@@ -1,0 +1,19 @@
+<input type="text" ng-model="sketch.name" />
+
+<button class="btn" ng-click="sketch.addFile();"
+  ng-mouseenter="info = 'Add a new file to this sketch.'"
+  ng-mouseleave="info = ''"><i class="icon-plus"></i></button>
+
+<button class="btn" ng-click="sketch.save()"
+  ng-mouseenter="info = 'Save all changes.'"
+  ng-mouseleave="info = ''"><i class="icon-upload"></i></button>
+
+<tabs>
+  <pane ng-repeat="file in sketch.files" heading="file.name" selected="file.selected">
+    <div>
+      <textarea ui-codemirror="{lineNumbers: true}" ng-model="file.contents"></textarea>
+    </div>
+  </pane>
+</tabs>
+
+<span>{{info}}</span>
