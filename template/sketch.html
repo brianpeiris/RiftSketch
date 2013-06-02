@@ -11,7 +11,8 @@
 <tabs>
   <pane ng-repeat="file in sketch.files" heading="file.name" selected="file.selected">
     <div>
-      <textarea ui-codemirror="{lineNumbers: true}" ng-model="file.contents"></textarea>
+      <textarea ui-codemirror="{lineNumbers: true}" ng-model="file.contents"
+        ui-refresh="file.selected"></textarea>
     </div>
   </pane>
 </tabs>
