@@ -1,3 +1,5 @@
+'use strict';
+
 var index = angular.module('index', ['ui.bootstrap', 'ui.codemirror', 'firebase']);
 
 index.directive('sketch', function () {
@@ -38,6 +40,7 @@ var Sketch = (function () {
 
 var SketchController = (function () {
   var constr = function ($scope, $routeParams, angularFireCollection, $location) {
+    this.scope = $scope;
     var sketches = angularFireCollection('https://riftsketch.firebaseio.com/sketches');
     $scope.sketch = new Sketch();
 
@@ -92,7 +95,14 @@ var SketchController = (function () {
     var that = this;
     $scope.$watch('sketch.getCode()', function (newVal, oldVal) {
       that.riftSandbox.clearScene();
-      var _sketchLoop = (new Function('scene', newVal))(that.riftSandbox.scene);
+      var _sketchLoop;
+      $scope.error = null;
+      try {
+          _sketchLoop = (new Function('scene', '"use strict";\n' + newVal))(that.riftSandbox.scene);
+      }
+      catch (err) {
+          $scope.error = err.toString();
+      }
       if (_sketchLoop) {
         that.sketchLoop = _sketchLoop;
       }
@@ -110,10 +120,9 @@ var SketchController = (function () {
       this.sketchLoop();
     }
     catch (err) {
-      console.log(err);
-      if (codeErr !== err) {
-        this.editor.setError(err);
-        codeError = err;
+      if (this.scope.error === null) {
+        this.scope.error = err.toString();
+        if (!this.scope.$$phase) { this.scope.$apply(); }
       }
     }
 
@@ -125,7 +134,7 @@ var SketchController = (function () {
 
 SketchController.$inject = ['$scope', '$routeParams', 'angularFireCollection', '$location'];
 
-ListController = function ($scope, angularFire, $location) {
+var ListController = function ($scope, angularFire, $location) {
   $scope.sketchData = {};
   $scope.sketches = [];
   angularFire('https://riftsketch.firebaseio.com/sketches', $scope, 'sketchData', {});

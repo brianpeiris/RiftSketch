@@ -1,6 +1,5 @@
 - Add back animation loop
 - Better UI for recent sketches (more info per sketch, paging)
-- Add error reporting for code execution
 - Save current code in localStorage and/or prompt so save before exit
 - Medium mode for editor (editor takes up less space, so that scene is more visible)
 - Minimal view for editor (removes unnecessary UI, leaving maximum editor space)
