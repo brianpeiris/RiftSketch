@@ -42,7 +42,9 @@ input[type="text"].input-small {
   margin-top: 3px;
 }
 
-.icon-plus, .icon-upload, .icon-th-list, .icon-asterisk {
+.icon-plus, .icon-upload,
+.icon-th-list, .icon-asterisk,
+.icon-resize-vertical {
   margin-top: -4px;
 }
 
@@ -57,7 +59,7 @@ input[type="text"].input-small {
   padding: 2px;
   border-radius: 2px;
   position: absolute;
-  top: 40%;
+  top: 35%;
 }
 
 @separation: 20%;
@@ -67,4 +69,12 @@ input[type="text"].input-small {
 
 .stereo.right {
   right: @separation;
+}
+
+sketch.minimized .tabbable {
+  display: none;
+}
+
+sketch.minimized {
+  top: 70%;
 }

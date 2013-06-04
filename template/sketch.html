@@ -4,6 +4,10 @@
   ng-mouseenter="info = 'Add a new file to this sketch.'"
   ng-mouseleave="info = ''"><i class="icon-plus"></i></button>
 
+<button class="btn" ng-click="toggleSize();"
+  ng-mouseenter="info = 'Minimize/restore the editor.'"
+  ng-mouseleave="info = ''"><i class="icon-resize-vertical"></i></button>
+
 <button class="btn" ng-click="sketch.save()"
   ng-mouseenter="info = 'Save all changes.'"
   ng-mouseleave="info = ''"><i class="icon-upload"></i></button>

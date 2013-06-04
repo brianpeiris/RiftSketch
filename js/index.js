@@ -58,6 +58,11 @@ var SketchController = (function () {
         });
     }
 
+    $scope.minimized = false;
+    $scope.toggleSize = function () {
+        $scope.minimized = !$scope.minimized;
+    };
+
     $scope.sketch.save = function () {
       var sketchId = sketches.add(angular.fromJson(angular.toJson($scope.sketch)));
       $location.path('/' + sketchId);
