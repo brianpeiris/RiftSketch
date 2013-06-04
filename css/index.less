@@ -2,6 +2,7 @@ html, body {
   padding: 0;
   margin: 0;
   overflow: hidden;
+  width: 100%;
 }
 
 body, input[type="text"] {
@@ -41,7 +42,7 @@ input[type="text"].input-small {
   margin-top: 3px;
 }
 
-.icon-plus, .icon-upload {
+.icon-plus, .icon-upload, .icon-th-list, .icon-asterisk {
   margin-top: -4px;
 }
 
@@ -49,7 +50,7 @@ input[type="text"].input-small {
   height: 180px;
 }
 
-sketch {
+.stereo {
   width: 250px;
   display: block;
   background: lightgrey;
@@ -60,10 +61,10 @@ sketch {
 }
 
 @separation: 20%;
-sketch.left {
+.stereo.left {
   left: @separation;
 }
 
-sketch.right {
+.stereo.right {
   right: @separation;
 }

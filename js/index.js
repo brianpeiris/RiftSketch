@@ -11,6 +11,7 @@ var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
     this.contents = contents || 'scene.add(\n  new THREE.Mesh(\n    new THREE.CubeGeometry(10, 10, 10)));';
+    this.selected = true;
   };
   return constr;
 }());
@@ -39,6 +40,8 @@ var SketchController = (function () {
   var constr = function ($scope, $routeParams, angularFireCollection, $location) {
     var sketches = angularFireCollection('https://riftsketch.firebaseio.com/sketches');
     $scope.sketch = new Sketch();
+
+    this.sketchLoop = function () {};
     
     if ($routeParams.sketchId) {
       var url = 'https://riftsketch.firebaseio.com/sketches/' + $routeParams.sketchId;
@@ -60,6 +63,14 @@ var SketchController = (function () {
       $location.path('/' + sketchId);
     };
 
+    $scope.listSketches = function () {
+      $location.path('/list');
+    };
+
+    $scope.newSketch = function () {
+      $location.path('/');
+    };
+
     // TODO: Obviously, RiftSandox and the resize event listener should not be
     // part of an angular controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
@@ -76,7 +87,10 @@ var SketchController = (function () {
     var that = this;
     $scope.$watch('sketch.getCode()', function (newVal, oldVal) {
       that.riftSandbox.clearScene();
-      (new Function('scene', newVal))(that.riftSandbox.scene);
+      var _sketchLoop = (new Function('scene', newVal))(that.riftSandbox.scene);
+      if (_sketchLoop) {
+        that.sketchLoop = _sketchLoop;
+      }
     });
   };
 
@@ -88,7 +102,7 @@ var SketchController = (function () {
     this.riftSandbox.updateCameraRotation();
 
     try {
-      //codeLoop();
+      this.sketchLoop();
     }
     catch (err) {
       console.log(err);
@@ -106,8 +120,23 @@ var SketchController = (function () {
 
 SketchController.$inject = ['$scope', '$routeParams', 'angularFireCollection', '$location'];
 
+ListController = function ($scope, angularFire, $location) {
+  $scope.sketchData = {};
+  $scope.sketches = [];
+  angularFire('https://riftsketch.firebaseio.com/sketches', $scope, 'sketchData', {});
+  $scope.watch('sketchData', function (name, oldVal, newVal) {
+    $scope.sketches = Object.keys(newVal).map(function (key) {
+      return {sketchId: key, sketch: newVal[key]};
+    });
+  });
+  $scope.getSketchUrl = function (sketchId) {
+    return $location.absUrl().split('#')[0] + '#/' + sketchId;
+  };
+};
+
 index.config(function ($routeProvider) {
   $routeProvider.
+    when('/list', {templateUrl: 'list.html', controller: ListController}).
     when('/', {templateUrl: 'view.html', controller: SketchController}).
     when('/:sketchId', {templateUrl: 'view.html', controller: SketchController});
 });

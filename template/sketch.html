@@ -8,11 +8,19 @@
   ng-mouseenter="info = 'Save all changes.'"
   ng-mouseleave="info = ''"><i class="icon-upload"></i></button>
 
+<button class="btn" ng-click="listSketches()"
+  ng-mouseenter="info = 'List recent sketches.'"
+  ng-mouseleave="info = ''"><i class="icon-th-list"></i></button>
+
+<button class="btn" ng-click="newSketch();"
+  ng-mouseenter="info = 'Create a brand new sketch.'"
+  ng-mouseleave="info = ''"><i class="icon-asterisk"></i></button>
+
 <tabs>
   <pane ng-repeat="file in sketch.files" heading="file.name" selected="file.selected">
     <div>
       <textarea ui-codemirror="{lineNumbers: true}" ng-model="file.contents"
-        ui-refresh="file.selected"></textarea>
+        ui-refresh="file.selected" scrollview="file.scrollView"></textarea>
     </div>
   </pane>
 </tabs>
