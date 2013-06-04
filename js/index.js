@@ -12,7 +12,16 @@ index.directive('sketch', function () {
 var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
-    this.contents = contents || 'scene.add(\n  new THREE.Mesh(\n    new THREE.CubeGeometry(10, 10, 10)));';
+    this.contents = contents === undefined ? (
+'scene.add(new THREE.PointLight())\n\n\
+var cube = new THREE.Mesh(\n\
+  new THREE.CubeGeometry(2, 2, 2),\n\
+  new THREE.MeshLambertMaterial(\n\
+    {color: \'red\'}));\n\n\
+cube.position.y = 5;\n\
+cube.position.z = 10;\n\
+cube.rotation.y = Math.PI / 4;\n\n\
+scene.add(cube);') : contents;
     this.selected = true;
   };
   return constr;
@@ -138,7 +147,7 @@ var ListController = function ($scope, angularFire, $location) {
   $scope.sketchData = {};
   $scope.sketches = [];
   angularFire('https://riftsketch.firebaseio.com/sketches', $scope, 'sketchData', {});
-  $scope.watch('sketchData', function (name, oldVal, newVal) {
+  $scope.$watch('sketchData', function (newVal) {
     $scope.sketches = Object.keys(newVal).map(function (key) {
       return {sketchId: key, sketch: newVal[key]};
     });
@@ -147,6 +156,7 @@ var ListController = function ($scope, angularFire, $location) {
     return $location.absUrl().split('#')[0] + '#/' + sketchId;
   };
 };
+ListController.$inject = ['$scope', 'angularFire', '$location'];
 
 index.config(function ($routeProvider) {
   $routeProvider.
