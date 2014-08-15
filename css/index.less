@@ -51,22 +51,24 @@ input[type="text"].input-small {
 }
 
 .CodeMirror {
-  height: 180px;
-  font-family: 'Inconsolata';
-  font-size: 10px;
+  height: 280px;
+  font-family: 'Inconsolata', 'Consolas';
+  font-size: 12px;
 }
 
 .stereo {
-  width: 250px;
+  width: 450px;
+  max-height: 400px;
+  overflow: auto;
   display: block;
   background: lightgrey;
   padding: 2px;
   border-radius: 2px;
   position: absolute;
-  top: 35%;
+  top: 40%;
 }
 
-@separation: 20%;
+@separation: 18%;
 .stereo.left {
   left: @separation;
 }

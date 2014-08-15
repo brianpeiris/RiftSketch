@@ -54,14 +54,14 @@ var SketchController = (function () {
     $scope.sketch = new Sketch();
 
     this.sketchLoop = function () {};
-    
+
     if ($routeParams.sketchId) {
       var url = 'https://riftsketch.firebaseio.com/sketches/' + $routeParams.sketchId;
       new Firebase(url).once(
         'value',
         function (snapshot) {
           var savedSketch = snapshot.val();
-          if (savedSketch) { 
+          if (savedSketch) {
             angular.extend($scope.sketch, savedSketch);
           }
           else {
@@ -92,7 +92,7 @@ var SketchController = (function () {
     // part of an angular controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
     this.riftClient = new RiftClient(
-      this.riftSandbox.setHmdRotation.bind(this.riftSandbox));
+      this.riftSandbox.setHmdPositionRotation.bind(this.riftSandbox));
     window.addEventListener(
       'resize',
       this.riftSandbox.resize.bind(this.riftSandbox),

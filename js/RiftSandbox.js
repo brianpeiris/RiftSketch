@@ -6,8 +6,9 @@ var constr = function (width, height) {
   this.height = height;
   this.headingVector = new THREE.Vector3();
   this.HMDRotation = new THREE.Quaternion();
+  this.HMDPosition = new THREE.Vector3();
   this.BaseRotation = new THREE.Quaternion();
-  this.BaseRotationEuler = new THREE.Vector3();
+  this.BaseRotationEuler = new THREE.Vector3(0, Math.PI);
   this.moveVector = new THREE.Vector3();
   this.scene = null;
   this.sceneStuff = [];
@@ -23,7 +24,8 @@ var constr = function (width, height) {
     interpupillaryDistance: 0.064,
     lensSeparationDistance: 0.064,
     eyeToScreenDistance: 0.041,
-    distortionK : [1.0, 0.22, 0.24, 0.0]
+    distortionK : [1.0, -0.02, 0.14, 0.0],
+    chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
   };
   this.initWebGL();
 };
@@ -220,8 +222,11 @@ constr.prototype.resize = function () {
   this.camera.projectionMatrix.makePerspective( 60, this.width / this.height, 1, 1100 );
 };
 
-constr.prototype.setHmdRotation = function (data) {
-  this.HMDRotation.set(data[1], data[2], data[3], data[0]);
+constr.prototype.setHmdPositionRotation = function (data) {
+  var rotation = data.O;
+  var position = data.P;
+  this.HMDRotation.set(rotation[0], rotation[1], rotation[2], rotation[3]);
+  this.HMDPosition.set(-position[0], position[1], -position[2]);
   this.updateCameraRotation();
 };
 
@@ -229,6 +234,7 @@ constr.prototype.updateCameraRotation = function () {
   this.camera.quaternion.multiplyQuaternions(
     this.BaseRotation,
     this.HMDRotation);
+  this.camera.position = this.HMDPosition;
   this.headingVector.setEulerFromQuaternion(this.camera.quaternion, 'YZX');
 };
 

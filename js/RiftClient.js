@@ -3,9 +3,9 @@ var RiftClient = (function () {
 
 var webSocketPrefix = 'ws://';
 
-var constr = function (rotationCallback) {
-  this.rotationCallback = rotationCallback;
-  this.webSocketAddress = webSocketPrefix + '127.0.0.1:1981';
+var constr = function (positionRotationCallback) {
+  this.positionRotationCallback = positionRotationCallback;
+  this.webSocketAddress = webSocketPrefix + '127.0.0.1:38950';
   this.connection = null;
   this.enabled = true;
   if (this.enabled) {
@@ -27,8 +27,11 @@ constr.prototype.init = function () {
     this.retryConnection.bind(this);
 
   this.connection.onmessage = function (message) {
-    var data = JSON.parse('[' + message.data + ']');
-    that.rotationCallback(data);
+    try {
+      var data = JSON.parse( message.data);
+      that.positionRotationCallback(data.L);
+    }
+    catch (e) {}
   };
 };
 
