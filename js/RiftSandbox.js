@@ -13,20 +13,7 @@ var constr = function (width, height) {
   this.scene = null;
   this.sceneStuff = [];
   this.camera = null;
-  this.effect = null;
   this.renderer = null;
-  this.OculusRift = {
-    // Parameters from the Oculus Rift DK1
-    hResolution: 1280,
-    vResolution: 800,
-    hScreenSize: 0.14976,
-    vScreenSize: 0.0936,
-    interpupillaryDistance: 0.064,
-    lensSeparationDistance: 0.064,
-    eyeToScreenDistance: 0.041,
-    distortionK : [1.0, -0.02, 0.14, 0.0],
-    chromaAbParameter: [ 0.996, -0.004, 1.014, 0.0]
-  };
   this.initWebGL();
 };
 
@@ -113,15 +100,6 @@ constr.prototype.initWebGL = function () {
   this.renderer.autoClearColor = false;
   this.renderer.setSize( this.width, this.width );
 
-  // Add stereo effect
-  this.OculusRift.hResolution = this.width;
-  this.OculusRift.vResolution = this.height,
-
-  // Add stereo effect
-  this.effect = new THREE.OculusRiftEffect(
-      this.renderer, { HMD:this.OculusRift } );
-  this.effect.setSize( this.width, this.height );
-
   var viewer = document.getElementById('viewer');
   viewer.appendChild(this.renderer.domElement);
 
@@ -207,27 +185,28 @@ constr.prototype.clearScene = function () {
 };
 
 constr.prototype.render = function () {
-  this.effect.render(this.scene, this.camera);
+  this.renderer.render(this.scene, this.camera);
 };
 
 constr.prototype.resize = function () {
   this.width = window.innerWidth;
   this.height = window.innerHeight;
 
-  this.OculusRift.hResolution = this.width,
-  this.OculusRift.vResolution = this.height,
-  this.effect.setHMD(this.OculusRift);
-
   this.renderer.setSize( this.width, this.height );
   this.camera.projectionMatrix.makePerspective( 60, this.width / this.height, 1, 1100 );
 };
 
-constr.prototype.setHmdPositionRotation = function (data) {
-  var rotation = data.O;
-  var position = data.P;
-  this.HMDRotation.set(rotation[0], rotation[1], rotation[2], rotation[3]);
-  this.HMDPosition.set(-position[0], position[1], -position[2]);
-  this.updateCameraRotation();
+constr.prototype.setHmdPositionRotation = function (vrState) {
+  if (!vrState) { return; }
+  var rotation = vrState.orientation;
+  var position = vrState.position;
+  this.HMDRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
+  var VR_POSITION_SCALE = 25;
+  this.HMDPosition.set(
+    -1 * position.x * VR_POSITION_SCALE,
+    position.y * VR_POSITION_SCALE,
+    -1 * position.z * VR_POSITION_SCALE
+  );
 };
 
 constr.prototype.updateCameraRotation = function () {

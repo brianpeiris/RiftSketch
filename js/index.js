@@ -88,17 +88,16 @@ var SketchController = (function () {
       $location.path('/');
     };
 
+    this.deviceManager = new DeviceManager();
     // TODO: Obviously, RiftSandox and the resize event listener should not be
     // part of an angular controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
-    this.riftClient = new RiftClient(
-      this.riftSandbox.setHmdPositionRotation.bind(this.riftSandbox));
     window.addEventListener(
       'resize',
       this.riftSandbox.resize.bind(this.riftSandbox),
       false
     );
-    this.riftClient.init();
+    this.deviceManager.init();
     this.mainLoop();
 
     var that = this;
@@ -122,8 +121,12 @@ var SketchController = (function () {
     window.requestAnimationFrame( this.mainLoop.bind(this) );
 
     // Apply movement
-    this.riftSandbox.setBaseRotation();
-    this.riftSandbox.updateCameraRotation();
+    if (this.deviceManager.sensorDevice) {
+      this.riftSandbox.setHmdPositionRotation(
+        this.deviceManager.sensorDevice.getState());
+      this.riftSandbox.setBaseRotation();
+      this.riftSandbox.updateCameraRotation();
+    }
 
     try {
       this.sketchLoop();
