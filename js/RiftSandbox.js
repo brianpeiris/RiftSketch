@@ -4,15 +4,14 @@ var RiftSandbox = (function () {
 var constr = function (width, height) {
   this.width = width;
   this.height = height;
-  this.headingVector = new THREE.Vector3();
-  this.HMDRotation = new THREE.Quaternion();
+  window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
   this.HMDPosition = new THREE.Vector3();
   this.BaseRotation = new THREE.Quaternion();
   this.BaseRotationEuler = new THREE.Vector3(0, Math.PI);
-  this.moveVector = new THREE.Vector3();
   this.scene = null;
   this.sceneStuff = [];
-  this.camera = null;
+  this.cameraLeft = null;
+  this.cameraRight = null;
   this.renderer = null;
   this.initWebGL();
 };
@@ -22,11 +21,15 @@ constr.prototype.initScene = function () {
   this.scene = new THREE.Scene();
 
   // Create camera
-  this.camera = new THREE.PerspectiveCamera( 60, this.width/this.height, 1, 1100 );
-  // TODO: Is this necessary?
-  this.camera.target = new THREE.Vector3( 1, 0, 0 );
-  this.camera.useQuaternion = true;
-  this.scene.add( this.camera );
+  this.cameraPivot = new THREE.Object3D();
+  this.cameraPivot.useQuaternion = true;
+  this.scene.add(this.cameraPivot);
+
+  this.cameraLeft = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
+  this.cameraPivot.add( this.cameraLeft );
+
+  this.cameraRight = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
+  this.cameraPivot.add( this.cameraRight );
 
   // TODO: Refactor to reduce repetition.
 
@@ -60,6 +63,54 @@ constr.prototype.initScene = function () {
   };
 };
 
+constr.prototype.setCameraOffsets = function (eyeOffsetLeft, eyeOffsetRight) {
+  this.cameraLeft.position.sub(eyeOffsetLeft);
+  this.cameraRight.position.sub(eyeOffsetRight);
+};
+
+function perspectiveMatrixFromVRFieldOfView(fov, zNear, zFar) {
+  var outMat = new THREE.Matrix4();
+  var out = outMat.elements;
+  var upTan = Math.tan(fov.upDegrees * Math.PI/180.0);
+  var downTan = Math.tan(fov.downDegrees * Math.PI/180.0);
+  var leftTan = Math.tan(fov.leftDegrees * Math.PI/180.0);
+  var rightTan = Math.tan(fov.rightDegrees * Math.PI/180.0);
+
+  var xScale = 2.0 / (leftTan + rightTan);
+  var yScale = 2.0 / (upTan + downTan);
+
+  out[0] = xScale;
+  out[4] = 0.0;
+  out[8] = -((leftTan - rightTan) * xScale * 0.5);
+  out[12] = 0.0;
+
+  out[1] = 0.0;
+  out[5] = yScale;
+  out[9] = ((upTan - downTan) * yScale * 0.5);
+  out[13] = 0.0;
+
+  out[2] = 0.0;
+  out[6] = 0.0;
+  out[10] = zFar / (zNear - zFar);
+  out[14] = (zFar * zNear) / (zNear - zFar);
+
+  out[3] = 0.0;
+  out[7] = 0.0;
+  out[11] = -1.0;
+  out[15] = 0.0;
+
+  return outMat;
+}
+
+constr.prototype.setFOV = function (fovLeft, fovRight) {
+  var leftProjectionMatrix = perspectiveMatrixFromVRFieldOfView(
+    fovLeft, 0.1, 1000);
+  var rightProjectionMatrix = perspectiveMatrixFromVRFieldOfView(
+    fovRight, 0.1, 1000);
+  this.cameraLeft.projectionMatrix = leftProjectionMatrix;
+  this.cameraRight.projectionMatrix = rightProjectionMatrix;
+};
+
 // Utility function
 function angleRangeDeg(angle) {
   while (angle >= 360) angle -=360;
@@ -79,17 +130,16 @@ function deltaAngleDeg(a,b) {
 
 constr.prototype.setBaseRotation = function () {
   this.BaseRotationEuler.set(
-    angleRangeRad(this.BaseRotationEuler.x + this.moveVector.x),
-    angleRangeRad(this.BaseRotationEuler.y + this.moveVector.y), 0.0 );
+    angleRangeRad(this.BaseRotationEuler.x),
+    angleRangeRad(this.BaseRotationEuler.y), 0.0 );
   this.BaseRotation.setFromEuler(this.BaseRotationEuler, 'YZX');
 };
 
 constr.prototype.initWebGL = function () {
   this.initScene();
 
-  // Create render
   try {
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({preserveDrawingBuffer: true});
   }
   catch(e){
     console.log(e);
@@ -97,84 +147,12 @@ constr.prototype.initWebGL = function () {
     return false;
   }
 
-  this.renderer.autoClearColor = false;
+  this.renderer.setClearColor(0x202020, 1.0);
+  //this.renderer.autoClearColor = false;
   this.renderer.setSize( this.width, this.width );
 
   var viewer = document.getElementById('viewer');
   viewer.appendChild(this.renderer.domElement);
-
-  /*
-  var lastSpaceKeyTime = new Date();
-  var lastCtrlKeyTime = new Date();
-  $(document).keydown(function(e) {
-    switch(e.keyCode) {
-      case 32:
-        var spaceKeyTime = new Date();
-        if (spaceKeyTime-lastSpaceKeyTime < 300) {
-          $('#settings').toggle(200);
-        }
-        lastSpaceKeyTime = spaceKeyTime;
-        break;
-      case 37:
-        moveVector.y = KEYBOARD_SPEED;
-        break;
-      case 38:
-        moveVector.x = KEYBOARD_SPEED;
-        break;
-      case 39:
-        moveVector.y = -KEYBOARD_SPEED;
-        break;
-      case 40:
-        moveVector.x = -KEYBOARD_SPEED;
-        break;
-      case 17:
-        var ctrlKeyTime = new Date();
-        if (ctrlKeyTime-lastCtrlKeyTime < 300) {
-          moveToNextPlace();
-        }
-        lastCtrlKeyTime = ctrlKeyTime;
-        break;
-    }
-  });
-
-  $(document).keyup(function(e) {
-    switch(e.keyCode) {
-      case 37:
-      case 39:
-        moveVector.y = 0.0;
-        break;
-      case 38:
-      case 40:
-        moveVector.x = 0.0;
-        break;
-    }
-  });
-
-  viewer.mousedown(function(event) {
-    MOVING_MOUSE = !this.riftClient.enabled;
-    lastClientX = event.clientX;
-    lastClientY = event.clientY;
-  });
-
-  viewer.mouseup(function() {
-    MOVING_MOUSE = false;
-  });
-
-  lastClientX = 0; lastClientY = 0;
-  viewer.mousemove(function(event) {
-    if (MOVING_MOUSE) {
-      BaseRotationEuler.set(
-        angleRangeRad(BaseRotationEuler.x + (event.clientY - lastClientY) * MOUSE_SPEED),
-        angleRangeRad(BaseRotationEuler.y + (event.clientX - lastClientX) * MOUSE_SPEED),
-        0.0
-      );
-      lastClientX = event.clientX;lastClientY =event.clientY;
-      BaseRotation.setFromEuler(BaseRotationEuler, 'YZX');
-
-      updateCameraRotation();
-    }
-  });
-  */
 };
 
 constr.prototype.clearScene = function () {
@@ -185,7 +163,19 @@ constr.prototype.clearScene = function () {
 };
 
 constr.prototype.render = function () {
-  this.renderer.render(this.scene, this.camera);
+  var
+    halfWidth = this.width / 2,
+    halfHeight = this.height / 2;
+
+  this.renderer.enableScissorTest(true);
+
+  this.renderer.setScissor(0, 0, halfWidth, this.height);
+  this.renderer.setViewport(0, 0, halfWidth, this.height);
+  this.renderer.render(this.scene, this.cameraLeft);
+
+  this.renderer.setScissor(halfWidth, 0, halfWidth, this.height);
+  this.renderer.setViewport(halfWidth, 0, halfWidth, this.height);
+  this.renderer.render(this.scene, this.cameraRight);
 };
 
 constr.prototype.resize = function () {
@@ -193,7 +183,6 @@ constr.prototype.resize = function () {
   this.height = window.innerHeight;
 
   this.renderer.setSize( this.width, this.height );
-  this.camera.projectionMatrix.makePerspective( 60, this.width / this.height, 1, 1100 );
 };
 
 constr.prototype.setHmdPositionRotation = function (vrState) {
@@ -210,11 +199,10 @@ constr.prototype.setHmdPositionRotation = function (vrState) {
 };
 
 constr.prototype.updateCameraRotation = function () {
-  this.camera.quaternion.multiplyQuaternions(
+  this.cameraPivot.quaternion.multiplyQuaternions(
     this.BaseRotation,
     this.HMDRotation);
-  this.camera.position = this.HMDPosition;
-  this.headingVector.setEulerFromQuaternion(this.camera.quaternion, 'YZX');
+  this.cameraPivot.position = this.HMDPosition;
 };
 
 return constr;

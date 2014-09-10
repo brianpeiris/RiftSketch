@@ -92,11 +92,35 @@ var SketchController = (function () {
     // TODO: Obviously, RiftSandox and the resize event listener should not be
     // part of an angular controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
+    this.deviceManager.onResizeFOV = function (
+      renderTargetSize, fovLeft, fovRight
+    ) {
+      this.riftSandbox.setFOV(fovLeft, fovRight);
+    }.bind(this);
+    this.deviceManager.onHMDDeviceFound = function (hmdDevice) {
+      var eyeOffsetLeft = hmdDevice.getEyeTranslation("left");
+      var eyeOffsetRight = hmdDevice.getEyeTranslation("right");
+      this.riftSandbox.setCameraOffsets(eyeOffsetLeft, eyeOffsetRight);
+    }.bind(this);
+
     window.addEventListener(
       'resize',
       this.riftSandbox.resize.bind(this.riftSandbox),
       false
     );
+
+    var domElement = this.riftSandbox.renderer.domElement;
+    domElement.addEventListener('click', function () {
+      if (domElement.webkitRequestFullscreen) {
+        domElement.webkitRequestFullscreen({
+          vrDisplay: this.deviceManager.hmdDevice });
+      } else if (domElement.mozRequestFullScreen) {
+        domElement.mozRequestFullScreen({
+          vrDisplay: this.deviceManager.hmdDevice });
+      }
+    }.bind(this), false);
+
+    this.riftSandbox.resize();
     this.deviceManager.init();
     this.mainLoop();
 
@@ -106,10 +130,11 @@ var SketchController = (function () {
       var _sketchLoop;
       $scope.error = null;
       try {
-          _sketchLoop = (new Function('scene', '"use strict";\n' + newVal))(that.riftSandbox.scene);
+        _sketchLoop = (new Function('scene', '"use strict";\n' + newVal))(
+          that.riftSandbox.scene);
       }
       catch (err) {
-          $scope.error = err.toString();
+        $scope.error = err.toString();
       }
       if (_sketchLoop) {
         that.sketchLoop = _sketchLoop;
