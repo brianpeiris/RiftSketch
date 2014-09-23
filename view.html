@@ -1,3 +1,8 @@
-<div id="viewer"></div>
-<sketch ng-model="sketch" class="stereo left" ng-class="{minimized: minimized}"></sketch>
-<sketch ng-model="sketch" class="stereo right" ng-class="{minimized: minimized}"></sketch>
+<div id="container">
+  <div id="camera">
+    <textarea ng-repeat="file in sketch.files" ng-model="file.contents" ui-refresh="file.selected" scrollview="file.scrollView"></textarea>
+
+    <span class="threed alert alert-info" ng-show="info">{{info}}</span>
+    <span class="threed alert alert-error" ng-show="error">{{error}}</span>
+  </div>
+</div>

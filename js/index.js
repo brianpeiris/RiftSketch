@@ -1,27 +1,20 @@
 'use strict';
 
-var index = angular.module('index', ['ui.bootstrap', 'ui.codemirror', 'firebase']);
-
-index.directive('sketch', function () {
-  return {
-    restrict: 'E',
-    templateUrl: 'template/sketch.html'
-  };
-});
-
 var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
     this.contents = contents === undefined ? (
-'scene.add(new THREE.PointLight())\n\n\
+      'scene.add(new THREE.PointLight())\n\n\
 var cube = new THREE.Mesh(\n\
-  new THREE.CubeGeometry(2, 2, 2),\n\
-  new THREE.MeshLambertMaterial(\n\
-    {color: \'red\'}));\n\n\
+new THREE.CubeGeometry(2, 2, 2),\n\
+new THREE.MeshLambertMaterial(\n\
+  {color: \'red\'}));\n\n\
 cube.position.y = 5;\n\
 cube.position.z = 10;\n\
-cube.rotation.y = Math.PI / 4;\n\n\
-scene.add(cube);') : contents;
+scene.add(cube);\n\
+return function () {\n\
+    cube.rotation.y += 0.01;\n\
+};') : contents;
     this.selected = true;
   };
   return constr;
@@ -47,45 +40,43 @@ var Sketch = (function () {
   return constr;
 }());
 
-var SketchController = (function () {
-  var constr = function ($scope, $routeParams, angularFireCollection, $location) {
+angular.module('index', [])
+  .controller('SketchController', ['$scope', function($scope) {
     this.scope = $scope;
-    var sketches = angularFireCollection('https://riftsketch.firebaseio.com/sketches');
-    $scope.sketch = new Sketch();
+    var autosave = localStorage.getItem('autosave');
+    var files;
+    if (autosave) {
+        files = [new File('autosave', autosave)];
+        $scope.sketch = new Sketch('autosave', files);
+    }
+    else {
+        $scope.sketch = new Sketch(files);
+    }
 
     this.sketchLoop = function () {};
 
-    if ($routeParams.sketchId) {
-      var url = 'https://riftsketch.firebaseio.com/sketches/' + $routeParams.sketchId;
-      new Firebase(url).once(
-        'value',
-        function (snapshot) {
-          var savedSketch = snapshot.val();
-          if (savedSketch) {
-            angular.extend($scope.sketch, savedSketch);
-          }
-          else {
-            $location.path('/');
-          }
-        });
-    }
+    this.mainLoop = function () {
+      window.requestAnimationFrame( this.mainLoop.bind(this) );
 
-    $scope.minimized = false;
-    $scope.toggleSize = function () {
-        $scope.minimized = !$scope.minimized;
-    };
+      // Apply movement
+      if (this.deviceManager.sensorDevice) {
+        this.riftSandbox.setHmdPositionRotation(
+          this.deviceManager.sensorDevice.getState());
+        this.riftSandbox.setBaseRotation();
+        this.riftSandbox.updateCameraRotation();
+      }
 
-    $scope.sketch.save = function () {
-      var sketchId = sketches.add(angular.fromJson(angular.toJson($scope.sketch)));
-      $location.path('/' + sketchId);
-    };
+      try {
+        this.sketchLoop();
+      }
+      catch (err) {
+        if (this.scope.error === null) {
+          this.scope.error = err.toString();
+          if (!this.scope.$$phase) { this.scope.$apply(); }
+        }
+      }
 
-    $scope.listSketches = function () {
-      $location.path('/list');
-    };
-
-    $scope.newSketch = function () {
-      $location.path('/');
+      this.riftSandbox.render();
     };
 
     this.deviceManager = new DeviceManager();
@@ -109,15 +100,10 @@ var SketchController = (function () {
       false
     );
 
-    var domElement = this.riftSandbox.renderer.domElement;
+    var domElement = this.riftSandbox.container;
     domElement.addEventListener('click', function () {
-      if (domElement.webkitRequestFullscreen) {
-        domElement.webkitRequestFullscreen({
-          vrDisplay: this.deviceManager.hmdDevice });
-      } else if (domElement.mozRequestFullScreen) {
-        domElement.mozRequestFullScreen({
-          vrDisplay: this.deviceManager.hmdDevice });
-      }
+      domElement.mozRequestFullScreen({
+        vrDisplay: this.deviceManager.hmdDevice });
     }.bind(this), false);
 
     this.riftSandbox.resize();
@@ -139,56 +125,6 @@ var SketchController = (function () {
       if (_sketchLoop) {
         that.sketchLoop = _sketchLoop;
       }
+      localStorage.setItem('autosave', newVal);
     });
-  };
-
-  constr.prototype.mainLoop = function () {
-    window.requestAnimationFrame( this.mainLoop.bind(this) );
-
-    // Apply movement
-    if (this.deviceManager.sensorDevice) {
-      this.riftSandbox.setHmdPositionRotation(
-        this.deviceManager.sensorDevice.getState());
-      this.riftSandbox.setBaseRotation();
-      this.riftSandbox.updateCameraRotation();
-    }
-
-    try {
-      this.sketchLoop();
-    }
-    catch (err) {
-      if (this.scope.error === null) {
-        this.scope.error = err.toString();
-        if (!this.scope.$$phase) { this.scope.$apply(); }
-      }
-    }
-
-    this.riftSandbox.render();
-  };
-
-  return constr;
-}());
-
-SketchController.$inject = ['$scope', '$routeParams', 'angularFireCollection', '$location'];
-
-var ListController = function ($scope, angularFire, $location) {
-  $scope.sketchData = {};
-  $scope.sketches = [];
-  angularFire('https://riftsketch.firebaseio.com/sketches', $scope, 'sketchData', {});
-  $scope.$watch('sketchData', function (newVal) {
-    $scope.sketches = Object.keys(newVal).map(function (key) {
-      return {sketchId: key, sketch: newVal[key]};
-    });
-  });
-  $scope.getSketchUrl = function (sketchId) {
-    return $location.absUrl().split('#')[0] + '#/' + sketchId;
-  };
-};
-ListController.$inject = ['$scope', 'angularFire', '$location'];
-
-index.config(function ($routeProvider) {
-  $routeProvider.
-    when('/list', {templateUrl: 'list.html', controller: ListController}).
-    when('/', {templateUrl: 'view.html', controller: SketchController}).
-    when('/:sketchId', {templateUrl: 'view.html', controller: SketchController});
-});
+  }]);

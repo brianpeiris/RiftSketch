@@ -13,6 +13,7 @@ var constr = function (width, height) {
   this.cameraLeft = null;
   this.cameraRight = null;
   this.renderer = null;
+  this.cssCamera = document.getElementById('camera');
   this.initWebGL();
 };
 
@@ -139,7 +140,9 @@ constr.prototype.initWebGL = function () {
   this.initScene();
 
   try {
-    this.renderer = new THREE.WebGLRenderer({preserveDrawingBuffer: true});
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: document.getElementById('viewer'),
+      preserveDrawingBuffer: true});
   }
   catch(e){
     console.log(e);
@@ -151,8 +154,7 @@ constr.prototype.initWebGL = function () {
   //this.renderer.autoClearColor = false;
   this.renderer.setSize( this.width, this.width );
 
-  var viewer = document.getElementById('viewer');
-  viewer.appendChild(this.renderer.domElement);
+  this.container = document.getElementById('container');
 };
 
 constr.prototype.clearScene = function () {
@@ -185,17 +187,75 @@ constr.prototype.resize = function () {
   this.renderer.setSize( this.width, this.height );
 };
 
+function matrixFromOrientation(q, inverse) {
+  var m = Array(16);
+
+  var x = q.x, y = q.y, z = q.z, w = q.w;
+
+  // if inverse is given, invert the quaternion first
+  if (inverse) {
+    x = -x; y = -y; z = -z;
+    var l = Math.sqrt(x*x + y*y + z*z + w*w);
+    if (l == 0) {
+      x = y = z = 0;
+      w = 1;
+    } else {
+      l = 1/l;
+      x *= l; y *= l; z *= l; w *= l;
+    }
+  }
+
+  var x2 = x + x, y2 = y + y, z2 = z + z;
+  var xx = x * x2, xy = x * y2, xz = x * z2;
+  var yy = y * y2, yz = y * z2, zz = z * z2;
+  var wx = w * x2, wy = w * y2, wz = w * z2;
+
+  m[0] = 1 - (yy + zz);
+  m[4] = xy - wz;
+  m[8] = xz + wy;
+
+  m[1] = xy + wz;
+  m[5] = 1 - (xx + zz);
+  m[9] = yz - wx;
+
+  m[2] = xz - wy;
+  m[6] = yz + wx;
+  m[10] = 1 - (xx + yy);
+
+  m[3] = m[7] = m[11] = 0;
+  m[12] = m[13] = m[14] = 0;
+  m[15] = 1;
+
+  return m;
+}
+
+function cssMatrixFromElements(e) {
+  return "matrix3d(" + e.join(",") + ")";
+}
+
+function cssMatrixFromOrientation(q, inverse) {
+  return cssMatrixFromElements(matrixFromOrientation(q, inverse));
+}
+
+var cssCameraPositionTransform = (
+  "translate3d(0, 0, 0) rotateZ(180deg) rotateY(180deg)");
+
 constr.prototype.setHmdPositionRotation = function (vrState) {
   if (!vrState) { return; }
   var rotation = vrState.orientation;
   var position = vrState.position;
   this.HMDRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
-  var VR_POSITION_SCALE = 25;
+  var VR_POSITION_SCALE = 1;
   this.HMDPosition.set(
     -1 * position.x * VR_POSITION_SCALE,
     position.y * VR_POSITION_SCALE,
     -1 * position.z * VR_POSITION_SCALE
   );
+
+  var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
+
+  this.cssCamera.style.transform = (
+    cssOrientationMatrix + " " + cssCameraPositionTransform);
 };
 
 constr.prototype.updateCameraRotation = function () {

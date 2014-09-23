@@ -1,33 +1,7 @@
-<input type="text" ng-model="sketch.name" />
+<div ng-repeat="file in files">
+<textarea class="threed" ng-model="file.contents"
+  ui-refresh="file.selected" scrollview="file.scrollView"></textarea>
+</div>
 
-<button class="btn" ng-click="sketch.addFile();"
-  ng-mouseenter="info = 'Add a new file to this sketch.'"
-  ng-mouseleave="info = ''"><i class="icon-plus"></i></button>
-
-<button class="btn" ng-click="toggleSize();"
-  ng-mouseenter="info = 'Minimize/restore the editor.'"
-  ng-mouseleave="info = ''"><i class="icon-resize-vertical"></i></button>
-
-<button class="btn" ng-click="sketch.save()"
-  ng-mouseenter="info = 'Save all changes.'"
-  ng-mouseleave="info = ''"><i class="icon-upload"></i></button>
-
-<button class="btn" ng-click="listSketches()"
-  ng-mouseenter="info = 'List recent sketches.'"
-  ng-mouseleave="info = ''"><i class="icon-th-list"></i></button>
-
-<button class="btn" ng-click="newSketch();"
-  ng-mouseenter="info = 'Create a brand new sketch.'"
-  ng-mouseleave="info = ''"><i class="icon-asterisk"></i></button>
-
-<tabs>
-  <pane ng-repeat="file in sketch.files" heading="file.name" selected="file.selected">
-    <div>
-      <textarea ui-codemirror="{lineNumbers: true}" ng-model="file.contents"
-        ui-refresh="file.selected" scrollview="file.scrollView"></textarea>
-    </div>
-  </pane>
-</tabs>
-
-<span class="alert alert-info" ng-show="info">{{info}}</span>
-<span class="alert alert-error" ng-show="error">{{error}}</span>
+<span class="threed alert alert-info" ng-show="info">{{info}}</span>
+<span class="threed alert alert-error" ng-show="error">{{error}}</span>
