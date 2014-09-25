@@ -4,17 +4,47 @@ var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
     this.contents = contents === undefined ? (
-      'scene.add(new THREE.PointLight())\n\n\
-var cube = new THREE.Mesh(\n\
-new THREE.CubeGeometry(2, 2, 2),\n\
-new THREE.MeshLambertMaterial(\n\
-  {color: \'red\'}));\n\n\
-cube.position.y = 5;\n\
-cube.position.z = 10;\n\
-scene.add(cube);\n\
-return function () {\n\
-    cube.rotation.y += 0.01;\n\
-};') : contents;
+      'var RandomRunner = function () {\n\
+  var cube = new THREE.Mesh(\n\
+    new THREE.BoxGeometry(1, 1, 1),\n\
+    new THREE.MeshLambertMaterial(\n\
+      {color: new THREE.Color(\n\
+        Math.random(),\n\
+        Math.random(),\n\
+        Math.random()\n\
+      )}\n\
+    )\n\
+  );\n\
+  cube.position.x = 5;\n\
+  cube.position.z = 5;\n\
+  cube.rotation.x = Math.random() * Math.PI * 2;\n\
+  cube.rotation.y = Math.random() * Math.PI * 2;\n\
+  cube.rotation.z = Math.random() * Math.PI * 2;\n\
+  scene.add(cube);\n\
+  var velocity = new THREE.Vector3();\n\
+  this.update = function () {\n\
+    if (Math.random() < 0.01) {\n\
+      cube.rotation.x += (Math.random() - 0.5) * 2;\n\
+      cube.rotation.y += (Math.random() - 0.5) * 2;\n\
+      cube.rotation.z += (Math.random() - 0.5) * 2;\n\
+    }\n\
+    cube.translateX(0.2)\n\
+  };\n\
+};\n\
+var randomRunners = [];\n\
+var numRandomRunners = 50;\n\
+for (var i = 0; i < numRandomRunners; i++) {\n\
+  randomRunners.push(new RandomRunner());\n\
+}\n\
+\n\
+scene.add(new THREE.PointLight())\n\
+\n\
+return function () {  \n\
+  for (var i = 0; i < numRandomRunners; i++) {\n\
+    randomRunners[i].update();\n\
+  }\n\
+};\n\
+') : contents;
     this.selected = true;
   };
   return constr;
@@ -100,10 +130,33 @@ angular.module('index', [])
       false
     );
 
+    $scope.is_editor_visible = true;
     var domElement = this.riftSandbox.container;
-    domElement.addEventListener('click', function () {
-      domElement.mozRequestFullScreen({
-        vrDisplay: this.deviceManager.hmdDevice });
+    document.addEventListener('keypress', function (e) {
+      if (e.altKey) {
+        switch (e.key) {
+          case 'v':
+            this.riftSandbox.toggleVrMode();
+            domElement.mozRequestFullScreen({
+              vrDisplay: this.deviceManager.hmdDevice });
+            break;
+          case 'z':
+            this.deviceManager.sensorDevice.zeroSensor();
+            break;
+          case 'e':
+            $scope.is_editor_visible = !$scope.is_editor_visible;
+            if (!this.scope.$$phase) { this.scope.$apply(); }
+            break;
+          default:
+            return;
+        }
+        e.preventDefault();
+      }
+    }.bind(this), false);
+    document.addEventListener('mozfullscreenchange', function () {
+      if (!document.mozFullScreenElement && this.riftSandbox.vrMode) {
+        this.riftSandbox.toggleVrMode();
+      }
     }.bind(this), false);
 
     this.riftSandbox.resize();

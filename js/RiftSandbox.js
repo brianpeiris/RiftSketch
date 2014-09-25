@@ -7,7 +7,7 @@ var constr = function (width, height) {
   window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
   this.HMDPosition = new THREE.Vector3();
   this.BaseRotation = new THREE.Quaternion();
-  this.BaseRotationEuler = new THREE.Vector3(0, Math.PI);
+  this.BaseRotationEuler = new THREE.Euler(0, Math.PI);
   this.scene = null;
   this.sceneStuff = [];
   this.cameraLeft = null;
@@ -15,13 +15,17 @@ var constr = function (width, height) {
   this.renderer = null;
   this.cssCamera = document.getElementById('camera');
   this.initWebGL();
+  this.vrMode = false;
 };
 
 constr.prototype.initScene = function () {
   // create scene
   this.scene = new THREE.Scene();
 
-  // Create camera
+  this.camera = new THREE.PerspectiveCamera(
+    75, this.width / this.height, 0.1, 1000 );
+  this.camera.useQuaternion = true;
+
   this.cameraPivot = new THREE.Object3D();
   this.cameraPivot.useQuaternion = true;
   this.scene.add(this.cameraPivot);
@@ -169,15 +173,21 @@ constr.prototype.render = function () {
     halfWidth = this.width / 2,
     halfHeight = this.height / 2;
 
-  this.renderer.enableScissorTest(true);
+  if (this.vrMode) {
+    this.renderer.enableScissorTest(true);
 
-  this.renderer.setScissor(0, 0, halfWidth, this.height);
-  this.renderer.setViewport(0, 0, halfWidth, this.height);
-  this.renderer.render(this.scene, this.cameraLeft);
+    this.renderer.setScissor(0, 0, halfWidth, this.height);
+    this.renderer.setViewport(0, 0, halfWidth, this.height);
+    this.renderer.render(this.scene, this.cameraLeft);
 
-  this.renderer.setScissor(halfWidth, 0, halfWidth, this.height);
-  this.renderer.setViewport(halfWidth, 0, halfWidth, this.height);
-  this.renderer.render(this.scene, this.cameraRight);
+    this.renderer.setScissor(halfWidth, 0, halfWidth, this.height);
+    this.renderer.setViewport(halfWidth, 0, halfWidth, this.height);
+    this.renderer.render(this.scene, this.cameraRight);
+  } else {
+    this.renderer.enableScissorTest ( false );
+    this.renderer.setViewport( 0, 0, this.width, this.height );
+    this.renderer.render(this.scene, this.camera);
+  }
 };
 
 constr.prototype.resize = function () {
@@ -252,17 +262,26 @@ constr.prototype.setHmdPositionRotation = function (vrState) {
     -1 * position.z * VR_POSITION_SCALE
   );
 
-  var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
+  if (this.vrMode) {
+    var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
+    this.cssCamera.style.transform = (
+      cssOrientationMatrix + " " + cssCameraPositionTransform);
+  }
+};
 
-  this.cssCamera.style.transform = (
-    cssOrientationMatrix + " " + cssCameraPositionTransform);
+constr.prototype.toggleVrMode = function () {
+    this.vrMode = !this.vrMode;
+    this.cssCamera.style.transform = '';
 };
 
 constr.prototype.updateCameraRotation = function () {
+  this.camera.quaternion.multiplyQuaternions(
+    this.BaseRotation,
+    this.HMDRotation);
   this.cameraPivot.quaternion.multiplyQuaternions(
     this.BaseRotation,
     this.HMDRotation);
-  this.cameraPivot.position = this.HMDPosition;
+  //this.cameraPivot.position = this.HMDPosition;
 };
 
 return constr;

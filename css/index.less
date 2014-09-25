@@ -100,15 +100,19 @@ sketch.minimized {
 #camera {
   transform-origin: 0 0 0;
 }
-#container:not(:-moz-full-screen) textarea{
-  transform: translate(0px, -600px) rotateX(180deg);
-  perspective: 1000px;
+#container:not(:-moz-full-screen) {
+  textarea {
+    transform: translate(0, 0);
+  }
+  .alert{
+    &.alert-info{
+      transform: translate(0, 210px);
+    }
+    &.alert-error{
+      transform: translate(0, 245px);
+    }
+  }
 }
-/*
-#container:not(:-moz-full-screen) canvas {
-  transform: translate(-308px, -754px);
-}
-*/
 textarea {
   transform: rotateY(0deg) translate3d(-100px, 100px, 500px) translate(-100px, -150px);
   height: 200px;
@@ -117,7 +121,13 @@ textarea {
   font-size: 10pt;
 }
 .alert {
-  transform: rotateY(0deg) translate3d(-100px, 310px, 500px) translate(-100px, -150px);
+  &.alert-info{
+    text-align: center;
+    transform: rotateY(0deg) translate3d(-100px, 310px, 500px) translate(-100px, -150px);
+  }
+  &.alert-error{
+    transform: rotateY(0deg) translate3d(-100px, 340px, 500px) translate(-100px, -150px);
+  }
   width: 400px;
   font-family: Consolas, monospace;
   font-size: 10pt;
