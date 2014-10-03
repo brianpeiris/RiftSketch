@@ -3,49 +3,65 @@
 var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
-    this.contents = contents === undefined ? (
-      'var RandomRunner = function () {\n\
-  var cube = new THREE.Mesh(\n\
-    new THREE.BoxGeometry(1, 1, 1),\n\
-    new THREE.MeshLambertMaterial(\n\
-      {color: new THREE.Color(\n\
-        Math.random(),\n\
-        Math.random(),\n\
-        Math.random()\n\
-      )}\n\
-    )\n\
+    this.contents = contents === undefined ? ('\
+var t3 = THREE;\n\
+var light = new t3.PointLight();\n\
+light.position.set(10, 15, 9);\n\
+scene.add(light);\n\
+var makeCube = function (x, y, z) {\n\
+  var cube = new t3.Mesh(\n\
+    new t3.BoxGeometry(1, 0.1, 1),\n\
+    new t3.MeshLambertMaterial({color: \'red\'})\n\
   );\n\
-  cube.position.x = 5;\n\
-  cube.position.z = 5;\n\
-  cube.rotation.x = Math.random() * Math.PI * 2;\n\
-  cube.rotation.y = Math.random() * Math.PI * 2;\n\
-  cube.rotation.z = Math.random() * Math.PI * 2;\n\
+  cube.position.set(10, 0, 5.0).add(\n\
+    new t3.Vector3(x, y, z));\n\
   scene.add(cube);\n\
-  var velocity = new THREE.Vector3();\n\
-  this.update = function () {\n\
-    if (Math.random() < 0.01) {\n\
-      cube.rotation.x += (Math.random() - 0.5) * 2;\n\
-      cube.rotation.y += (Math.random() - 0.5) * 2;\n\
-      cube.rotation.z += (Math.random() - 0.5) * 2;\n\
-    }\n\
-    cube.translateX(0.2)\n\
-  };\n\
+  return cube;\n\
 };\n\
-var randomRunners = [];\n\
-var numRandomRunners = 50;\n\
-for (var i = 0; i < numRandomRunners; i++) {\n\
-  randomRunners.push(new RandomRunner());\n\
-}\n\
 \n\
-scene.add(new THREE.PointLight())\n\
-\n\
-return function () {  \n\
-  for (var i = 0; i < numRandomRunners; i++) {\n\
-    randomRunners[i].update();\n\
+var rows, cols, cubes = [], spacing = 0.7;\n\
+rows = cols = 18;\n\
+for (var r = 0; r < rows; r++) {\n\
+  for (var c = 0; c < cols; c++) {\n\
+    if (c === 0) { cubes[r] = []; }\n\
+    cubes[r][c] = makeCube(r * spacing, 0, c * spacing);\n\
   }\n\
-};\n\
-') : contents;
+}\n\
+var i = 0;\n\
+return function () {\n\
+  i += -0.05;\n\
+  for (var r = 0; r < rows; r++) {\n\
+    for (var c = 0; c < cols; c++) {\n\
+      var height = (\n\
+        Math.sin(r / rows * Math.PI * 2 + i) + \n\
+        Math.cos(c / cols * Math.PI * 2 + i)) / 3;\n\
+      cubes[r][c].position.setY(height - 7.6);\n\
+      cubes[r][c].material.color.setRGB(\n\
+        height + 1.0, height + 0.1, 0.1);\n\
+    }\n\
+  }\n\
+};') : contents;
     this.selected = true;
+  };
+  constr.prototype.findNumberAt = function (index) {
+    return this.contents.substring(index).match(/-?\d+\.?\d*/)[0];
+  };
+  constr.prototype.spinNumber = function (number, direction, amount) {
+    if (number.indexOf('.') === -1) {
+      return (parseInt(number, 10) + direction * amount).toString();
+    }
+    else {
+      return (parseFloat(number) + direction * amount).toFixed(1);
+    }
+  }
+  constr.prototype.spinNumberAt = function (index, direction, amount) {
+    var number = this.findNumberAt(index);
+    var newNumber = this.spinNumber(number, direction, amount);
+    this.contents = (
+      this.contents.substring(0, index) +
+      newNumber +
+      this.contents.substring(index + number.length)
+    );
   };
   return constr;
 }());
@@ -132,6 +148,13 @@ angular.module('index', [])
 
     $scope.is_editor_visible = true;
     var domElement = this.riftSandbox.container;
+    var spinNumberAndKeepSelection = function (direction, amount) {
+      var textarea = document.querySelector('textarea');
+      var start = textarea.selectionStart;
+      $scope.sketch.files[0].spinNumberAt(start, direction, amount);
+      if (!this.scope.$$phase) { this.scope.$apply(); }
+      textarea.selectionStart = textarea.selectionEnd = start;
+    }.bind(this);
     document.addEventListener('keypress', function (e) {
       if (e.altKey) {
         switch (e.key) {
@@ -146,6 +169,24 @@ angular.module('index', [])
           case 'e':
             $scope.is_editor_visible = !$scope.is_editor_visible;
             if (!this.scope.$$phase) { this.scope.$apply(); }
+            break
+          case 'u':
+            spinNumberAndKeepSelection(-1, 10);
+            break;
+          case 'i':
+            spinNumberAndKeepSelection(1, 10);
+            break;
+          case 'j':
+            spinNumberAndKeepSelection(-1, 1);
+            break;
+          case 'k':
+            spinNumberAndKeepSelection(1, 1);
+            break;
+          case 'm':
+            spinNumberAndKeepSelection(-1, 0.1);
+            break;
+          case ',':
+            spinNumberAndKeepSelection(1, 0.1);
             break;
           default:
             return;

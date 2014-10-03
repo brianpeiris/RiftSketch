@@ -247,8 +247,17 @@ function cssMatrixFromOrientation(q, inverse) {
   return cssMatrixFromElements(matrixFromOrientation(q, inverse));
 }
 
-var cssCameraPositionTransform = (
-  "translate3d(0, 0, 0) rotateZ(180deg) rotateY(180deg)");
+var cssCameraPositionTransform = function (position) {
+  var CSS_POSITION_SCALE = -250;
+  var transform = (
+      "translate3d(" +
+      (position.x * CSS_POSITION_SCALE) + "px, " +
+      (position.y * CSS_POSITION_SCALE) + "px, " +
+      (position.z * CSS_POSITION_SCALE) + "px" +
+      ") rotateZ(180deg) rotateY(180deg)");
+
+  return transform;
+};
 
 constr.prototype.setHmdPositionRotation = function (vrState) {
   if (!vrState) { return; }
@@ -265,7 +274,7 @@ constr.prototype.setHmdPositionRotation = function (vrState) {
   if (this.vrMode) {
     var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
     this.cssCamera.style.transform = (
-      cssOrientationMatrix + " " + cssCameraPositionTransform);
+      cssOrientationMatrix + " " + cssCameraPositionTransform(vrState.position));
   }
 };
 
@@ -281,7 +290,7 @@ constr.prototype.updateCameraRotation = function () {
   this.cameraPivot.quaternion.multiplyQuaternions(
     this.BaseRotation,
     this.HMDRotation);
-  //this.cameraPivot.position = this.HMDPosition;
+  this.cameraPivot.position.copy(this.HMDPosition);
 };
 
 return constr;
