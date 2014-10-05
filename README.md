@@ -12,5 +12,5 @@ It's quite a niche application since you need to have an Oculus Rift (DK2), be a
 
 If happen to have a Rift DK2 and you want to try it out yourself, download the Windows or OS X or dev build of Firefox that includes the WebVR APIs from http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/ and visit http://brianpeiris.github.io/RiftSketch with your Rift hooked up.
 
-Thanks to [troffmo5](https://github.com/troffmo5)'s [
-OculusStreetView](https://github.com/troffmo5/OculusStreetView) for the original base.
+Thanks to @troffmo5 for [
+OculusStreetView](https://github.com/troffmo5/OculusStreetView) which served as the original base.
