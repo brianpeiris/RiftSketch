@@ -8,8 +8,6 @@ RiftSketch is an HTML5 live-coding environment for the Oculus Rift.
 
 It lets you code a "sketch" in JavaScript, using ThreeJS, and the world around you changes immediately as you code.
 
-More info: https://developer.oculusvr.com/forums/viewtopic.php?p=16637#p16637
-
 It's quite a niche application since you need to have an Oculus Rift (DK2), be a JavaScript programmer, be sufficiently familiar with Three.js *and* you need to be able to touch-type but if you meet that criteria it's a surprisingly fun and engaging experience!
 
 If happen to have a Rift DK2 and you want to try it out yourself, download the Windows or OS X or dev build of Firefox that includes the WebVR APIs from http://blog.bitops.com/blog/2014/08/20/updated-firefox-vr-builds/ and visit http://brianpeiris.github.io/RiftSketch with your Rift hooked up.
