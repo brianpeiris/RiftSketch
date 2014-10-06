@@ -247,17 +247,8 @@ function cssMatrixFromOrientation(q, inverse) {
   return cssMatrixFromElements(matrixFromOrientation(q, inverse));
 }
 
-var cssCameraPositionTransform = function (position) {
-  var CSS_POSITION_SCALE = -250;
-  var transform = (
-      "translate3d(" +
-      (position.x * CSS_POSITION_SCALE) + "px, " +
-      (position.y * CSS_POSITION_SCALE) + "px, " +
-      (position.z * CSS_POSITION_SCALE) + "px" +
-      ") rotateZ(180deg) rotateY(180deg)");
-
-  return transform;
-};
+var cssCameraPositionTransform = (
+  "translate3d(0, 0, 0) rotateZ(180deg) rotateY(180deg)");
 
 constr.prototype.setHmdPositionRotation = function (vrState) {
   if (!vrState) { return; }
@@ -274,7 +265,7 @@ constr.prototype.setHmdPositionRotation = function (vrState) {
   if (this.vrMode) {
     var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
     this.cssCamera.style.transform = (
-      cssOrientationMatrix + " " + cssCameraPositionTransform(vrState.position));
+      cssOrientationMatrix + " " + cssCameraPositionTransform);
   }
 };
 
