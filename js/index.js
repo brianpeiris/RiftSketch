@@ -11,7 +11,7 @@ scene.add(light);\n\
 var makeCube = function (x, y, z) {\n\
   var cube = new t3.Mesh(\n\
     new t3.BoxGeometry(1, 1.1, 1),\n\
-    new t3.MeshLambertMaterial({color: 'red'})\n\
+    new t3.MeshLambertMaterial({color: \'red\'})\n\
   );\n\
   cube.scale.set(0.1, 0.1, 0.1);\n\
   cube.position.set(1, 0, 0.0).add(\n\
