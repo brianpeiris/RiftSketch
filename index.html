@@ -18,6 +18,7 @@
     <script src="lib/angular/ui-bootstrap.js"></script>
     <script src="lib/angular/ui-codemirror.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js"></script>
 
     <script src="js/DeviceManager.js"></script>
     <script src="js/RiftSandbox.js"></script>
@@ -27,7 +28,7 @@
     <div id="container">
       <canvas id="viewer"></canvas>
       <div id="camera" class="threed" ng-show="is_editor_visible">
-        <textarea class="threed" ng-repeat="file in sketch.files" ng-model="file.contents" spellcheck="false"></textarea>
+        <textarea class="threed mousetrap" ng-repeat="file in sketch.files" ng-model="file.contents" spellcheck="false"></textarea>
         <span class="threed alert alert-info">
           Alt + v - toggle VR | Alt + z - zero VR sensor<br />
           Alt + e - toggle editor | Alt + j/k, u/i, m/n - decrement or increment numbers

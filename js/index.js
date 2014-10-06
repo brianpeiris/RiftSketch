@@ -10,16 +10,17 @@ light.position.set(10, 15, 9);\n\
 scene.add(light);\n\
 var makeCube = function (x, y, z) {\n\
   var cube = new t3.Mesh(\n\
-    new t3.BoxGeometry(1, 0.1, 1),\n\
-    new t3.MeshLambertMaterial({color: \'red\'})\n\
+    new t3.BoxGeometry(1, 1.1, 1),\n\
+    new t3.MeshLambertMaterial({color: 'red'})\n\
   );\n\
-  cube.position.set(10, 0, 5.0).add(\n\
+  cube.scale.set(0.1, 0.1, 0.1);\n\
+  cube.position.set(1, 0, 0.0).add(\n\
     new t3.Vector3(x, y, z));\n\
   scene.add(cube);\n\
   return cube;\n\
 };\n\
 \n\
-var rows, cols, cubes = [], spacing = 0.7;\n\
+var rows, cols, cubes = [], spacing = 0.07;\n\
 rows = cols = 18;\n\
 for (var r = 0; r < rows; r++) {\n\
   for (var c = 0; c < cols; c++) {\n\
@@ -34,8 +35,8 @@ return function () {\n\
     for (var c = 0; c < cols; c++) {\n\
       var height = (\n\
         Math.sin(r / rows * Math.PI * 2 + i) + \n\
-        Math.cos(c / cols * Math.PI * 2 + i)) / 3;\n\
-      cubes[r][c].position.setY(height - 7.6);\n\
+        Math.cos(c / cols * Math.PI * 2 + i)) / 11;\n\
+      cubes[r][c].position.setY(height - 0.6);\n\
       cubes[r][c].material.color.setRGB(\n\
         height + 1.0, height + 0.1, 0.1);\n\
     }\n\
@@ -155,45 +156,45 @@ angular.module('index', [])
       if (!this.scope.$$phase) { this.scope.$apply(); }
       textarea.selectionStart = textarea.selectionEnd = start;
     }.bind(this);
-    document.addEventListener('keypress', function (e) {
-      if (e.altKey) {
-        switch (e.key) {
-          case 'v':
-            this.riftSandbox.toggleVrMode();
-            domElement.mozRequestFullScreen({
-              vrDisplay: this.deviceManager.hmdDevice });
-            break;
-          case 'z':
-            this.deviceManager.sensorDevice.zeroSensor();
-            break;
-          case 'e':
-            $scope.is_editor_visible = !$scope.is_editor_visible;
-            if (!this.scope.$$phase) { this.scope.$apply(); }
-            break
-          case 'u':
-            spinNumberAndKeepSelection(-1, 10);
-            break;
-          case 'i':
-            spinNumberAndKeepSelection(1, 10);
-            break;
-          case 'j':
-            spinNumberAndKeepSelection(-1, 1);
-            break;
-          case 'k':
-            spinNumberAndKeepSelection(1, 1);
-            break;
-          case 'm':
-            spinNumberAndKeepSelection(-1, 0.1);
-            break;
-          case ',':
-            spinNumberAndKeepSelection(1, 0.1);
-            break;
-          default:
-            return;
-        }
-        e.preventDefault();
-      }
-    }.bind(this), false);
+    Mousetrap.bind('alt+v', function () {
+      this.riftSandbox.toggleVrMode();
+      domElement.mozRequestFullScreen({
+        vrDisplay: this.deviceManager.hmdDevice });
+      return false;
+    }.bind(this));
+    Mousetrap.bind('alt+z', function () {
+      this.deviceManager.sensorDevice.zeroSensor();
+      return false;
+    }.bind(this));
+    Mousetrap.bind('alt+e', function () {
+      $scope.is_editor_visible = !$scope.is_editor_visible;
+      if (!this.scope.$$phase) { this.scope.$apply(); }
+      return false;
+    }.bind(this));
+    Mousetrap.bind('alt+u', function () {
+      spinNumberAndKeepSelection(-1, 10);
+      return false;
+    });
+    Mousetrap.bind('alt+i', function () {
+      spinNumberAndKeepSelection(1, 10);
+      return false;
+    });
+    Mousetrap.bind('alt+j', function () {
+      spinNumberAndKeepSelection(-1, 1);
+      return false;
+    });
+    Mousetrap.bind('alt+k', function () {
+      spinNumberAndKeepSelection(1, 1);
+      return false;
+    });
+    Mousetrap.bind('alt+m', function () {
+      spinNumberAndKeepSelection(-1, 0.1);
+      return false;
+    });
+    Mousetrap.bind('alt+,', function () {
+      spinNumberAndKeepSelection(1, 0.1);
+      return false;
+    });
     document.addEventListener('mozfullscreenchange', function () {
       if (!document.mozFullScreenElement && this.riftSandbox.vrMode) {
         this.riftSandbox.toggleVrMode();
