@@ -155,45 +155,45 @@ angular.module('index', [])
       if (!this.scope.$$phase) { this.scope.$apply(); }
       textarea.selectionStart = textarea.selectionEnd = start;
     }.bind(this);
-    document.addEventListener('keypress', function (e) {
-      if (e.altKey) {
-        switch (e.key) {
-          case 'v':
-            this.riftSandbox.toggleVrMode();
-            domElement.mozRequestFullScreen({
-              vrDisplay: this.deviceManager.hmdDevice });
-            break;
-          case 'z':
-            this.deviceManager.sensorDevice.zeroSensor();
-            break;
-          case 'e':
-            $scope.is_editor_visible = !$scope.is_editor_visible;
-            if (!this.scope.$$phase) { this.scope.$apply(); }
-            break
-          case 'u':
-            spinNumberAndKeepSelection(-1, 10);
-            break;
-          case 'i':
-            spinNumberAndKeepSelection(1, 10);
-            break;
-          case 'j':
-            spinNumberAndKeepSelection(-1, 1);
-            break;
-          case 'k':
-            spinNumberAndKeepSelection(1, 1);
-            break;
-          case 'm':
-            spinNumberAndKeepSelection(-1, 0.1);
-            break;
-          case ',':
-            spinNumberAndKeepSelection(1, 0.1);
-            break;
-          default:
-            return;
-        }
-        e.preventDefault();
-      }
-    }.bind(this), false);
+    Mousetrap.bind('alt+v', function () {
+      this.riftSandbox.toggleVrMode();
+      domElement.mozRequestFullScreen({
+        vrDisplay: this.deviceManager.hmdDevice });
+      return false;
+    }.bind(this));
+    Mousetrap.bind('alt+z', function () {
+      this.deviceManager.sensorDevice.zeroSensor();
+      return false;
+    }.bind(this));
+    Mousetrap.bind('alt+e', function () {
+      $scope.is_editor_visible = !$scope.is_editor_visible;
+      if (!this.scope.$$phase) { this.scope.$apply(); }
+      return false;
+    }.bind(this));
+    Mousetrap.bind('alt+u', function () {
+      spinNumberAndKeepSelection(-1, 10);
+      return false;
+    });
+    Mousetrap.bind('alt+i', function () {
+      spinNumberAndKeepSelection(1, 10);
+      return false;
+    });
+    Mousetrap.bind('alt+j', function () {
+      spinNumberAndKeepSelection(-1, 1);
+      return false;
+    });
+    Mousetrap.bind('alt+k', function () {
+      spinNumberAndKeepSelection(1, 1);
+      return false;
+    });
+    Mousetrap.bind('alt+m', function () {
+      spinNumberAndKeepSelection(-1, 0.1);
+      return false;
+    });
+    Mousetrap.bind('alt+,', function () {
+      spinNumberAndKeepSelection(1, 0.1);
+      return false;
+    });
     document.addEventListener('mozfullscreenchange', function () {
       if (!document.mozFullScreenElement && this.riftSandbox.vrMode) {
         this.riftSandbox.toggleVrMode();
