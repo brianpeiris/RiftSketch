@@ -3,6 +3,7 @@ RiftSketch
 
 ![RiftSketch screenshot](http://i.imgur.com/aT92cE8.png)
 
+https://www.youtube.com/watch?v=db-7J5OaSag
 
 RiftSketch is an HTML5 live-coding environment for the Oculus Rift.
 
