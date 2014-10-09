@@ -87,7 +87,7 @@ var Sketch = (function () {
   return constr;
 }());
 
-angular.module('index', [])
+angular.module('index', ['code-aware'])
   .controller('SketchController', ['$scope', function($scope) {
     this.scope = $scope;
     var autosave = localStorage.getItem('autosave');
