@@ -1,95 +1,12 @@
 html, body {
   padding: 0;
   margin: 0;
-  overflow: hidden;
   width: 100%;
 }
 
-body, input[type="text"] {
+body {
   font-size: 10px;
   line-height: 2px;
-}
-
-input[type="text"] {
-  height: 12px;
-  padding: 2px;
-  border-radius: 2px;
-  margin: 2px;
-  width: 100px;
-}
-
-input[type="text"].input-small {
-  width: 60px;
-}
-
-.nav-tabs > li > a {
-  padding: 2px;
-  border-radius: 2px;
-}
-
-.nav-tabs > li {
-  margin-bottom: -3px;
-}
-
-.nav-tabs {
-  margin: 0;
-}
-
-.btn {
-  padding: 4px;
-  border-radius: 2px;
-  height: 20px;
-  width: 20px;
-  margin-top: 3px;
-}
-
-.icon-plus, .icon-upload,
-.icon-th-list, .icon-asterisk,
-.icon-resize-vertical {
-  margin-top: -4px;
-  margin-left: -1px;
-}
-
-.CodeMirror {
-  height: 280px;
-  font-family: 'Inconsolata', 'Consolas';
-  font-size: 12px;
-}
-
-.stereo {
-  width: 450px;
-  max-height: 400px;
-  overflow: auto;
-  display: block;
-  background: lightgrey;
-  padding: 2px;
-  border-radius: 2px;
-  position: absolute;
-  top: 40%;
-}
-
-@separation: 18%;
-.stereo.left {
-  left: @separation;
-}
-
-.stereo.right {
-  right: @separation;
-}
-
-sketch.minimized .tabbable {
-  display: none;
-}
-
-sketch.minimized {
-  top: 70%;
-}
-
-.alert {
-  padding: 2px;
-  line-height: 14px;
-  display: block;
-  margin: 0;
 }
 
 .threed {
@@ -117,8 +34,8 @@ textarea {
   transform: rotateY(0deg) translate3d(-100px, 100px, 500px) translate(-100px, -150px);
   height: 200px;
   width: 400px;
-  font-family: Consolas, monospace;
-  font-size: 10pt;
+  font-family: Inconsolata, Consolas, monospace;
+  font-size: 11pt;
 }
 .alert {
   &.alert-info{
@@ -131,4 +48,8 @@ textarea {
   width: 400px;
   font-family: Consolas, monospace;
   font-size: 10pt;
+  padding: 2px;
+  line-height: 14px;
+  display: block;
+  margin: 0;
 }
