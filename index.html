@@ -3,22 +3,16 @@
   <head>
     <title>RiftSketch</title>
 
-    <link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
-
+    <link
+      href='http://fonts.googleapis.com/css?family=Inconsolata'
+      rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" />
-    <link rel="stylesheet" href="lib/codemirror/codemirror.css" />
-
     <link rel="stylesheet/less" href="css/index.less" />
 
     <script src="lib/less/less-1.3.3.min.js"></script>
-    <script src="lib/codemirror/codemirror.js"></script>
-    <script src="https://cdn.firebase.com/v0/firebase.js"></script>
     <script src="lib/angular/angular.js"></script>
-    <script src="lib/angular/angularFire.js"></script>
-    <script src="lib/angular/ui-bootstrap.js"></script>
-    <script src="lib/angular/ui-codemirror.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js"></script>
+    <script src="lib/ThreeJS/Three.js"></script>
+    <script src="lib/mousetrap.js"> </script>
 
     <script src="js/DeviceManager.js"></script>
     <script src="js/RiftSandbox.js"></script>
@@ -28,10 +22,14 @@
     <div id="container">
       <canvas id="viewer"></canvas>
       <div id="camera" class="threed" ng-show="is_editor_visible">
-        <textarea class="threed mousetrap" ng-repeat="file in sketch.files" ng-model="file.contents" spellcheck="false"></textarea>
+        <textarea
+          class="threed mousetrap" ng-repeat="file in sketch.files"
+          ng-model="file.contents" spellcheck="false">
+        </textarea>
         <span class="threed alert alert-info">
           Alt + v - toggle VR | Alt + z - zero VR sensor<br />
-          Alt + e - toggle editor | Alt + j/k, u/i, m/n - decrement or increment numbers
+          Alt + e - toggle editor |
+          Alt + j/k, u/i, m/n - decrement or increment numbers
         </span>
         <span class="threed alert alert-error" ng-show="error">{{error}}</span>
       </div>
