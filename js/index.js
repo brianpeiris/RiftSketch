@@ -1,3 +1,5 @@
+/* global angular, DeviceManager, RiftSandbox, Mousetrap */
+(function () {
 'use strict';
 
 var File = (function () {
@@ -42,7 +44,7 @@ var File = (function () {
           }\n\
         }\n\
       };\
-    '.replace(/\n {6}/g, '\n').replace(/^\s+|\s+$/g, ''))
+    '.replace(/\n {6}/g, '\n').replace(/^\s+|\s+$/g, ''));
     this.contents = contents === undefined ? defaultContents : contents;
     this.selected = true;
   };
@@ -56,7 +58,7 @@ var File = (function () {
     else {
       return (parseFloat(number) + direction * amount).toFixed(1);
     }
-  }
+  };
   constr.prototype.spinNumberAt = function (index, direction, amount) {
     var number = this.findNumberAt(index);
     var newNumber = this.spinNumber(number, direction, amount);
@@ -91,7 +93,6 @@ var Sketch = (function () {
 
 angular.module('index', [])
   .controller('SketchController', ['$scope', function($scope) {
-    this.scope = $scope;
     var autosave = localStorage.getItem('autosave');
     var files;
     if (autosave) {
@@ -102,6 +103,17 @@ angular.module('index', [])
         $scope.sketch = new Sketch(files);
     }
 
+    // TODO: Most of this should be in a directive instead of in the controller.
+    var mousePos = {x: 0, y: 0};
+    window.addEventListener(
+      'mousemove',
+      function (e) {
+        mousePos.x = e.clientX;
+        mousePos.y = e.clientY;
+      },
+      false
+    );
+
     this.sketchLoop = function () {};
 
     this.mainLoop = function () {
@@ -109,8 +121,17 @@ angular.module('index', [])
 
       // Apply movement
       if (this.deviceManager.sensorDevice) {
-        this.riftSandbox.setHmdPositionRotation(
-          this.deviceManager.sensorDevice.getState());
+        if (this.riftSandbox.vrMode) {
+          this.riftSandbox.setHmdPositionRotation(
+            this.deviceManager.sensorDevice.getState());
+        }
+        this.riftSandbox.setBaseRotation();
+        this.riftSandbox.updateCameraRotation();
+      }
+      if (!this.deviceManager.sensorDevice || !this.riftSandbox.vrMode) {
+        this.riftSandbox.setRotation({
+          y: (mousePos.x / window.innerWidth) * Math.PI *2
+        });
         this.riftSandbox.setBaseRotation();
         this.riftSandbox.updateCameraRotation();
       }
@@ -119,9 +140,9 @@ angular.module('index', [])
         this.sketchLoop();
       }
       catch (err) {
-        if (this.scope.error === null) {
-          this.scope.error = err.toString();
-          if (!this.scope.$$phase) { this.scope.$apply(); }
+        if ($scope.error === null) {
+          $scope.error = err.toString();
+          if (!$scope.$$phase) { $scope.$apply(); }
         }
       }
 
@@ -129,7 +150,6 @@ angular.module('index', [])
     };
 
     this.deviceManager = new DeviceManager();
-    // TODO: Most of this should be in a directive instead of in the controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
     this.deviceManager.onResizeFOV = function (
       renderTargetSize, fovLeft, fovRight
@@ -155,13 +175,19 @@ angular.module('index', [])
         var textarea = document.querySelector('textarea');
         var start = textarea.selectionStart;
         $scope.sketch.files[0].spinNumberAt(start, direction, amount);
-        if (!this.scope.$$phase) { this.scope.$apply(); }
+        if (!$scope.$$phase) { $scope.$apply(); }
         textarea.selectionStart = textarea.selectionEnd = start;
       }.bind(this);
       Mousetrap.bind('alt+v', function () {
         this.riftSandbox.toggleVrMode();
-        domElement.mozRequestFullScreen({
-          vrDisplay: this.deviceManager.hmdDevice });
+        if (domElement.mozRequestFullScreen) {
+          domElement.mozRequestFullScreen({
+            vrDisplay: this.deviceManager.hmdDevice });
+        }
+        else if (domElement.webkitRequestFullscreen) {
+          domElement.webkitRequestFullscreen({
+            vrDisplay: this.deviceManager.hmdDevice });
+        }
         return false;
       }.bind(this));
       Mousetrap.bind('alt+z', function () {
@@ -170,7 +196,7 @@ angular.module('index', [])
       }.bind(this));
       Mousetrap.bind('alt+e', function () {
         $scope.is_editor_visible = !$scope.is_editor_visible;
-        if (!this.scope.$$phase) { this.scope.$apply(); }
+        if (!$scope.$$phase) { $scope.$apply(); }
         return false;
       }.bind(this));
       Mousetrap.bind('alt+u', function () {
@@ -200,31 +226,53 @@ angular.module('index', [])
     }.bind(this);
     this.bindKeyboardShortcuts();
 
-    document.addEventListener('mozfullscreenchange', function () {
-      if (!document.mozFullScreenElement && this.riftSandbox.vrMode) {
+    var toggleVrMode = function () {
+      if (
+        !(document.mozFullScreenElement || document.webkitFullScreenElement) &&
+        this.riftSandbox.vrMode
+      ) {
+        $scope.isInfullscreen = false;
+        if (!$scope.$$phase) { $scope.$apply(); }
         this.riftSandbox.toggleVrMode();
       }
-    }.bind(this), false);
+      else {
+        $scope.isInfullscreen = true;
+        if (!$scope.$$phase) { $scope.$apply(); }
+      }
+    }.bind(this);
+    document.addEventListener('mozfullscreenchange', toggleVrMode, false);
+    document.addEventListener('webkitfullscreenchange', toggleVrMode, false);
 
     this.riftSandbox.resize();
+    // We only support a specific WebVR build at the moment.
+    if (!navigator.userAgent.match('Firefox/34')) {
+      $scope.seemsUnsupported = true;
+    }
+    this.deviceManager.onError = function () {
+      $scope.seemsUnsupported = true;
+      if (!$scope.$$phase) { $scope.$apply(); }
+    }.bind(this);
     this.deviceManager.init();
     this.mainLoop();
 
-    var that = this;
     $scope.$watch('sketch.getCode()', function (newVal, oldVal) {
-      that.riftSandbox.clearScene();
+      this.riftSandbox.clearScene();
       var _sketchLoop;
       $scope.error = null;
       try {
-        _sketchLoop = (new Function('scene', '"use strict";\n' + newVal))(
-          that.riftSandbox.scene);
+        /* jshint -W054 */
+        var _sketchFunc = new Function('scene', '"use strict";\n' + newVal);
+        /* jshint +W054 */
+        _sketchLoop = (_sketchFunc)(
+          this.riftSandbox.scene);
       }
       catch (err) {
         $scope.error = err.toString();
       }
       if (_sketchLoop) {
-        that.sketchLoop = _sketchLoop;
+        this.sketchLoop = _sketchLoop;
       }
       localStorage.setItem('autosave', newVal);
-    });
+    }.bind(this));
   }]);
+}());
