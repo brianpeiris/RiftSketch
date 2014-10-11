@@ -129,8 +129,7 @@ angular.module('index', [])
     };
 
     this.deviceManager = new DeviceManager();
-    // TODO: Obviously, RiftSandox and the resize event listener should not be
-    // part of an angular controller.
+    // TODO: Most of this should be in a directive instead of in the controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
     this.deviceManager.onResizeFOV = function (
       renderTargetSize, fovLeft, fovRight
@@ -151,52 +150,56 @@ angular.module('index', [])
 
     $scope.is_editor_visible = true;
     var domElement = this.riftSandbox.container;
-    var spinNumberAndKeepSelection = function (direction, amount) {
-      var textarea = document.querySelector('textarea');
-      var start = textarea.selectionStart;
-      $scope.sketch.files[0].spinNumberAt(start, direction, amount);
-      if (!this.scope.$$phase) { this.scope.$apply(); }
-      textarea.selectionStart = textarea.selectionEnd = start;
+    this.bindKeyboardShortcuts = function () {
+      var spinNumberAndKeepSelection = function (direction, amount) {
+        var textarea = document.querySelector('textarea');
+        var start = textarea.selectionStart;
+        $scope.sketch.files[0].spinNumberAt(start, direction, amount);
+        if (!this.scope.$$phase) { this.scope.$apply(); }
+        textarea.selectionStart = textarea.selectionEnd = start;
+      }.bind(this);
+      Mousetrap.bind('alt+v', function () {
+        this.riftSandbox.toggleVrMode();
+        domElement.mozRequestFullScreen({
+          vrDisplay: this.deviceManager.hmdDevice });
+        return false;
+      }.bind(this));
+      Mousetrap.bind('alt+z', function () {
+        this.deviceManager.sensorDevice.zeroSensor();
+        return false;
+      }.bind(this));
+      Mousetrap.bind('alt+e', function () {
+        $scope.is_editor_visible = !$scope.is_editor_visible;
+        if (!this.scope.$$phase) { this.scope.$apply(); }
+        return false;
+      }.bind(this));
+      Mousetrap.bind('alt+u', function () {
+        spinNumberAndKeepSelection(-1, 10);
+        return false;
+      });
+      Mousetrap.bind('alt+i', function () {
+        spinNumberAndKeepSelection(1, 10);
+        return false;
+      });
+      Mousetrap.bind('alt+j', function () {
+        spinNumberAndKeepSelection(-1, 1);
+        return false;
+      });
+      Mousetrap.bind('alt+k', function () {
+        spinNumberAndKeepSelection(1, 1);
+        return false;
+      });
+      Mousetrap.bind('alt+m', function () {
+        spinNumberAndKeepSelection(-1, 0.1);
+        return false;
+      });
+      Mousetrap.bind('alt+,', function () {
+        spinNumberAndKeepSelection(1, 0.1);
+        return false;
+      });
     }.bind(this);
-    Mousetrap.bind('alt+v', function () {
-      this.riftSandbox.toggleVrMode();
-      domElement.mozRequestFullScreen({
-        vrDisplay: this.deviceManager.hmdDevice });
-      return false;
-    }.bind(this));
-    Mousetrap.bind('alt+z', function () {
-      this.deviceManager.sensorDevice.zeroSensor();
-      return false;
-    }.bind(this));
-    Mousetrap.bind('alt+e', function () {
-      $scope.is_editor_visible = !$scope.is_editor_visible;
-      if (!this.scope.$$phase) { this.scope.$apply(); }
-      return false;
-    }.bind(this));
-    Mousetrap.bind('alt+u', function () {
-      spinNumberAndKeepSelection(-1, 10);
-      return false;
-    });
-    Mousetrap.bind('alt+i', function () {
-      spinNumberAndKeepSelection(1, 10);
-      return false;
-    });
-    Mousetrap.bind('alt+j', function () {
-      spinNumberAndKeepSelection(-1, 1);
-      return false;
-    });
-    Mousetrap.bind('alt+k', function () {
-      spinNumberAndKeepSelection(1, 1);
-      return false;
-    });
-    Mousetrap.bind('alt+m', function () {
-      spinNumberAndKeepSelection(-1, 0.1);
-      return false;
-    });
-    Mousetrap.bind('alt+,', function () {
-      spinNumberAndKeepSelection(1, 0.1);
-      return false;
-    });
+    this.bindKeyboardShortcuts();
+
     document.addEventListener('mozfullscreenchange', function () {
       if (!document.mozFullScreenElement && this.riftSandbox.vrMode) {
         this.riftSandbox.toggleVrMode();
