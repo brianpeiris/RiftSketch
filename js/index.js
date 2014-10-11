@@ -1,47 +1,51 @@
+/* global angular, DeviceManager, RiftSandbox, Mousetrap */
+(function () {
 'use strict';
 
 var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
-    this.contents = contents === undefined ? ('\
-var t3 = THREE;\n\
-var light = new t3.PointLight();\n\
-light.position.set(10, 15, 9);\n\
-scene.add(light);\n\
-var makeCube = function (x, y, z) {\n\
-  var cube = new t3.Mesh(\n\
-    new t3.BoxGeometry(1, 1.1, 1),\n\
-    new t3.MeshLambertMaterial({color: \'red\'})\n\
-  );\n\
-  cube.scale.set(0.1, 0.1, 0.1);\n\
-  cube.position.set(1, 0, 0.0).add(\n\
-    new t3.Vector3(x, y, z));\n\
-  scene.add(cube);\n\
-  return cube;\n\
-};\n\
-\n\
-var rows, cols, cubes = [], spacing = 0.07;\n\
-rows = cols = 18;\n\
-for (var r = 0; r < rows; r++) {\n\
-  for (var c = 0; c < cols; c++) {\n\
-    if (c === 0) { cubes[r] = []; }\n\
-    cubes[r][c] = makeCube(r * spacing, 0, c * spacing);\n\
-  }\n\
-}\n\
-var i = 0;\n\
-return function () {\n\
-  i += -0.05;\n\
-  for (var r = 0; r < rows; r++) {\n\
-    for (var c = 0; c < cols; c++) {\n\
-      var height = (\n\
-        Math.sin(r / rows * Math.PI * 2 + i) + \n\
-        Math.cos(c / cols * Math.PI * 2 + i)) / 11;\n\
-      cubes[r][c].position.setY(height - 0.6);\n\
-      cubes[r][c].material.color.setRGB(\n\
-        height + 1.0, height + 0.1, 0.1);\n\
-    }\n\
-  }\n\
-};') : contents;
+    var defaultContents = ('\
+      var t3 = THREE;\n\
+      var light = new t3.PointLight();\n\
+      light.position.set(10, 15, 9);\n\
+      scene.add(light);\n\
+      var makeCube = function (x, y, z) {\n\
+        var cube = new t3.Mesh(\n\
+          new t3.BoxGeometry(1, 1.1, 1),\n\
+          new t3.MeshLambertMaterial({color: \'red\'})\n\
+        );\n\
+        cube.scale.set(0.1, 0.1, 0.1);\n\
+        cube.position.set(1, 0, 0.0).add(\n\
+          new t3.Vector3(x, y, z));\n\
+        scene.add(cube);\n\
+        return cube;\n\
+      };\n\
+      \n\
+      var rows, cols, cubes = [], spacing = 0.07;\n\
+      rows = cols = 18;\n\
+      for (var r = 0; r < rows; r++) {\n\
+        for (var c = 0; c < cols; c++) {\n\
+          if (c === 0) { cubes[r] = []; }\n\
+          cubes[r][c] = makeCube(r * spacing, 0, c * spacing);\n\
+        }\n\
+      }\n\
+      var i = 0;\n\
+      return function () {\n\
+        i += -0.05;\n\
+        for (var r = 0; r < rows; r++) {\n\
+          for (var c = 0; c < cols; c++) {\n\
+            var height = (\n\
+              Math.sin(r / rows * Math.PI * 2 + i) + \n\
+              Math.cos(c / cols * Math.PI * 2 + i)) / 11;\n\
+            cubes[r][c].position.setY(height - 0.6);\n\
+            cubes[r][c].material.color.setRGB(\n\
+              height + 1.0, height + 0.1, 0.1);\n\
+          }\n\
+        }\n\
+      };\
+    '.replace(/\n {6}/g, '\n').replace(/^\s+|\s+$/g, ''));
+    this.contents = contents === undefined ? defaultContents : contents;
     this.selected = true;
   };
   constr.prototype.findNumberAt = function (index) {
@@ -54,7 +58,7 @@ return function () {\n\
     else {
       return (parseFloat(number) + direction * amount).toFixed(1);
     }
-  }
+  };
   constr.prototype.spinNumberAt = function (index, direction, amount) {
     var number = this.findNumberAt(index);
     var newNumber = this.spinNumber(number, direction, amount);
@@ -89,7 +93,6 @@ var Sketch = (function () {
 
 angular.module('index', [])
   .controller('SketchController', ['$scope', function($scope) {
-    this.scope = $scope;
     var autosave = localStorage.getItem('autosave');
     var files;
     if (autosave) {
@@ -100,6 +103,17 @@ angular.module('index', [])
         $scope.sketch = new Sketch(files);
     }
 
+    // TODO: Most of this should be in a directive instead of in the controller.
+    var mousePos = {x: 0, y: 0};
+    window.addEventListener(
+      'mousemove',
+      function (e) {
+        mousePos.x = e.clientX;
+        mousePos.y = e.clientY;
+      },
+      false
+    );
+
     this.sketchLoop = function () {};
 
     this.mainLoop = function () {
@@ -107,8 +121,17 @@ angular.module('index', [])
 
       // Apply movement
       if (this.deviceManager.sensorDevice) {
-        this.riftSandbox.setHmdPositionRotation(
-          this.deviceManager.sensorDevice.getState());
+        if (this.riftSandbox.vrMode) {
+          this.riftSandbox.setHmdPositionRotation(
+            this.deviceManager.sensorDevice.getState());
+        }
+        this.riftSandbox.setBaseRotation();
+        this.riftSandbox.updateCameraRotation();
+      }
+      if (!this.deviceManager.sensorDevice || !this.riftSandbox.vrMode) {
+        this.riftSandbox.setRotation({
+          y: (mousePos.x / window.innerWidth) * Math.PI *2
+        });
         this.riftSandbox.setBaseRotation();
         this.riftSandbox.updateCameraRotation();
       }
@@ -117,9 +140,9 @@ angular.module('index', [])
         this.sketchLoop();
       }
       catch (err) {
-        if (this.scope.error === null) {
-          this.scope.error = err.toString();
-          if (!this.scope.$$phase) { this.scope.$apply(); }
+        if ($scope.error === null) {
+          $scope.error = err.toString();
+          if (!$scope.$$phase) { $scope.$apply(); }
         }
       }
 
@@ -127,8 +150,6 @@ angular.module('index', [])
     };
 
     this.deviceManager = new DeviceManager();
-    // TODO: Obviously, RiftSandox and the resize event listener should not be
-    // part of an angular controller.
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
     this.deviceManager.onResizeFOV = function (
       renderTargetSize, fovLeft, fovRight
@@ -149,77 +170,109 @@ angular.module('index', [])
 
     $scope.is_editor_visible = true;
     var domElement = this.riftSandbox.container;
-    var spinNumberAndKeepSelection = function (direction, amount) {
-      var textarea = document.querySelector('textarea');
-      var start = textarea.selectionStart;
-      $scope.sketch.files[0].spinNumberAt(start, direction, amount);
-      if (!this.scope.$$phase) { this.scope.$apply(); }
-      textarea.selectionStart = textarea.selectionEnd = start;
+    this.bindKeyboardShortcuts = function () {
+      var spinNumberAndKeepSelection = function (direction, amount) {
+        var textarea = document.querySelector('textarea');
+        var start = textarea.selectionStart;
+        $scope.sketch.files[0].spinNumberAt(start, direction, amount);
+        if (!$scope.$$phase) { $scope.$apply(); }
+        textarea.selectionStart = textarea.selectionEnd = start;
+      }.bind(this);
+      Mousetrap.bind('alt+v', function () {
+        this.riftSandbox.toggleVrMode();
+        if (domElement.mozRequestFullScreen) {
+          domElement.mozRequestFullScreen({
+            vrDisplay: this.deviceManager.hmdDevice });
+        }
+        else if (domElement.webkitRequestFullscreen) {
+          domElement.webkitRequestFullscreen({
+            vrDisplay: this.deviceManager.hmdDevice });
+        }
+        return false;
+      }.bind(this));
+      Mousetrap.bind('alt+z', function () {
+        this.deviceManager.sensorDevice.zeroSensor();
+        return false;
+      }.bind(this));
+      Mousetrap.bind('alt+e', function () {
+        $scope.is_editor_visible = !$scope.is_editor_visible;
+        if (!$scope.$$phase) { $scope.$apply(); }
+        return false;
+      }.bind(this));
+      Mousetrap.bind('alt+u', function () {
+        spinNumberAndKeepSelection(-1, 10);
+        return false;
+      });
+      Mousetrap.bind('alt+i', function () {
+        spinNumberAndKeepSelection(1, 10);
+        return false;
+      });
+      Mousetrap.bind('alt+j', function () {
+        spinNumberAndKeepSelection(-1, 1);
+        return false;
+      });
+      Mousetrap.bind('alt+k', function () {
+        spinNumberAndKeepSelection(1, 1);
+        return false;
+      });
+      Mousetrap.bind('alt+m', function () {
+        spinNumberAndKeepSelection(-1, 0.1);
+        return false;
+      });
+      Mousetrap.bind('alt+,', function () {
+        spinNumberAndKeepSelection(1, 0.1);
+        return false;
+      });
     }.bind(this);
-    Mousetrap.bind('alt+v', function () {
-      this.riftSandbox.toggleVrMode();
-      domElement.mozRequestFullScreen({
-        vrDisplay: this.deviceManager.hmdDevice });
-      return false;
-    }.bind(this));
-    Mousetrap.bind('alt+z', function () {
-      this.deviceManager.sensorDevice.zeroSensor();
-      return false;
-    }.bind(this));
-    Mousetrap.bind('alt+e', function () {
-      $scope.is_editor_visible = !$scope.is_editor_visible;
-      if (!this.scope.$$phase) { this.scope.$apply(); }
-      return false;
-    }.bind(this));
-    Mousetrap.bind('alt+u', function () {
-      spinNumberAndKeepSelection(-1, 10);
-      return false;
-    });
-    Mousetrap.bind('alt+i', function () {
-      spinNumberAndKeepSelection(1, 10);
-      return false;
-    });
-    Mousetrap.bind('alt+j', function () {
-      spinNumberAndKeepSelection(-1, 1);
-      return false;
-    });
-    Mousetrap.bind('alt+k', function () {
-      spinNumberAndKeepSelection(1, 1);
-      return false;
-    });
-    Mousetrap.bind('alt+m', function () {
-      spinNumberAndKeepSelection(-1, 0.1);
-      return false;
-    });
-    Mousetrap.bind('alt+,', function () {
-      spinNumberAndKeepSelection(1, 0.1);
-      return false;
-    });
-    document.addEventListener('mozfullscreenchange', function () {
-      if (!document.mozFullScreenElement && this.riftSandbox.vrMode) {
+    this.bindKeyboardShortcuts();
+
+    var toggleVrMode = function () {
+      if (
+        !(document.mozFullScreenElement || document.webkitFullScreenElement) &&
+        this.riftSandbox.vrMode
+      ) {
+        $scope.isInfullscreen = false;
+        if (!$scope.$$phase) { $scope.$apply(); }
         this.riftSandbox.toggleVrMode();
       }
-    }.bind(this), false);
+      else {
+        $scope.isInfullscreen = true;
+        if (!$scope.$$phase) { $scope.$apply(); }
+      }
+    }.bind(this);
+    document.addEventListener('mozfullscreenchange', toggleVrMode, false);
+    document.addEventListener('webkitfullscreenchange', toggleVrMode, false);
 
     this.riftSandbox.resize();
+    // We only support a specific WebVR build at the moment.
+    if (!navigator.userAgent.match('Firefox/34')) {
+      $scope.seemsUnsupported = true;
+    }
+    this.deviceManager.onError = function () {
+      $scope.seemsUnsupported = true;
+      if (!$scope.$$phase) { $scope.$apply(); }
+    }.bind(this);
     this.deviceManager.init();
     this.mainLoop();
 
-    var that = this;
     $scope.$watch('sketch.getCode()', function (newVal, oldVal) {
-      that.riftSandbox.clearScene();
+      this.riftSandbox.clearScene();
       var _sketchLoop;
       $scope.error = null;
       try {
-        _sketchLoop = (new Function('scene', '"use strict";\n' + newVal))(
-          that.riftSandbox.scene);
+        /* jshint -W054 */
+        var _sketchFunc = new Function('scene', '"use strict";\n' + newVal);
+        /* jshint +W054 */
+        _sketchLoop = (_sketchFunc)(
+          this.riftSandbox.scene);
       }
       catch (err) {
         $scope.error = err.toString();
       }
       if (_sketchLoop) {
-        that.sketchLoop = _sketchLoop;
+        this.sketchLoop = _sketchLoop;
       }
       localStorage.setItem('autosave', newVal);
-    });
+    }.bind(this));
   }]);
+}());

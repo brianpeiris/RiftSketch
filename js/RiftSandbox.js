@@ -7,6 +7,7 @@ var constr = function (width, height) {
   window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
   this.HMDPosition = new THREE.Vector3();
   this.BaseRotation = new THREE.Quaternion();
+  this.plainRotation = new THREE.Vector3();
   this.BaseRotationEuler = new THREE.Euler(0, Math.PI);
   this.scene = null;
   this.sceneStuff = [];
@@ -198,7 +199,7 @@ constr.prototype.resize = function () {
 };
 
 function matrixFromOrientation(q, inverse) {
-  var m = Array(16);
+  var m = new Array(16);
 
   var x = q.x, y = q.y, z = q.z, w = q.w;
 
@@ -206,7 +207,7 @@ function matrixFromOrientation(q, inverse) {
   if (inverse) {
     x = -x; y = -y; z = -z;
     var l = Math.sqrt(x*x + y*y + z*z + w*w);
-    if (l == 0) {
+    if (l === 0) {
       x = y = z = 0;
       w = 1;
     } else {
@@ -250,17 +251,23 @@ function cssMatrixFromOrientation(q, inverse) {
 var cssCameraPositionTransform = (
   "translate3d(0, 0, 0) rotateZ(180deg) rotateY(180deg)");
 
+constr.prototype.setRotation = function (rotation) {
+  this.plainRotation.set(0, rotation.y, 0);
+};
+
 constr.prototype.setHmdPositionRotation = function (vrState) {
   if (!vrState) { return; }
   var rotation = vrState.orientation;
   var position = vrState.position;
   this.HMDRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
   var VR_POSITION_SCALE = 1;
-  this.HMDPosition.set(
-    -1 * position.x * VR_POSITION_SCALE,
-    position.y * VR_POSITION_SCALE,
-    -1 * position.z * VR_POSITION_SCALE
-  );
+  if (position) {
+    this.HMDPosition.set(
+      -1 * position.x * VR_POSITION_SCALE,
+      position.y * VR_POSITION_SCALE,
+      -1 * position.z * VR_POSITION_SCALE
+    );
+  }
 
   if (this.vrMode) {
     var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
@@ -275,9 +282,14 @@ constr.prototype.toggleVrMode = function () {
 };
 
 constr.prototype.updateCameraRotation = function () {
-  this.camera.quaternion.multiplyQuaternions(
-    this.BaseRotation,
-    this.HMDRotation);
+  if (this.vrMode) {
+    this.camera.quaternion.multiplyQuaternions(
+      this.BaseRotation,
+      this.HMDRotation);
+  }
+  else {
+    this.camera.rotation.set(0 , this.plainRotation.y, 0);
+  }
   this.cameraPivot.quaternion.multiplyQuaternions(
     this.BaseRotation,
     this.HMDRotation);

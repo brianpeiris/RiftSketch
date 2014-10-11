@@ -5,8 +5,10 @@
 
     <link
       href='http://fonts.googleapis.com/css?family=Inconsolata'
-      rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" />
+      rel='stylesheet' type='text/css' />
+    <link
+      rel="stylesheet"
+      href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet/less" href="css/index.less" />
 
     <script src="lib/less/less-1.3.3.min.js"></script>
@@ -18,8 +20,10 @@
     <script src="js/RiftSandbox.js"></script>
     <script src="js/index.js"></script>
   </head>
-  <body ng-controller="SketchController">
-    <div id="container">
+  <body
+    ng-controller="SketchController"
+    ng-class="{'modal-open': (!hasOverridenUnsupported && seemsUnsupported)}">
+    <div id="container" ng-class="{'not-fullscreen': !isInfullscreen}">
       <canvas id="viewer"></canvas>
       <div id="camera" class="threed" ng-show="is_editor_visible">
         <textarea
@@ -32,6 +36,40 @@
           Alt + j/k, u/i, m/n - decrement or increment numbers
         </span>
         <span class="threed alert alert-error" ng-show="error">{{error}}</span>
+      </div>
+    </div>
+
+    <div
+      class="modal-backdrop fade in"
+      ng-show="!hasOverridenUnsupported && seemsUnsupported">
+    </div>
+    <div class="modal" ng-show="!hasOverridenUnsupported && seemsUnsupported">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">RiftSketch - Unsupported Browser</div>
+          <div class="modal-body">
+            <p>RiftSketch is a live-coding environment for VR built with
+            preliminary WebVR APIs, WebGL and Three.js.</p>
+
+            <p>It seems your browser doesn't support the required WebVR
+            features. Please read the
+            <a href="https://github.com/brianpeiris/RiftSketch/blob/gh-pages/README.md">
+              setup instructions
+            </a>
+            if you would like to try RiftSketch.</p>
+
+            <iframe
+              width="560" height="315"
+              src="//www.youtube.com/embed/db-7J5OaSag"
+              frameborder="0" allowfullscreen>
+            </iframe>
+          </div>
+          <div class="modal-footer">
+            <button ng-click="hasOverridenUnsupported = true">
+              continue anyway
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </body>
