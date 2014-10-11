@@ -3,45 +3,47 @@
 var File = (function () {
   var constr = function (name, contents) {
     this.name = name || 'Example';
-    this.contents = contents === undefined ? ('\
-var t3 = THREE;\n\
-var light = new t3.PointLight();\n\
-light.position.set(10, 15, 9);\n\
-scene.add(light);\n\
-var makeCube = function (x, y, z) {\n\
-  var cube = new t3.Mesh(\n\
-    new t3.BoxGeometry(1, 1.1, 1),\n\
-    new t3.MeshLambertMaterial({color: \'red\'})\n\
-  );\n\
-  cube.scale.set(0.1, 0.1, 0.1);\n\
-  cube.position.set(1, 0, 0.0).add(\n\
-    new t3.Vector3(x, y, z));\n\
-  scene.add(cube);\n\
-  return cube;\n\
-};\n\
-\n\
-var rows, cols, cubes = [], spacing = 0.07;\n\
-rows = cols = 18;\n\
-for (var r = 0; r < rows; r++) {\n\
-  for (var c = 0; c < cols; c++) {\n\
-    if (c === 0) { cubes[r] = []; }\n\
-    cubes[r][c] = makeCube(r * spacing, 0, c * spacing);\n\
-  }\n\
-}\n\
-var i = 0;\n\
-return function () {\n\
-  i += -0.05;\n\
-  for (var r = 0; r < rows; r++) {\n\
-    for (var c = 0; c < cols; c++) {\n\
-      var height = (\n\
-        Math.sin(r / rows * Math.PI * 2 + i) + \n\
-        Math.cos(c / cols * Math.PI * 2 + i)) / 11;\n\
-      cubes[r][c].position.setY(height - 0.6);\n\
-      cubes[r][c].material.color.setRGB(\n\
-        height + 1.0, height + 0.1, 0.1);\n\
-    }\n\
-  }\n\
-};') : contents;
+    var defaultContents = ('\
+      var t3 = THREE;\n\
+      var light = new t3.PointLight();\n\
+      light.position.set(10, 15, 9);\n\
+      scene.add(light);\n\
+      var makeCube = function (x, y, z) {\n\
+        var cube = new t3.Mesh(\n\
+          new t3.BoxGeometry(1, 1.1, 1),\n\
+          new t3.MeshLambertMaterial({color: \'red\'})\n\
+        );\n\
+        cube.scale.set(0.1, 0.1, 0.1);\n\
+        cube.position.set(1, 0, 0.0).add(\n\
+          new t3.Vector3(x, y, z));\n\
+        scene.add(cube);\n\
+        return cube;\n\
+      };\n\
+      \n\
+      var rows, cols, cubes = [], spacing = 0.07;\n\
+      rows = cols = 18;\n\
+      for (var r = 0; r < rows; r++) {\n\
+        for (var c = 0; c < cols; c++) {\n\
+          if (c === 0) { cubes[r] = []; }\n\
+          cubes[r][c] = makeCube(r * spacing, 0, c * spacing);\n\
+        }\n\
+      }\n\
+      var i = 0;\n\
+      return function () {\n\
+        i += -0.05;\n\
+        for (var r = 0; r < rows; r++) {\n\
+          for (var c = 0; c < cols; c++) {\n\
+            var height = (\n\
+              Math.sin(r / rows * Math.PI * 2 + i) + \n\
+              Math.cos(c / cols * Math.PI * 2 + i)) / 11;\n\
+            cubes[r][c].position.setY(height - 0.6);\n\
+            cubes[r][c].material.color.setRGB(\n\
+              height + 1.0, height + 0.1, 0.1);\n\
+          }\n\
+        }\n\
+      };\
+    '.replace(/\n {6}/g, '\n').replace(/^\s+|\s+$/g, ''))
+    this.contents = contents === undefined ? defaultContents : contents;
     this.selected = true;
   };
   constr.prototype.findNumberAt = function (index) {
