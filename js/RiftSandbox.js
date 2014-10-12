@@ -5,6 +5,7 @@ var constr = function (width, height) {
   this.width = width;
   this.height = height;
   window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
+  this.BasePosition = new THREE.Vector3(0, 1.5, 0);
   this.HMDPosition = new THREE.Vector3();
   this.BaseRotation = new THREE.Quaternion();
   this.plainRotation = new THREE.Vector3();
@@ -25,10 +26,8 @@ constr.prototype.initScene = function () {
 
   this.camera = new THREE.PerspectiveCamera(
     75, this.width / this.height, 0.1, 1000 );
-  this.camera.useQuaternion = true;
 
   this.cameraPivot = new THREE.Object3D();
-  this.cameraPivot.useQuaternion = true;
   this.scene.add(this.cameraPivot);
 
   this.cameraLeft = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
@@ -37,29 +36,14 @@ constr.prototype.initScene = function () {
   this.cameraRight = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
   this.cameraPivot.add( this.cameraRight );
 
-  // TODO: Refactor to reduce repetition.
 
-  // Add projection sphere
-  var sphereTexture = THREE.ImageUtils.loadTexture('img/placeholder.png');
-  sphereTexture.wrapS = sphereTexture.wrapT = THREE.RepeatWrapping;
-  sphereTexture.repeat.set( 4, 4 );
-  var projSphere = new THREE.Mesh(
-    new THREE.SphereGeometry( 5000, 60, 40 ),
-    new THREE.MeshBasicMaterial({ map: sphereTexture, side: THREE.DoubleSide}) );
-  // TODO: Is this necessary?
-  projSphere.useQuaternion = true;
-  this.scene.add( projSphere );
-
-  var planeTexture = THREE.ImageUtils.loadTexture('img/placeholder.png');
+  var planeTexture = THREE.ImageUtils.loadTexture('img/background.png');
   planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
-  planeTexture.repeat.set( 40, 40 );
+  planeTexture.repeat.set( 1000, 1000 );
   var plane = new THREE.Mesh(
-    new THREE.PlaneGeometry( 5000, 5000 ),
+    new THREE.PlaneGeometry( 1000, 1000 ),
     new THREE.MeshBasicMaterial({ map: planeTexture, side: THREE.DoubleSide}) );
-  // TODO: Is this necessary?
   plane.rotation.x = Math.PI / 2;
-  // TODO: We should move the camera to human height instead of moving the floor.
-  plane.position.y = -100;
   this.scene.add( plane );
 
   var oldAdd = this.scene.add, that = this;
@@ -155,8 +139,7 @@ constr.prototype.initWebGL = function () {
     return false;
   }
 
-  this.renderer.setClearColor(0x202020, 1.0);
-  //this.renderer.autoClearColor = false;
+  this.renderer.setClearColor(0xEAEAEA, 1.0);
   this.renderer.setSize( this.width, this.width );
 
   this.container = document.getElementById('container');
@@ -248,8 +231,18 @@ function cssMatrixFromOrientation(q, inverse) {
   return cssMatrixFromElements(matrixFromOrientation(q, inverse));
 }
 
-var cssCameraPositionTransform = (
-  "translate3d(0, 0, 0) rotateZ(180deg) rotateY(180deg)");
+
+var cssCameraPositionTransform = function (position) {
+  var CSS_POSITION_SCALE = -250;
+  var transform = (
+      "translate3d(" +
+      (position.x * CSS_POSITION_SCALE) + "px, " +
+      (position.y * CSS_POSITION_SCALE) + "px, " +
+      (position.z * CSS_POSITION_SCALE) + "px" +
+      ") rotateZ(180deg) rotateY(180deg)");
+
+  return transform;
+};
 
 constr.prototype.setRotation = function (rotation) {
   this.plainRotation.set(0, rotation.y, 0);
@@ -272,7 +265,7 @@ constr.prototype.setHmdPositionRotation = function (vrState) {
   if (this.vrMode) {
     var cssOrientationMatrix = cssMatrixFromOrientation(vrState.orientation, true);
     this.cssCamera.style.transform = (
-      cssOrientationMatrix + " " + cssCameraPositionTransform);
+      cssOrientationMatrix + " " + cssCameraPositionTransform(vrState.position));
   }
 };
 
@@ -281,7 +274,7 @@ constr.prototype.toggleVrMode = function () {
     this.cssCamera.style.transform = '';
 };
 
-constr.prototype.updateCameraRotation = function () {
+constr.prototype.updateCameraPositionRotation = function () {
   if (this.vrMode) {
     this.camera.quaternion.multiplyQuaternions(
       this.BaseRotation,
@@ -293,7 +286,7 @@ constr.prototype.updateCameraRotation = function () {
   this.cameraPivot.quaternion.multiplyQuaternions(
     this.BaseRotation,
     this.HMDRotation);
-  this.cameraPivot.position.copy(this.HMDPosition);
+  this.cameraPivot.position.copy(this.BasePosition).add(this.HMDPosition);
 };
 
 return constr;
