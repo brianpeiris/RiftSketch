@@ -126,14 +126,14 @@ angular.module('index', [])
             this.deviceManager.sensorDevice.getState());
         }
         this.riftSandbox.setBaseRotation();
-        this.riftSandbox.updateCameraRotation();
+        this.riftSandbox.updateCameraPositionRotation();
       }
       if (!this.deviceManager.sensorDevice || !this.riftSandbox.vrMode) {
         this.riftSandbox.setRotation({
           y: (mousePos.x / window.innerWidth) * Math.PI *2
         });
         this.riftSandbox.setBaseRotation();
-        this.riftSandbox.updateCameraRotation();
+        this.riftSandbox.updateCameraPositionRotation();
       }
 
       try {
@@ -255,16 +255,15 @@ angular.module('index', [])
     this.deviceManager.init();
     this.mainLoop();
 
-    $scope.$watch('sketch.getCode()', function (newVal, oldVal) {
+    $scope.$watch('sketch.getCode()', function (code) {
       this.riftSandbox.clearScene();
       var _sketchLoop;
       $scope.error = null;
       try {
         /* jshint -W054 */
-        var _sketchFunc = new Function('scene', '"use strict";\n' + newVal);
+        var _sketchFunc = new Function('scene', '"use strict";\n' + code);
         /* jshint +W054 */
-        _sketchLoop = (_sketchFunc)(
-          this.riftSandbox.scene);
+        _sketchLoop = _sketchFunc(this.riftSandbox.scene);
       }
       catch (err) {
         $scope.error = err.toString();
@@ -272,7 +271,7 @@ angular.module('index', [])
       if (_sketchLoop) {
         this.sketchLoop = _sketchLoop;
       }
-      localStorage.setItem('autosave', newVal);
+      localStorage.setItem('autosave', code);
     }.bind(this));
   }]);
 }());
