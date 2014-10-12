@@ -26,6 +26,7 @@ constr.prototype.initScene = function () {
 
   this.camera = new THREE.PerspectiveCamera(
     75, this.width / this.height, 0.1, 1000 );
+  this.camera.position.copy(this.BasePosition);
 
   this.cameraPivot = new THREE.Object3D();
   this.scene.add(this.cameraPivot);

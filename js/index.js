@@ -37,10 +37,10 @@ var File = (function () {
           for (var c = 0; c < cols; c++) {\n\
             var height = (\n\
               Math.sin(r / rows * Math.PI * 2 + i) + \n\
-              Math.cos(c / cols * Math.PI * 2 + i)) / 11;\n\
-            cubes[r][c].position.setY(height - 0.6);\n\
+              Math.cos(c / cols * Math.PI * 2 + i));\n\
+            cubes[r][c].position.setY(height / 12 + 0.6);\n\
             cubes[r][c].material.color.setRGB(\n\
-              height + 1.0, height + 0.1, 0.1);\n\
+              height + 1.0, height + 0.5, 0.5);\n\
           }\n\
         }\n\
       };\
