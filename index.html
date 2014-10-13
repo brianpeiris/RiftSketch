@@ -22,7 +22,7 @@
   </head>
   <body
     ng-controller="SketchController"
-    ng-class="{'modal-open': (!hasOverridenUnsupported && seemsUnsupported)}">
+    ng-class="{'modal-open': (!hasOverridenUnsupported && seemsUnsupported), 'dk1': isDK1}">
     <div id="container" ng-class="{'not-fullscreen': !isInfullscreen}">
       <canvas id="viewer"></canvas>
       <div id="camera" class="threed" ng-show="is_editor_visible">
