@@ -237,6 +237,11 @@ angular.module('index', [])
       }
       else {
         $scope.isInfullscreen = true;
+        // Guesstimate that it's DK1 based on resolution. Ideally getVRDevices
+        // would give us a model name but it doesn't in Firefox.
+        if (window.innerWidth < 1800) {
+          $scope.isDK1 = true;
+        }
         if (!$scope.$$phase) { $scope.$apply(); }
       }
     }.bind(this);
