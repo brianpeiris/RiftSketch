@@ -37,9 +37,6 @@ textarea {
   font-family: Inconsolata, Consolas, monospace;
   font-size: 11pt;
 }
-.dk1 textarea {
-  font-size: 22pt;
-}
 .alert {
   &.alert-info{
     text-align: center;
@@ -61,6 +58,32 @@ textarea {
   line-height: 14px;
   display: block;
   margin: 0;
+}
+
+.dk1 {
+  textarea {
+    transform: rotateY(0deg) translate3d(-200px, 0, 500px) translate(-100px, -150px);
+    font-size: 20pt;
+    width: 666px;
+    height: 400px;
+  }
+  .alert {
+    font-size: 17pt;
+    width: 700px;
+    line-height: 24px;
+    &.alert-info{
+      transform:
+        rotateY(0deg)
+        translate3d(-200px, 410px, 500px)
+        translate(-100px, -150px);
+    }
+    &.alert-warning{
+      transform:
+        rotateY(0deg)
+        translate3d(-200px, 480px, 500px)
+        translate(-100px, -150px);
+    }
+  }
 }
 
 .modal {
