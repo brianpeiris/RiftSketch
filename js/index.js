@@ -16,7 +16,7 @@ var File = (function () {
           new t3.MeshLambertMaterial({color: \'red\'})\n\
         );\n\
         cube.scale.set(0.1, 0.1, 0.1);\n\
-        cube.position.set(1, 0, 0.0).add(\n\
+        cube.position.set(1, 0, -1).add(\n\
           new t3.Vector3(x, y, z));\n\
         scene.add(cube);\n\
         return cube;\n\
@@ -223,6 +223,54 @@ angular.module('index', [])
         spinNumberAndKeepSelection(1, 0.1);
         return false;
       });
+
+      var MOVEMENT_RATE = 0.01;
+      var ROTATION_RATE = 0.01;
+
+      Mousetrap.bind('w', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.setVelocity(MOVEMENT_RATE);
+        }
+      }.bind(this), 'keydown');
+      Mousetrap.bind('w', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.setVelocity(0);
+        }
+      }.bind(this), 'keyup');
+
+      Mousetrap.bind('s', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.setVelocity(-MOVEMENT_RATE);
+        }
+      }.bind(this));
+      Mousetrap.bind('s', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.setVelocity(0);
+        }
+      }.bind(this), 'keyup');
+
+      Mousetrap.bind('a', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.BaseRotationEuler.y += ROTATION_RATE;
+        }
+      }.bind(this));
+      Mousetrap.bind('d', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.BaseRotationEuler.y -= ROTATION_RATE;
+        }
+      }.bind(this));
+
+      Mousetrap.bind('q', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.BaseRotationEuler.y += Math.PI / 4;
+        }
+      }.bind(this));
+      Mousetrap.bind('e', function () {
+        if (!$scope.is_editor_visible) {
+          this.riftSandbox.BaseRotationEuler.y -= Math.PI / 4;
+        }
+      }.bind(this));
+
     }.bind(this);
     this.bindKeyboardShortcuts();
 
