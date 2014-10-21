@@ -30,12 +30,13 @@ body {
     }
   }
 }
+@editorHeight: 600px;
 textarea {
-  transform: rotateY(0deg) translate3d(-100px, 100px, 500px) translate(-100px, -150px);
-  height: 200px;
-  width: 400px;
   font-family: Inconsolata, Consolas, monospace;
-  font-size: 11pt;
+  font-size: 20pt;
+  width: 666px;
+  height: @editorHeight;
+  line-height: 30px;
 }
 .alert {
   &.alert-info{
@@ -61,11 +62,10 @@ textarea {
 }
 
 .dk1 {
+  @2dX: -100px;
+  @2dY: -150px;
   textarea {
-    transform: rotateY(0deg) translate3d(-200px, 0, 500px) translate(-100px, -150px);
-    font-size: 20pt;
-    width: 666px;
-    height: 400px;
+    transform: rotateY(0deg) translate3d(-200px, -200px, 500px) translate(@2dX, @2dY);
   }
   .alert {
     font-size: 17pt;
@@ -85,6 +85,11 @@ textarea {
     }
   }
 }
+
+#maze {
+    background-color: black;
+    transform: rotateY(80deg) translate3d(100px, -200px, 100px) translate(-100px, -150px)
+  }
 
 .modal {
   display: block;
