@@ -172,11 +172,11 @@ angular.module('index', [])
     var domElement = this.riftSandbox.container;
     this.bindKeyboardShortcuts = function () {
       var spinNumberAndKeepSelection = function (direction, amount) {
-        var textarea = document.querySelector('textarea');
-        var start = textarea.selectionStart;
+        var farEditor = document.querySelector('.far-editor');
+        var start = farEditor.selectionStart;
         $scope.sketch.files[0].spinNumberAt(start, direction, amount);
         if (!$scope.$$phase) { $scope.$apply(); }
-        textarea.selectionStart = textarea.selectionEnd = start;
+        farEditor.selectionStart = farEditor.selectionEnd = start;
       }.bind(this);
       Mousetrap.bind('alt+v', function () {
         this.riftSandbox.toggleVrMode();
