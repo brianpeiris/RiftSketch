@@ -130,7 +130,7 @@ angular.module('index', [])
       }
       if (!this.deviceManager.sensorDevice || !this.riftSandbox.vrMode) {
         this.riftSandbox.setRotation({
-          y: (mousePos.x / window.innerWidth) * Math.PI *2
+          y: mousePos.x / window.innerWidth * Math.PI * 2
         });
         this.riftSandbox.setBaseRotation();
         this.riftSandbox.updateCameraPositionRotation();

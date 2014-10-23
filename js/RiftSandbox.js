@@ -16,12 +16,14 @@ var RiftSandbox = (function () {
     this.cameraRight = null;
     this.renderer = null;
     this.cssCamera = document.getElementById('camera');
-    this.initWebGL();
     this.vrMode = false;
     this._targetVelocity = 0;
     this._velocity = 0;
     this._rampUp = true;
     this._rampRate = 0;
+
+    this.initScene();
+    this.initWebGL();
   };
 
   constr.prototype.initScene = function () {
@@ -41,21 +43,20 @@ var RiftSandbox = (function () {
     this.cameraRight = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
     this.cameraPivot.add( this.cameraRight );
 
-
-    var planeTexture = THREE.ImageUtils.loadTexture('img/background.png');
-    planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
-    planeTexture.repeat.set( 1000, 1000 );
-    var plane = new THREE.Mesh(
+    var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
+    groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set( 1000, 1000 );
+    var ground = new THREE.Mesh(
       new THREE.PlaneGeometry( 1000, 1000 ),
-      new THREE.MeshBasicMaterial({ map: planeTexture, side: THREE.DoubleSide}) );
-    plane.rotation.x = Math.PI / 2;
-    this.scene.add( plane );
+      new THREE.MeshBasicMaterial({map: groundTexture}) );
+    ground.rotation.x = -Math.PI / 2;
+    this.scene.add(ground);
 
-    var oldAdd = this.scene.add, that = this;
+    var oldAdd = this.scene.add;
     this.scene.add = function (obj) {
-      that.sceneStuff.push(obj);
-      oldAdd.call(that.scene, obj);
-    };
+      this.sceneStuff.push(obj);
+      oldAdd.call(this.scene, obj);
+    }.bind(this);
   };
 
   constr.prototype.setCameraOffsets = function (eyeOffsetLeft, eyeOffsetRight) {
@@ -131,12 +132,10 @@ var RiftSandbox = (function () {
   };
 
   constr.prototype.initWebGL = function () {
-    this.initScene();
-
     try {
       this.renderer = new THREE.WebGLRenderer({
-        canvas: document.getElementById('viewer'),
-        preserveDrawingBuffer: true});
+          canvas: document.getElementById('viewer')
+      });
     }
     catch(e){
       console.log(e);
@@ -144,8 +143,8 @@ var RiftSandbox = (function () {
       return false;
     }
 
-    this.renderer.setClearColor(0xEAEAEA, 1.0);
-    this.renderer.setSize( this.width, this.width );
+    this.renderer.setClearColor(0xD3D3D3, 1.0);
+    this.renderer.setSize(this.width, this.height);
 
     this.container = document.getElementById('container');
   };
@@ -182,7 +181,6 @@ var RiftSandbox = (function () {
   constr.prototype.resize = function () {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-
     this.renderer.setSize( this.width, this.height );
   };
 
