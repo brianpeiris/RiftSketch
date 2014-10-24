@@ -41,8 +41,9 @@ var RiftSandbox = (function () {
     this.cameraRight = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
     this.cameraPivot.add( this.cameraRight );
 
-
+    var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var planeTexture = THREE.ImageUtils.loadTexture('img/background.png');
+    planeTexture.anisotropy = maxAnisotropy;
     planeTexture.wrapS = planeTexture.wrapT = THREE.RepeatWrapping;
     planeTexture.repeat.set( 1000, 1000 );
     var plane = new THREE.Mesh(
@@ -131,8 +132,6 @@ var RiftSandbox = (function () {
   };
 
   constr.prototype.initWebGL = function () {
-    this.initScene();
-
     try {
       this.renderer = new THREE.WebGLRenderer({
         canvas: document.getElementById('viewer'),
@@ -143,6 +142,8 @@ var RiftSandbox = (function () {
       alert('This application needs WebGL enabled!');
       return false;
     }
+
+    this.initScene();
 
     this.renderer.setClearColor(0xEAEAEA, 1.0);
     this.renderer.setSize( this.width, this.width );
