@@ -93,14 +93,27 @@ var Sketch = (function () {
 
 angular.module('index', [])
   .controller('SketchController', ['$scope', function($scope) {
+    // TODO: lol, this controller is out of control. Refactor and maybe actually
+    // use Angular properly.
+
+    navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    navigator.getUserMedia(
+      {video: true},
+      function (stream) {
+        var monitor = document.getElementById('monitor');
+        monitor.src = window.URL.createObjectURL(stream);
+      },
+      function () {}
+    );
+
     var autosave = localStorage.getItem('autosave');
     var files;
     if (autosave) {
-        files = [new File('autosave', autosave)];
-        $scope.sketch = new Sketch('autosave', files);
+      files = [new File('autosave', autosave)];
+      $scope.sketch = new Sketch('autosave', files);
     }
     else {
-        $scope.sketch = new Sketch(files);
+      $scope.sketch = new Sketch(files);
     }
 
     // TODO: Most of this should be in a directive instead of in the controller.
@@ -151,11 +164,13 @@ angular.module('index', [])
 
     this.deviceManager = new DeviceManager();
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
+
     this.deviceManager.onResizeFOV = function (
       renderTargetSize, fovLeft, fovRight
     ) {
       this.riftSandbox.setFOV(fovLeft, fovRight);
     }.bind(this);
+
     this.deviceManager.onHMDDeviceFound = function (hmdDevice) {
       var eyeOffsetLeft = hmdDevice.getEyeTranslation("left");
       var eyeOffsetRight = hmdDevice.getEyeTranslation("right");
@@ -270,7 +285,6 @@ angular.module('index', [])
           this.riftSandbox.BaseRotationEuler.y -= Math.PI / 4;
         }
       }.bind(this));
-
     }.bind(this);
     this.bindKeyboardShortcuts();
 
@@ -297,6 +311,7 @@ angular.module('index', [])
     document.addEventListener('webkitfullscreenchange', toggleVrMode, false);
 
     this.riftSandbox.resize();
+
     // We only support a specific WebVR build at the moment.
     if (!navigator.userAgent.match('Firefox/34')) {
       $scope.seemsUnsupported = true;
@@ -305,6 +320,7 @@ angular.module('index', [])
       $scope.seemsUnsupported = true;
       if (!$scope.$$phase) { $scope.$apply(); }
     }.bind(this);
+
     this.deviceManager.init();
     this.mainLoop();
 

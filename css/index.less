@@ -29,6 +29,9 @@ body {
       transform: translate(0, 265px);
     }
   }
+  #monitor {
+    transform: translate(0, 280px);
+  }
 }
 textarea {
   transform: rotateY(0deg) translate3d(-100px, 100px, 500px) translate(-100px, -150px);
@@ -58,6 +61,14 @@ textarea {
   line-height: 14px;
   display: block;
   margin: 0;
+}
+
+#monitor {
+  transform:
+    rotateY(0deg) rotateX(-45deg) translate3d(-100px, 0, 500px) translate(-100px, -150px);
+  width: 400px;
+  clip: rect(0, 400px, 215px, 0);
+  opacity: 0.5;
 }
 
 .dk1 {
