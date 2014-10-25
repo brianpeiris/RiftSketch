@@ -22,8 +22,8 @@ var RiftSandbox = (function () {
     this._rampUp = true;
     this._rampRate = 0;
 
-    this.initScene();
     this.initWebGL();
+    this.initScene();
   };
 
   constr.prototype.initScene = function () {
@@ -43,7 +43,9 @@ var RiftSandbox = (function () {
     this.cameraRight = new THREE.PerspectiveCamera(75, 4/3, 0.1, 1000);
     this.cameraPivot.add( this.cameraRight );
 
+    var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
+    groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set( 1000, 1000 );
     var ground = new THREE.Mesh(
