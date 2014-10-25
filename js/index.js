@@ -59,14 +59,24 @@ var File = (function () {
       return (parseFloat(number) + direction * amount).toFixed(1);
     }
   };
-  constr.prototype.spinNumberAt = function (index, direction, amount) {
+  constr.prototype.spinNumberAt = function (
+    index, direction, amount, originalNumber
+  ) {
     var number = this.findNumberAt(index);
-    var newNumber = this.spinNumber(number, direction, amount);
+    originalNumber = originalNumber || number;
+    var newNumber = this.spinNumber(originalNumber, direction, amount);
     this.contents = (
       this.contents.substring(0, index) +
       newNumber +
       this.contents.substring(index + number.length)
     );
+  };
+  constr.prototype.recordOriginalNumberAt = function (index) {
+    this.originalIndex = index;
+    this.originalNumber = this.findNumberAt(index);
+  };
+  constr.prototype.offsetOriginalNumber = function (offset) {
+    this.spinNumberAt(this.originalIndex, 1, offset, this.originalNumber);
   };
   return constr;
 }());
@@ -131,6 +141,10 @@ angular.module('index', [])
 
     this.mainLoop = function () {
       window.requestAnimationFrame( this.mainLoop.bind(this) );
+      // HACK: I really need to turn this DOM manipulation into a directive.
+      if (!this.textarea) {
+        this.textarea = document.querySelector('textarea');
+      }
 
       // Apply movement
       if (this.deviceManager.sensorDevice) {
@@ -177,6 +191,36 @@ angular.module('index', [])
       this.riftSandbox.setCameraOffsets(eyeOffsetLeft, eyeOffsetRight);
     }.bind(this);
 
+    var spinNumberAndKeepSelection = function (direction, amount) {
+      var start = this.textarea.selectionStart;
+      $scope.sketch.files[0].spinNumberAt(start, direction, amount);
+      if (!$scope.$$phase) { $scope.$apply(); }
+      this.textarea.selectionStart = this.textarea.selectionEnd = start;
+    }.bind(this);
+
+    var offsetNumberAndKeepSelection = function (offset) {
+      var start = this.textarea.selectionStart;
+      $scope.sketch.files[0].offsetOriginalNumber(offset);
+      if (!$scope.$$phase) { $scope.$apply(); }
+      this.textarea.selectionStart = this.textarea.selectionEnd = start;
+    }.bind(this);
+
+    this.handStart = this.handCurrent = null;
+    this.altPressed = this.shiftPressed = false;
+    Leap.loop({}, function (frame) {
+      if (frame.hands.length) {
+        this.handCurrent = frame;
+        if (this.altPressed && this.handStart) {
+          var hand = frame.hands[0];
+          var handTranslation = hand.translation(this.handStart);
+          var factor = this.shiftPressed ? 10 : 100;
+          offsetNumberAndKeepSelection(
+            Math.round(handTranslation[1] / factor * 1000) / 1000);
+        }
+      }
+      this.previousFrame = frame;
+    }.bind(this));
+
     window.addEventListener(
       'resize',
       this.riftSandbox.resize.bind(this.riftSandbox),
@@ -186,13 +230,6 @@ angular.module('index', [])
     $scope.is_editor_visible = true;
     var domElement = this.riftSandbox.container;
     this.bindKeyboardShortcuts = function () {
-      var spinNumberAndKeepSelection = function (direction, amount) {
-        var textarea = document.querySelector('textarea');
-        var start = textarea.selectionStart;
-        $scope.sketch.files[0].spinNumberAt(start, direction, amount);
-        if (!$scope.$$phase) { $scope.$apply(); }
-        textarea.selectionStart = textarea.selectionEnd = start;
-      }.bind(this);
       Mousetrap.bind('alt+v', function () {
         this.riftSandbox.toggleVrMode();
         if (domElement.mozRequestFullScreen) {
@@ -257,7 +294,7 @@ angular.module('index', [])
         if (!$scope.is_editor_visible) {
           this.riftSandbox.setVelocity(-MOVEMENT_RATE);
         }
-      }.bind(this));
+      }.bind(this), 'keydown');
       Mousetrap.bind('s', function () {
         if (!$scope.is_editor_visible) {
           this.riftSandbox.setVelocity(0);
@@ -285,6 +322,29 @@ angular.module('index', [])
           this.riftSandbox.BaseRotationEuler.y -= Math.PI / 4;
         }
       }.bind(this));
+
+      Mousetrap.bind(['shift', 'alt+shift'], function () {
+        if (this.shiftPressed) { return false; }
+        this.shiftPressed = true;
+        return false;
+      }.bind(this), 'keydown');
+      Mousetrap.bind('shift', function () {
+        this.shiftPressed = false;
+        return false;
+      }.bind(this), 'keyup');
+
+      Mousetrap.bind('alt', function () {
+        if (this.altPressed) { return false; }
+        var start = this.textarea.selectionStart;
+        $scope.sketch.files[0].recordOriginalNumberAt(start);
+        this.handStart = this.handCurrent;
+        this.altPressed = true;
+        return false;
+      }.bind(this), 'keydown');
+      Mousetrap.bind('alt', function () {
+        this.altPressed = false;
+        return false;
+      }.bind(this), 'keyup');
     }.bind(this);
     this.bindKeyboardShortcuts();
 
