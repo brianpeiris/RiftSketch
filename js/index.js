@@ -56,7 +56,7 @@ var File = (function () {
       return (parseInt(number, 10) + direction * amount).toString();
     }
     else {
-      return (parseFloat(number) + direction * amount).toFixed(1);
+      return (parseFloat(number) + direction * amount).toFixed(2);
     }
   };
   constr.prototype.spinNumberAt = function (
@@ -214,8 +214,8 @@ angular.module('index', [])
           var hand = frame.hands[0];
           var handTranslation = hand.translation(this.handStart);
           var factor = this.shiftPressed ? 10 : 100;
-          offsetNumberAndKeepSelection(
-            Math.round(handTranslation[1] / factor * 1000) / 1000);
+          var offset = Math.round(handTranslation[1] / factor * 1000) / 1000;
+          offsetNumberAndKeepSelection(offset);
         }
       }
       this.previousFrame = frame;
