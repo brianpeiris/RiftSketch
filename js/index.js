@@ -221,6 +221,32 @@ angular.module('index', [])
       this.previousFrame = frame;
     }.bind(this));
 
+    OAuth.initialize('bnVXi9ZBNKekF-alA1aF7PQEpsU');
+    var apiCache = {};
+    var api = _.throttle(function (provider, url, data, callback) {
+      var cacheKey = url + JSON.stringify(data);
+      var cacheEntry = apiCache[cacheKey];
+      if (cacheEntry && (Date.now() - cacheEntry.lastCall) < 1000 * 60 * 5) {
+        callback(cacheEntry.data);
+        return;
+      }
+      OAuth.popup(
+        provider,
+        {cache: true}
+      ).done(function(result) {
+        result.get(
+          url,
+          {data: data, cache: true}
+        ).done(function (data) {
+          apiCache[cacheKey] = {
+            lastCall: Date.now(),
+            data: data
+          };
+          callback(data);
+        });
+      });
+    }, 1000);
+
     window.addEventListener(
       'resize',
       this.riftSandbox.resize.bind(this.riftSandbox),
@@ -390,9 +416,9 @@ angular.module('index', [])
       $scope.error = null;
       try {
         /* jshint -W054 */
-        var _sketchFunc = new Function('scene', '"use strict";\n' + code);
+        var _sketchFunc = new Function('scene', 'api', '"use strict";\n' + code);
         /* jshint +W054 */
-        _sketchLoop = _sketchFunc(this.riftSandbox.scene);
+        _sketchLoop = _sketchFunc(this.riftSandbox.scene, api);
       }
       catch (err) {
         $scope.error = err.toString();
