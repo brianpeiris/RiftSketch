@@ -1,7 +1,7 @@
 RiftSketch
 ==========
 
-![RiftSketch screenshot](http://i.imgur.com/Xa2v6uy.png)
+![RiftSketch screenshot](http://i.imgur.com/3XwM1Rk.png)
 
 https://www.youtube.com/watch?v=db-7J5OaSag
 
