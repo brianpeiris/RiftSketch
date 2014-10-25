@@ -416,9 +416,13 @@ angular.module('index', [])
       $scope.error = null;
       try {
         /* jshint -W054 */
-        var _sketchFunc = new Function('scene', 'api', '"use strict";\n' + code);
+        var _sketchFunc = new Function(
+          'scene', 'camera', 'api',
+          '"use strict";\n' + code
+        );
         /* jshint +W054 */
-        _sketchLoop = _sketchFunc(this.riftSandbox.scene, api);
+        _sketchLoop = _sketchFunc(
+          this.riftSandbox.scene, this.riftSandbox.cameraPivot, api);
       }
       catch (err) {
         $scope.error = err.toString();
