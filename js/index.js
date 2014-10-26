@@ -56,17 +56,27 @@ var File = (function () {
       return (parseInt(number, 10) + direction * amount).toString();
     }
     else {
-      return (parseFloat(number) + direction * amount).toFixed(1);
+      return (parseFloat(number) + direction * amount).toFixed(2);
     }
   };
-  constr.prototype.spinNumberAt = function (index, direction, amount) {
+  constr.prototype.spinNumberAt = function (
+    index, direction, amount, originalNumber
+  ) {
     var number = this.findNumberAt(index);
-    var newNumber = this.spinNumber(number, direction, amount);
+    originalNumber = originalNumber || number;
+    var newNumber = this.spinNumber(originalNumber, direction, amount);
     this.contents = (
       this.contents.substring(0, index) +
       newNumber +
       this.contents.substring(index + number.length)
     );
+  };
+  constr.prototype.recordOriginalNumberAt = function (index) {
+    this.originalIndex = index;
+    this.originalNumber = this.findNumberAt(index);
+  };
+  constr.prototype.offsetOriginalNumber = function (offset) {
+    this.spinNumberAt(this.originalIndex, 1, offset, this.originalNumber);
   };
   return constr;
 }());
@@ -93,14 +103,27 @@ var Sketch = (function () {
 
 angular.module('index', [])
   .controller('SketchController', ['$scope', function($scope) {
+    // TODO: lol, this controller is out of control. Refactor and maybe actually
+    // use Angular properly.
+
+    navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    navigator.getUserMedia(
+      {video: true},
+      function (stream) {
+        var monitor = document.getElementById('monitor');
+        monitor.src = window.URL.createObjectURL(stream);
+      },
+      function () {}
+    );
+
     var autosave = localStorage.getItem('autosave');
     var files;
     if (autosave) {
-        files = [new File('autosave', autosave)];
-        $scope.sketch = new Sketch('autosave', files);
+      files = [new File('autosave', autosave)];
+      $scope.sketch = new Sketch('autosave', files);
     }
     else {
-        $scope.sketch = new Sketch(files);
+      $scope.sketch = new Sketch(files);
     }
 
     // TODO: Most of this should be in a directive instead of in the controller.
@@ -118,6 +141,10 @@ angular.module('index', [])
 
     this.mainLoop = function () {
       window.requestAnimationFrame( this.mainLoop.bind(this) );
+      // HACK: I really need to turn this DOM manipulation into a directive.
+      if (!this.textarea) {
+        this.textarea = document.querySelector('textarea');
+      }
 
       // Apply movement
       if (this.deviceManager.sensorDevice) {
@@ -130,7 +157,7 @@ angular.module('index', [])
       }
       if (!this.deviceManager.sensorDevice || !this.riftSandbox.vrMode) {
         this.riftSandbox.setRotation({
-          y: (mousePos.x / window.innerWidth) * Math.PI *2
+          y: mousePos.x / window.innerWidth * Math.PI * 2
         });
         this.riftSandbox.setBaseRotation();
         this.riftSandbox.updateCameraPositionRotation();
@@ -151,16 +178,74 @@ angular.module('index', [])
 
     this.deviceManager = new DeviceManager();
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight);
+
     this.deviceManager.onResizeFOV = function (
       renderTargetSize, fovLeft, fovRight
     ) {
       this.riftSandbox.setFOV(fovLeft, fovRight);
     }.bind(this);
+
     this.deviceManager.onHMDDeviceFound = function (hmdDevice) {
       var eyeOffsetLeft = hmdDevice.getEyeTranslation("left");
       var eyeOffsetRight = hmdDevice.getEyeTranslation("right");
       this.riftSandbox.setCameraOffsets(eyeOffsetLeft, eyeOffsetRight);
     }.bind(this);
+
+    var spinNumberAndKeepSelection = function (direction, amount) {
+      var start = this.textarea.selectionStart;
+      $scope.sketch.files[0].spinNumberAt(start, direction, amount);
+      if (!$scope.$$phase) { $scope.$apply(); }
+      this.textarea.selectionStart = this.textarea.selectionEnd = start;
+    }.bind(this);
+
+    var offsetNumberAndKeepSelection = function (offset) {
+      var start = this.textarea.selectionStart;
+      $scope.sketch.files[0].offsetOriginalNumber(offset);
+      if (!$scope.$$phase) { $scope.$apply(); }
+      this.textarea.selectionStart = this.textarea.selectionEnd = start;
+    }.bind(this);
+
+    this.handStart = this.handCurrent = null;
+    this.altPressed = this.shiftPressed = false;
+    Leap.loop({}, function (frame) {
+      if (frame.hands.length) {
+        this.handCurrent = frame;
+        if (this.altPressed && this.handStart) {
+          var hand = frame.hands[0];
+          var handTranslation = hand.translation(this.handStart);
+          var factor = this.shiftPressed ? 10 : 100;
+          var offset = Math.round(handTranslation[1] / factor * 1000) / 1000;
+          offsetNumberAndKeepSelection(offset);
+        }
+      }
+      this.previousFrame = frame;
+    }.bind(this));
+
+    OAuth.initialize('bnVXi9ZBNKekF-alA1aF7PQEpsU');
+    var apiCache = {};
+    var api = _.throttle(function (provider, url, data, callback) {
+      var cacheKey = url + JSON.stringify(data);
+      var cacheEntry = apiCache[cacheKey];
+      if (cacheEntry && (Date.now() - cacheEntry.lastCall) < 1000 * 60 * 5) {
+        callback(cacheEntry.data);
+        return;
+      }
+      OAuth.popup(
+        provider,
+        {cache: true}
+      ).done(function(result) {
+        result.get(
+          url,
+          {data: data, cache: true}
+        ).done(function (data) {
+          apiCache[cacheKey] = {
+            lastCall: Date.now(),
+            data: data
+          };
+          callback(data);
+        });
+      });
+    }, 1000);
 
     window.addEventListener(
       'resize',
@@ -171,13 +256,6 @@ angular.module('index', [])
     $scope.is_editor_visible = true;
     var domElement = this.riftSandbox.container;
     this.bindKeyboardShortcuts = function () {
-      var spinNumberAndKeepSelection = function (direction, amount) {
-        var textarea = document.querySelector('textarea');
-        var start = textarea.selectionStart;
-        $scope.sketch.files[0].spinNumberAt(start, direction, amount);
-        if (!$scope.$$phase) { $scope.$apply(); }
-        textarea.selectionStart = textarea.selectionEnd = start;
-      }.bind(this);
       Mousetrap.bind('alt+v', function () {
         this.riftSandbox.toggleVrMode();
         if (domElement.mozRequestFullScreen) {
@@ -242,7 +320,7 @@ angular.module('index', [])
         if (!$scope.is_editor_visible) {
           this.riftSandbox.setVelocity(-MOVEMENT_RATE);
         }
-      }.bind(this));
+      }.bind(this), 'keydown');
       Mousetrap.bind('s', function () {
         if (!$scope.is_editor_visible) {
           this.riftSandbox.setVelocity(0);
@@ -271,6 +349,28 @@ angular.module('index', [])
         }
       }.bind(this));
 
+      Mousetrap.bind(['shift', 'alt+shift'], function () {
+        if (this.shiftPressed) { return false; }
+        this.shiftPressed = true;
+        return false;
+      }.bind(this), 'keydown');
+      Mousetrap.bind('shift', function () {
+        this.shiftPressed = false;
+        return false;
+      }.bind(this), 'keyup');
+
+      Mousetrap.bind('alt', function () {
+        if (this.altPressed) { return false; }
+        var start = this.textarea.selectionStart;
+        $scope.sketch.files[0].recordOriginalNumberAt(start);
+        this.handStart = this.handCurrent;
+        this.altPressed = true;
+        return false;
+      }.bind(this), 'keydown');
+      Mousetrap.bind('alt', function () {
+        this.altPressed = false;
+        return false;
+      }.bind(this), 'keyup');
     }.bind(this);
     this.bindKeyboardShortcuts();
 
@@ -297,6 +397,7 @@ angular.module('index', [])
     document.addEventListener('webkitfullscreenchange', toggleVrMode, false);
 
     this.riftSandbox.resize();
+
     // We only support a specific WebVR build at the moment.
     if (!navigator.userAgent.match('Firefox/34')) {
       $scope.seemsUnsupported = true;
@@ -305,6 +406,7 @@ angular.module('index', [])
       $scope.seemsUnsupported = true;
       if (!$scope.$$phase) { $scope.$apply(); }
     }.bind(this);
+
     this.deviceManager.init();
     this.mainLoop();
 
@@ -314,9 +416,13 @@ angular.module('index', [])
       $scope.error = null;
       try {
         /* jshint -W054 */
-        var _sketchFunc = new Function('scene', '"use strict";\n' + code);
+        var _sketchFunc = new Function(
+          'scene', 'camera', 'api',
+          '"use strict";\n' + code
+        );
         /* jshint +W054 */
-        _sketchLoop = _sketchFunc(this.riftSandbox.scene);
+        _sketchLoop = _sketchFunc(
+          this.riftSandbox.scene, this.riftSandbox.cameraPivot, api);
       }
       catch (err) {
         $scope.error = err.toString();
