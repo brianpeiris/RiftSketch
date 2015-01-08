@@ -27,30 +27,24 @@
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/oauth-js/dist/oauth.min.js"></script>
 
-    <script src="js/DeviceManager.js"></script>
+    <script src="lib/VRControls.js"></script>
+    <script src="lib/VREffect.js"></script>
+    <script src="js/TextArea.js"></script>
     <script src="js/RiftSandbox.js"></script>
     <script src="js/index.js"></script>
   </head>
   <body
     ng-controller="SketchController"
-    ng-class="{'modal-open': (!hasOverridenUnsupported && seemsUnsupported), 'dk1': isDK1}">
+    ng-class="{'modal-open': (!hasOverridenUnsupported && seemsUnsupported)}">
 
 
     <div id="container" ng-class="{'not-fullscreen': !isInfullscreen}">
       <canvas id="viewer"></canvas>
-      <div id="camera" class="threed" ng-show="is_editor_visible">
-        <textarea
-          class="threed mousetrap" ng-repeat="file in sketch.files"
-          ng-model="file.contents" spellcheck="false">
-        </textarea>
-        <span class="threed alert alert-info">
-          Alt + v - toggle VR | Alt + z - zero VR sensor<br />
-          Alt + e - toggle editor |
-          Alt + j/k, u/i, m/n - decrement or increment numbers
-        </span>
-        <span class="threed alert alert-warning" ng-show="error">{{error}}</span>
-        <video id="monitor" class="threed" autoplay></video>
-      </div>
+      <textarea
+        class="mousetrap" ng-repeat="file in sketch.files"
+        ng-model="file.contents" spellcheck="false">
+      </textarea>
+      <video id="monitor" autoplay></video>
     </div>
 
     <div
