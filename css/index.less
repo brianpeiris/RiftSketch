@@ -9,92 +9,21 @@ body {
   font-size: 10px;
 }
 
-.threed {
-  transform-style: preserve-3d;
-  position: absolute;
-  top: 0; left: 0;
-}
-#camera {
-  transform-origin: 0 0 0;
-}
-#container.not-fullscreen {
-  textarea {
-    transform: translate(0, 0);
-  }
-  .alert{
-    &.alert-info{
-      transform: translate(0, 210px);
-    }
-    &.alert-warning{
-      transform: translate(0, 265px);
-    }
-  }
-  #monitor {
-    transform: translate(0, 280px);
-  }
-}
 textarea {
-  transform: rotateY(0deg) translate3d(-100px, 100px, 500px) translate(-100px, -150px);
   height: 200px;
   width: 400px;
   font-family: Inconsolata, Consolas, monospace;
   font-size: 11pt;
-}
-.alert {
-  &.alert-info{
-    text-align: center;
-    transform:
-      rotateY(0deg)
-      translate3d(-100px, 310px, 500px)
-      translate(-100px, -150px);
-  }
-  &.alert-warning{
-    transform:
-      rotateY(0deg)
-      translate3d(-100px, 360px, 500px)
-      translate(-100px, -150px);
-  }
-  width: 400px;
-  font-family: Consolas, monospace;
-  font-size: 10pt;
-  padding: 2px;
-  line-height: 14px;
-  display: block;
-  margin: 0;
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  overflow: auto;
 }
 
 #monitor {
-  transform:
-    rotateY(0deg) rotateX(-45deg) translate3d(-100px, 0, 500px) translate(-100px, -150px);
-  width: 400px;
+  width: 0px;
   clip: rect(0, 400px, 215px, 0);
   opacity: 0.5;
-}
-
-.dk1 {
-  textarea {
-    transform: rotateY(0deg) translate3d(-200px, 0, 500px) translate(-100px, -150px);
-    font-size: 20pt;
-    width: 666px;
-    height: 400px;
-  }
-  .alert {
-    font-size: 17pt;
-    width: 700px;
-    line-height: 24px;
-    &.alert-info{
-      transform:
-        rotateY(0deg)
-        translate3d(-200px, 410px, 500px)
-        translate(-100px, -150px);
-    }
-    &.alert-warning{
-      transform:
-        rotateY(0deg)
-        translate3d(-200px, 480px, 500px)
-        translate(-100px, -150px);
-    }
-  }
 }
 
 .modal {
