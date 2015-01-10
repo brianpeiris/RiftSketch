@@ -5,5 +5,6 @@
     "jquery": "~2.1.1",
     "lodash": "~2.4.1"
   },
+  "name": "RiftSketch",
   "private": true
 }
