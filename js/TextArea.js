@@ -1,6 +1,8 @@
 define([
+  'Three'
 ],
 function (
+  THREE
 ) {
   'use strict';
   var FONT_SIZE_PX = 40;
@@ -91,7 +93,7 @@ function (
     var charsSeen = 0, charsSeenWithNewLines = 0;
 
     var lines = this.domTextArea.value.split('\n');
-    return lines.map(function (line, i) {
+    return lines.map(function (line) {
       var isLineSelected = (
         start <= charsSeenWithNewLines + line.length &&
         end >= charsSeenWithNewLines);
