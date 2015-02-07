@@ -1,4 +1,15 @@
-var RiftSandbox = (function () {
+define([
+  'Three',
+
+  'TextArea',
+
+  'VRControls',
+  'VREffect'
+],
+function (
+  THREE,
+  TextArea
+) {
   'use strict';
   var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
   var BASE_ROTATION = new THREE.Quaternion().setFromEuler(
@@ -191,4 +202,4 @@ var RiftSandbox = (function () {
   };
 
   return constr;
-}());
+});

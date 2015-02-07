@@ -1,8 +1,14 @@
-var TextArea = (function () {
-  FONT_SIZE_PX = 40;
-  NUM_LINES = 20;
-  CANVAS_SIZE_PX = NUM_LINES * FONT_SIZE_PX + FONT_SIZE_PX * 0.2;
-  UPDATE_INTERVAL_MS = 500;
+define([
+  'Three'
+],
+function (
+  THREE
+) {
+  'use strict';
+  var FONT_SIZE_PX = 40;
+  var NUM_LINES = 20;
+  var CANVAS_SIZE_PX = NUM_LINES * FONT_SIZE_PX + FONT_SIZE_PX * 0.2;
+  var UPDATE_INTERVAL_MS = 500;
   var constr = function (domTextArea) {
     this.domTextArea = domTextArea;
     
@@ -87,7 +93,7 @@ var TextArea = (function () {
     var charsSeen = 0, charsSeenWithNewLines = 0;
 
     var lines = this.domTextArea.value.split('\n');
-    return lines.map(function (line, i) {
+    return lines.map(function (line) {
       var isLineSelected = (
         start <= charsSeenWithNewLines + line.length &&
         end >= charsSeenWithNewLines);
@@ -206,4 +212,4 @@ var TextArea = (function () {
     this.textTexture.needsUpdate = true;
   };
   return constr; 
-}());
+});
