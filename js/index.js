@@ -10,6 +10,8 @@ require.config({
     Three: 'lib/ThreeJS/Three',
     VRControls: 'lib/VRControls',
     VREffect: 'lib/VREffect',
+    WebVRPolyfill: 'lib/webvr-polyfill',
+    WebVRManager: 'lib/webvr-manager',
 
     RiftSandbox: 'js/RiftSandbox',
     TextArea: 'js/TextArea',

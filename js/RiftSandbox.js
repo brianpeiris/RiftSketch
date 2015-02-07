@@ -4,7 +4,9 @@ define([
   'TextArea',
 
   'VRControls',
-  'VREffect'
+  'VREffect',
+  'WebVRPolyfill',
+  'WebVRManager',
 ],
 function (
   THREE,
@@ -44,16 +46,11 @@ function (
     this.camera = new THREE.PerspectiveCamera(
       75, this.width / this.height, 1, 10000);
 
-    this.hasVR = true;
-    this.controls = new THREE.VRControls(
-      this.camera,
-      function (err) {
-        this.hasVR = !err;
-        if (err) { this.camera.quaternion.multiply(BASE_ROTATION); }
-        callback(err);
-      }.bind(this));
+    this.controls = new THREE.VRControls(this.camera);
     this.effect = new THREE.VREffect(this.renderer);
     this.effect.setSize(this.width, this.height);
+
+    this.vrManager = new WebVRManager(this.effect);
 
     var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
@@ -134,7 +131,12 @@ function (
       this.camera.position.copy(BASE_POSITION);
     }
 
-    this.effect.render(this.scene, this.camera);
+    if (this.vrManager.isVRMode()) {
+      this.effect.render(this.scene, this.camera);
+    }
+    else {
+      this.renderer.render(this.scene, this.camera);
+    }
   };
 
   constr.prototype.resize = function () {
