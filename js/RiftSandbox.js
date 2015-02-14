@@ -10,7 +10,11 @@ define([
 ],
 function (
   THREE,
-  TextArea
+  TextArea,
+  VRControls,
+  VREffect,
+  WebVRPolyfill,
+  WebVRManager
 ) {
   'use strict';
   var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
@@ -120,23 +124,29 @@ function (
     this.textArea.update();
     this.controls.update();
 
-    if (this.hasVR) {
-      this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
-      var rotatedHMDPosition = new THREE.Vector3();
-      rotatedHMDPosition.copy(this.camera.position);
-      rotatedHMDPosition.applyQuaternion(BASE_ROTATION);
-      this.camera.position.copy(BASE_POSITION).add(rotatedHMDPosition);
-    }
-    else {
-      this.camera.position.copy(BASE_POSITION);
-    }
+    this.vrManager.isHMDAvailable().then(function (isHMDAvailable) {
+      if (!isHMDAvailable) {
+        this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
+      }
 
-    if (this.vrManager.isVRMode()) {
-      this.effect.render(this.scene, this.camera);
-    }
-    else {
-      this.renderer.render(this.scene, this.camera);
-    }
+      if (this.hasVR) {
+        this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
+        var rotatedHMDPosition = new THREE.Vector3();
+        rotatedHMDPosition.copy(this.camera.position);
+        rotatedHMDPosition.applyQuaternion(BASE_ROTATION);
+        this.camera.position.copy(BASE_POSITION).add(rotatedHMDPosition);
+      }
+      else {
+        this.camera.position.copy(BASE_POSITION);
+      }
+
+      if (this.vrManager.isVRMode()) {
+        this.effect.render(this.scene, this.camera);
+      }
+      else {
+        this.renderer.render(this.scene, this.camera);
+      }
+    }.bind(this));
   };
 
   constr.prototype.resize = function () {
@@ -177,7 +187,7 @@ function (
   //   }
   //   this.cameraPivot.quaternion.multiplyQuaternions(
   //     this.BaseRotation, this.HMDRotation);
-  // 
+  //
   //   var rotatedHMDPosition = new THREE.Vector3();
   //   rotatedHMDPosition.copy(this.HMDPosition);
   //   rotatedHMDPosition.applyQuaternion(this.BaseRotation);

@@ -24,7 +24,8 @@ require.config({
     oauth: {exports: 'OAuth'},
     Three: {exports: 'THREE'},
     VRControls: {deps: ['Three']},
-    VREffect: {deps: ['Three']}
+    VREffect: {deps: ['Three']},
+    WebVRManager: {exports: 'WebVRManager'}
   }
 });
 
