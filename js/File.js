@@ -28,7 +28,7 @@ function (
         i += -0.02;\n\
         cube.rotation.y = i;\n\
       };\
-    '.replace(/\n {8}/g, '\n').replace(/^\s+|\s+$/g, ''));
+    '.replace(/\n {6}/g, '\n').replace(/^\s+|\s+$/g, ''));
     this.contents = contents === undefined ? defaultContents : contents;
     this.selected = true;
   };
