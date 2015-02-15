@@ -6,7 +6,7 @@ require.config({
     leap: 'lib/leap-0.6.3',
     oauth: 'bower_components/oauth-js/dist/oauth',
     lodash: 'bower_components/lodash/dist/lodash',
-    mousetrap: 'lib/mousetrap',
+    kibo: 'lib/kibo',
     Three: 'lib/ThreeJS/Three',
     VRControls: 'lib/VRControls',
     VREffect: 'lib/VREffect',
@@ -22,7 +22,9 @@ require.config({
     angular: {exports: 'angular'},
     leap: {exports: 'Leap'},
     oauth: {exports: 'OAuth'},
+    kibo: {exports: 'Kibo'},
     Three: {exports: 'THREE'},
+    WebVRPolyfill: {deps: ['Three']},
     VRControls: {deps: ['Three']},
     VREffect: {deps: ['Three']},
     WebVRManager: {exports: 'WebVRManager'}
@@ -34,7 +36,7 @@ require([
   'leap',
   'oauth',
   'lodash',
-  'mousetrap',
+  'kibo',
 
   'RiftSandbox',
   'File',
@@ -45,7 +47,7 @@ function (
   Leap,
   OAuth,
   _,
-  Mousetrap,
+  Kibo,
 
   RiftSandbox,
   File,
@@ -183,37 +185,38 @@ function (
 
       $scope.is_editor_visible = true;
       this.bindKeyboardShortcuts = function () {
-        Mousetrap.bind('alt+z', function () {
+        var kibo = new Kibo(this.domTextArea);
+        kibo.down('alt shift z', function () {
           this.riftSandbox.controls.zeroSensor();
           return false;
         }.bind(this));
-        Mousetrap.bind('alt+e', function () {
+        kibo.down('alt shift e', function () {
           $scope.is_editor_visible = !$scope.is_editor_visible;
           this.riftSandbox.toggleTextArea($scope.is_editor_visible);
           if (!$scope.$$phase) { $scope.$apply(); }
           return false;
         }.bind(this));
-        Mousetrap.bind('alt+u', function () {
+        kibo.down('alt shift u', function () {
           spinNumberAndKeepSelection(-1, 10);
           return false;
         });
-        Mousetrap.bind('alt+i', function () {
+        kibo.down('alt shift i', function () {
           spinNumberAndKeepSelection(1, 10);
           return false;
         });
-        Mousetrap.bind('alt+j', function () {
+        kibo.down('alt shift j', function () {
           spinNumberAndKeepSelection(-1, 1);
           return false;
         });
-        Mousetrap.bind('alt+k', function () {
+        kibo.down('alt shift k', function () {
           spinNumberAndKeepSelection(1, 1);
           return false;
         });
-        Mousetrap.bind('alt+m', function () {
+        kibo.down('alt shift m', function () {
           spinNumberAndKeepSelection(-1, 0.1);
           return false;
         });
-        Mousetrap.bind('alt+,', function () {
+        kibo.down('alt shift ,', function () {
           spinNumberAndKeepSelection(1, 0.1);
           return false;
         });
@@ -221,74 +224,73 @@ function (
         var MOVEMENT_RATE = 0.01;
         var ROTATION_RATE = 0.01;
 
-        Mousetrap.bind('w', function () {
+        kibo.down('w', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.setVelocity(MOVEMENT_RATE);
           }
-        }.bind(this), 'keydown');
-        Mousetrap.bind('w', function () {
+        }.bind(this));
+        kibo.up('w', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.setVelocity(0);
           }
-        }.bind(this), 'keyup');
+        }.bind(this));
 
-        Mousetrap.bind('s', function () {
+        kibo.down('s', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.setVelocity(-MOVEMENT_RATE);
           }
-        }.bind(this), 'keydown');
-        Mousetrap.bind('s', function () {
+        }.bind(this));
+        kibo.up('s', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.setVelocity(0);
           }
-        }.bind(this), 'keyup');
+        }.bind(this));
 
-        Mousetrap.bind('a', function () {
+        kibo.down('a', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.BaseRotationEuler.y += ROTATION_RATE;
           }
         }.bind(this));
-        Mousetrap.bind('d', function () {
+        kibo.down('d', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.BaseRotationEuler.y -= ROTATION_RATE;
           }
         }.bind(this));
 
-        Mousetrap.bind('q', function () {
+        kibo.down('q', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.BaseRotationEuler.y += Math.PI / 4;
           }
         }.bind(this));
-        Mousetrap.bind('e', function () {
+        kibo.down('e', function () {
           if (!$scope.is_editor_visible) {
             this.riftSandbox.BaseRotationEuler.y -= Math.PI / 4;
           }
         }.bind(this));
 
-        Mousetrap.bind(['shift', 'alt+shift'], function () {
+        kibo.down(['alt shift'], function () {
           if (this.shiftPressed) { return false; }
           this.shiftPressed = true;
           return false;
-        }.bind(this), 'keydown');
-        Mousetrap.bind('shift', function () {
+        }.bind(this));
+        kibo.up('shift', function () {
           this.shiftPressed = false;
           return false;
-        }.bind(this), 'keyup');
+        }.bind(this));
 
-        Mousetrap.bind('alt', function () {
+        kibo.down('alt shift', function () {
           if (this.altPressed) { return false; }
           var start = this.domTextArea.selectionStart;
           $scope.sketch.files[0].recordOriginalNumberAt(start);
           this.handStart = this.handCurrent;
           this.altPressed = true;
           return false;
-        }.bind(this), 'keydown');
-        Mousetrap.bind('alt', function () {
+        }.bind(this));
+        kibo.up('alt shift', function () {
           this.altPressed = false;
           return false;
-        }.bind(this), 'keyup');
+        }.bind(this));
       }.bind(this);
-      this.bindKeyboardShortcuts();
 
       var toggleVrMode = function () {
         if (
@@ -309,11 +311,16 @@ function (
       $(function () {
         // HACK: I really need to turn this DOM manipulation into a directive.
         this.domTextArea = document.querySelector('textarea');
+        this.bindKeyboardShortcuts();
         var $domTextArea = $(this.domTextArea);
         $domTextArea.on('blur', function () {
           $domTextArea.focus();
           this.domTextArea.selectionStart = this.domTextArea.selectionEnd = 0;
         }.bind(this));
+        $domTextArea.on('keydown', function (e) {
+          // prevent VR polyfill from hijacking wasd.
+          e.stopPropagation();
+        });
         $domTextArea.focus();
         this.domTextArea.selectionStart = this.domTextArea.selectionEnd = 0;
         this.riftSandbox = new RiftSandbox(
@@ -354,7 +361,8 @@ function (
           false
         );
 
-        Mousetrap.bind('alt+v', function () {
+        var kibo = new Kibo(this.domTextArea);
+        kibo.down('alt shift v', function () {
           this.riftSandbox.toggleVrMode();
           this.riftSandbox.effect.startFullscreen();
           return false;
