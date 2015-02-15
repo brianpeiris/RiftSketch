@@ -1,0 +1,34 @@
+{
+  "name": "firebase",
+  "version": "2.1.2",
+  "homepage": "https://firebase.com",
+  "authors": [
+    "Firebase <operations@firebase.com>"
+  ],
+  "description": "Firebase Web Client",
+  "main": "firebase.js",
+  "keywords": [
+    "Firebase",
+    "synchronization",
+    "real-time",
+    "websocket"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "2.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.1.2",
+    "commit": "a0c23cc0572deb8e6112cb392b39f7a6023daf73"
+  },
+  "_source": "git://github.com/firebase/firebase-bower.git",
+  "_target": "2.1.x",
+  "_originalSource": "firebase"
+}
