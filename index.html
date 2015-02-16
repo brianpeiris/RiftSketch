@@ -21,8 +21,7 @@
     <div id="container" ng-class="{'not-fullscreen': !isInfullscreen}">
       <canvas id="viewer"></canvas>
       <textarea
-        class="mousetrap" ng-repeat="file in sketch.files"
-        ng-model="file.contents" spellcheck="false">
+        class="mousetrap" ng-model="sketch.contents" spellcheck="false">
       </textarea>
       <video id="monitor" autoplay></video>
     </div>
