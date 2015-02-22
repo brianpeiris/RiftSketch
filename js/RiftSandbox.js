@@ -121,10 +121,9 @@ function (
   };
 
   constr.prototype.render = function () {
-    this.textArea.update();
-    this.controls.update();
-
     this.vrManager.isHMDAvailable().then(function (isHMDAvailable) {
+      this.textArea.update();
+      this.controls.update();
       if (!isHMDAvailable) {
         this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
       }
