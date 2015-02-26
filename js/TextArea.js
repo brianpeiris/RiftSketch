@@ -83,7 +83,6 @@ function (
 
   constr.prototype.toggle = function (shouldBeVisible) {
     this.object.visible = shouldBeVisible;
-    this.info.visible = shouldBeVisible;
   };
   
   constr.prototype.getLines = function (){
