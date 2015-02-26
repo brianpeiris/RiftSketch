@@ -54,9 +54,9 @@ function (
     this.infoContext.fillStyle = 'hsla(200, 50%, 90%, 0.9)';
     this.infoContext.fillRect(0, 0, this.canvasSize, this.canvasSize);
     this.infoContext.fillStyle = 'hsl(0, 0%, 25%)';
-    this.infoContext.fillText('Alt + v - VR | Alt + z - reset', 0, FONT_SIZE_PX * 2);
-    this.infoContext.fillText('Alt + e - toggle editor', 0, FONT_SIZE_PX * 3);
-    this.infoContext.fillText('Alt + j/k, u/i, m/n - change number', 0, FONT_SIZE_PX * 4);
+    this.infoContext.fillText('Alt + Shift + ...', 0, FONT_SIZE_PX * 2);
+    this.infoContext.fillText('v - VR | z - reset | e - editor', 0, FONT_SIZE_PX * 3);
+    this.infoContext.fillText('j/k, u/i, n/m - change number', 0, FONT_SIZE_PX * 4);
 
     this.infoTexture = new THREE.Texture(canvas);
     this.infoTexture.needsUpdate = true;
