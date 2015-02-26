@@ -133,14 +133,14 @@ function (
 
         var spinNumberAndKeepSelection = function (direction, amount) {
           var start = this.domTextArea.selectionStart;
-          $scope.sketch.files[0].spinNumberAt(start, direction, amount);
+          File.spinNumberAt($scope.sketch, start, direction, amount);
           if (!$scope.$$phase) { $scope.$apply(); }
           this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
         }.bind(this);
 
         var offsetNumberAndKeepSelection = function (offset) {
           var start = this.domTextArea.selectionStart;
-          $scope.sketch.files[0].offsetOriginalNumber(offset);
+          File.offsetOriginalNumber($scope.sketch, offset);
           if (!$scope.$$phase) { $scope.$apply(); }
           this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
         }.bind(this);
@@ -216,11 +216,11 @@ function (
             spinNumberAndKeepSelection(1, 1);
             return false;
           });
-          kibo.down('alt shift m', function () {
+          kibo.down('alt shift n', function () {
             spinNumberAndKeepSelection(-1, 0.1);
             return false;
           });
-          kibo.down('alt shift ,', function () {
+          kibo.down('alt shift m', function () {
             spinNumberAndKeepSelection(1, 0.1);
             return false;
           });
@@ -285,7 +285,7 @@ function (
           kibo.down('alt shift', function () {
             if (this.altPressed) { return false; }
             var start = this.domTextArea.selectionStart;
-            $scope.sketch.files[0].recordOriginalNumberAt(start);
+            File.recordOriginalNumberAt($scope.sketch, start);
             this.handStart = this.handCurrent;
             this.altPressed = true;
             return false;

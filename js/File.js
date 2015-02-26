@@ -2,7 +2,7 @@ define([
 ],
 function (
 ) {
-  var constr = function (name, contents) {
+  var File = function (name, contents) {
     this.name = name || 'Example';
     var defaultContents = ('\
       var t3 = THREE;\n\
@@ -32,10 +32,10 @@ function (
     this.contents = contents === undefined ? defaultContents : contents;
     this.selected = true;
   };
-  constr.prototype.findNumberAt = function (index) {
-    return this.contents.substring(index).match(/-?\d+\.?\d*/)[0];
+  File.findNumberAt = function (sketch, index) {
+    return sketch.contents.substring(index).match(/-?\d+\.?\d*/)[0];
   };
-  constr.prototype.spinNumber = function (number, direction, amount) {
+  File.spinNumber = function (number, direction, amount) {
     if (number.indexOf('.') === -1) {
       return (parseInt(number, 10) + direction * amount).toString();
     }
@@ -43,25 +43,25 @@ function (
       return (parseFloat(number) + direction * amount).toFixed(2);
     }
   };
-  constr.prototype.spinNumberAt = function (
-    index, direction, amount, originalNumber
+  File.spinNumberAt = function (
+    sketch, index, direction, amount, originalNumber
   ) {
-    var number = this.findNumberAt(index);
+    var number = File.findNumberAt(sketch, index);
     originalNumber = originalNumber || number;
-    var newNumber = this.spinNumber(originalNumber, direction, amount);
-    this.contents = (
-      this.contents.substring(0, index) +
+    var newNumber = File.spinNumber(originalNumber, direction, amount);
+    sketch.contents = (
+      sketch.contents.substring(0, index) +
       newNumber +
-      this.contents.substring(index + number.length)
+      sketch.contents.substring(index + number.length)
     );
   };
-  constr.prototype.recordOriginalNumberAt = function (index) {
-    this.originalIndex = index;
-    this.originalNumber = this.findNumberAt(index);
+  File.recordOriginalNumberAt = function (sketch, index) {
+    File.originalIndex = index;
+    File.originalNumber = File.findNumberAt(sketch, index);
   };
-  constr.prototype.offsetOriginalNumber = function (offset) {
-    this.spinNumberAt(this.originalIndex, 1, offset, this.originalNumber);
+  File.offsetOriginalNumber = function (sketch, offset) {
+    File.spinNumberAt(sketch, File.originalIndex, 1, offset, File.originalNumber);
   };
-  return constr;
+  return File;
 });
 
