@@ -4,34 +4,34 @@ function (
 ) {
   var File = function (name, contents) {
     this.name = name || 'Example';
-    var defaultContents = ('\
-      var t3 = THREE;\n\
-      var light = new t3.PointLight();\n\
-      light.position.set(1, 1, 1);\n\
-      scene.add(light);\n\
-      \n\
-      var makeCube = function (x, y, z) {\n\
-        var cube = new t3.Mesh(\n\
-          new t3.BoxGeometry(1, 1.1, 1),\n\
-          new t3.MeshLambertMaterial(\n\
-            {color: \'red\'})\n\
-        );\n\
-        cube.position.set(0, 0, 0).add(\n\
-          new t3.Vector3(x, y, z));\n\
-        scene.add(cube);\n\
-        return cube;\n\
-      };\n\
-      \n\
-      var cube = makeCube(0, 2, 2);\n\
-      var i = 0;\n\
-      return function () {\n\
-        i += -0.02;\n\
-        cube.rotation.y = i;\n\
-      };\
-    '.replace(/\n {6}/g, '\n').replace(/^\s+|\s+$/g, ''));
     this.contents = contents === undefined ? defaultContents : contents;
     this.selected = true;
   };
+  File.defaultContents = ('\
+    var t3 = THREE;\n\
+    var light = new t3.PointLight();\n\
+    light.position.set(1, 1, 1);\n\
+    scene.add(light);\n\
+    \n\
+    var makeCube = function (x, y, z) {\n\
+      var cube = new t3.Mesh(\n\
+        new t3.BoxGeometry(1, 1.1, 1),\n\
+        new t3.MeshLambertMaterial(\n\
+          {color: \'red\'})\n\
+      );\n\
+      cube.position.set(0, 0, 0).add(\n\
+        new t3.Vector3(x, y, z));\n\
+      scene.add(cube);\n\
+      return cube;\n\
+    };\n\
+    \n\
+    var cube = makeCube(0, 2, 2);\n\
+    var i = 0;\n\
+    return function () {\n\
+      i += -0.02;\n\
+      cube.rotation.y = i;\n\
+    };\
+  '.replace(/\n {4}/g, '\n').replace(/^\s+|\s+$/g, ''));
   File.findNumberAt = function (sketch, index) {
     return sketch.contents.substring(index).match(/-?\d+\.?\d*/)[0];
   };

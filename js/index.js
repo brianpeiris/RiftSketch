@@ -85,7 +85,15 @@ function (
         setupVideoPassthrough();
 
         var setupSketch = function () {
-          var ref = new Firebase('https://riftsketch2.firebaseio.com/sketch');
+          var sketches_base = 'https://riftsketch2.firebaseio.com/sketches/';
+          if (!window.location.hash) {
+            var ref = new Firebase(sketches_base);
+            ref = ref.push({contents: File.defaultContents});
+            window.location.hash = '#!' + ref.key();
+          }
+          else {
+            var ref = new Firebase(sketches_base + window.location.hash.substring(2));
+          }
           var sync = $firebase(ref);
           this.firebaseSketch = sync.$asObject();
           this.firebaseSketch.$bindTo($scope, 'sketch');
