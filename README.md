@@ -19,5 +19,5 @@ meet that criteria it's a surprisingly fun and engaging experience!
 If you happen to have a Rift and you want to try it out yourself, download a
 developer bulid of Firefox or Chrome that includes the WebVR APIs from
 [MozVR](http://mozvr.com/downloads) or
-[https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list](the Chrome dev build share)
+[the Chrome dev build share](https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list)
 and visit http://brian.peiris.io/RiftSketch/ with your Rift hooked up.
