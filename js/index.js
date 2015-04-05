@@ -71,15 +71,30 @@ function (
     };
     setupVideoPassthrough();
 
+    var loadSketch = function (ref) {
+      this.sketch = {};
+      this.firebaseRef = ref;
+      ref.on('value', function (data) {
+        this.updateCode(data.val().contents);
+      }.bind(this));
+    }.bind(this);
+
     var setupSketch = function () {
       var sketches_base = 'https://riftsketch2.firebaseio.com/sketches/';
+      var ref;
       if (!window.location.hash) {
-        var ref = new Firebase(sketches_base);
-        ref = ref.push({contents: File.defaultContents});
-        window.location.hash = '#!' + ref.key();
+        ref = new Firebase(sketches_base);
+        ref = ref.push(
+          {contents: File.defaultContents},
+          function () {
+            window.location.hash = '#!' + ref.key();
+            loadSketch(ref);
+          }
+        );
       }
       else {
-        var ref = new Firebase(sketches_base + window.location.hash.substring(2));
+        ref = new Firebase(sketches_base + window.location.hash.substring(2));
+        loadSketch(ref);
       }
     }.bind(this);
     setupSketch();
@@ -125,12 +140,14 @@ function (
     var spinNumberAndKeepSelection = function (direction, amount) {
       var start = this.domTextArea.selectionStart;
       File.spinNumberAt(this.sketch, start, direction, amount);
+      this.updateCode(this.sketch.contents);
       this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
     }.bind(this);
 
     var offsetNumberAndKeepSelection = function (offset) {
       var start = this.domTextArea.selectionStart;
       File.offsetOriginalNumber(this.sketch, offset);
+      this.updateCode(this.sketch.contents);
       this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
     }.bind(this);
 
@@ -319,7 +336,11 @@ function (
         }.bind(this)
       );
 
-      $scope.$watch('sketch.contents', function (code) {
+      this.updateCode = function (code) {
+        console.log('updating code');
+        this.sketch.contents = code;
+        this.domTextArea.value = code;
+        this.firebaseRef.set({contents: code});
         this.riftSandbox.clearScene();
         var _sketchLoop;
         this.riftSandbox.textArea.setInfo('');
@@ -339,8 +360,12 @@ function (
         if (_sketchLoop) {
           this.sketchLoop = _sketchLoop;
         }
-        // localStorage.setItem('autosave', code);
-        //this.firebaseSketch.contents = code;
+
+      }.bind(this);
+      $('#sketchContents').on('keyup', function (e) {
+        var code = e.target.value;
+        if (code === this.sketch.contents) { return; }
+        this.updateCode(code);
       }.bind(this));
 
       window.addEventListener(
@@ -361,4 +386,5 @@ function (
       this.mainLoop();
     }.bind(this));
   };
+  new SketchController();
 });

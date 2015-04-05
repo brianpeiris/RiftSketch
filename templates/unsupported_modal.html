@@ -1,0 +1,36 @@
+
+    <div
+      class="modal-backdrop fade in"
+      ng-show="!hasOverridenUnsupported && seemsUnsupported">
+    </div>
+    <div class="modal" ng-show="!hasOverridenUnsupported && seemsUnsupported">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">RiftSketch - Unsupported Browser</div>
+          <div class="modal-body">
+            <p>
+                RiftSketch is a live-coding environment for VR built with
+                preliminary WebVR APIs, WebGL and Three.js.
+            </p>
+            <p>
+                It seems your browser doesn't support the required WebVR
+                features. Please read the
+                <a href="https://github.com/brianpeiris/RiftSketch/blob/gh-pages/README.md">
+                  setup instructions
+                </a>
+                if you would like to try RiftSketch.
+            </p>
+            <iframe
+              width="560" height="315"
+              src="//www.youtube.com/embed/db-7J5OaSag"
+              frameborder="0" allowfullscreen>
+            </iframe>
+          </div>
+          <div class="modal-footer">
+            <button ng-click="hasOverridenUnsupported = true">
+              continue anyway
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
