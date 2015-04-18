@@ -1,8 +1,11 @@
+/* global require */
+
 require.config({
   waitSeconds: 30,
   baseUrl: '',
   paths: {
     firebase: 'bower_components/firebase/firebase',
+    jquery: 'bower_components/jquery/dist/jquery',
     leap: 'lib/leap-0.6.3',
     oauth: 'bower_components/oauth-js/dist/oauth',
     lodash: 'bower_components/lodash/dist/lodash',
@@ -20,6 +23,7 @@ require.config({
   },
   shim: {
     firebase: {exports: 'Firebase'},
+    jquery: {exports: 'jQuery'},
     leap: {exports: 'Leap'},
     oauth: {exports: 'OAuth'},
     kibo: {exports: 'Kibo'},
@@ -33,6 +37,7 @@ require.config({
 
 require([
   'firebase',
+  'jquery',
   'leap',
   'oauth',
   'lodash',
@@ -44,6 +49,7 @@ require([
 ],
 function (
   Firebase,
+  $,
   Leap,
   OAuth,
   _,
