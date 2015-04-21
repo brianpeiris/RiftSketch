@@ -158,11 +158,11 @@ function (
     }.bind(this);
 
     this.handStart = this.handCurrent = null;
-    this.altPressed = this.shiftPressed = false;
+    this.modifierPressed = this.shiftPressed = false;
     Leap.loop({}, function (frame) {
       if (frame.hands.length) {
         this.handCurrent = frame;
-        if (this.altPressed && this.handStart) {
+        if (this.modifierPressed && this.handStart) {
           var hand = frame.hands[0];
           var handTranslation = hand.translation(this.handStart);
           var factor = this.shiftPressed ? 10 : 100;
@@ -199,39 +199,44 @@ function (
       });
     }, 1000);
 
+    var getShortcut = function (key) {
+      key = key || '';
+      return ['alt shift ' + key, 'ctrl shift ' + key];
+    };
+
     this.is_editor_visible = true;
     this.bindKeyboardShortcuts = function () {
       var kibo = new Kibo(this.domTextArea);
-      kibo.down('alt shift z', function () {
+      kibo.down(getShortcut('z'), function () {
         this.riftSandbox.controls.zeroSensor();
         return false;
       }.bind(this));
-      kibo.down('alt shift e', function () {
+      kibo.down(getShortcut('e'), function () {
         this.is_editor_visible = !this.is_editor_visible;
         this.riftSandbox.toggleTextArea(this.is_editor_visible);
         return false;
       }.bind(this));
-      kibo.down('alt shift u', function () {
+      kibo.down(getShortcut('u'), function () {
         spinNumberAndKeepSelection(-1, 10);
         return false;
       });
-      kibo.down('alt shift i', function () {
+      kibo.down(getShortcut('i'), function () {
         spinNumberAndKeepSelection(1, 10);
         return false;
       });
-      kibo.down('alt shift j', function () {
+      kibo.down(getShortcut('j'), function () {
         spinNumberAndKeepSelection(-1, 1);
         return false;
       });
-      kibo.down('alt shift k', function () {
+      kibo.down(getShortcut('k'), function () {
         spinNumberAndKeepSelection(1, 1);
         return false;
       });
-      kibo.down('alt shift n', function () {
+      kibo.down(getShortcut('n'), function () {
         spinNumberAndKeepSelection(-1, 0.1);
         return false;
       });
-      kibo.down('alt shift m', function () {
+      kibo.down(getShortcut('m'), function () {
         spinNumberAndKeepSelection(1, 0.1);
         return false;
       });
@@ -283,7 +288,7 @@ function (
         }
       }.bind(this));
 
-      kibo.down(['alt shift'], function () {
+      kibo.down(getShortcut(), function () {
         if (this.shiftPressed) { return false; }
         this.shiftPressed = true;
         return false;
@@ -293,16 +298,16 @@ function (
         return false;
       }.bind(this));
 
-      kibo.down('alt shift', function () {
-        if (this.altPressed) { return false; }
+      kibo.down(getShortcut(), function () {
+        if (this.modifierPressed) { return false; }
         var start = this.domTextArea.selectionStart;
         File.recordOriginalNumberAt(this.sketch, start);
         this.handStart = this.handCurrent;
-        this.altPressed = true;
+        this.modifierPressed = true;
         return false;
       }.bind(this));
-      kibo.up('alt shift', function () {
-        this.altPressed = false;
+      kibo.up(getShortcut(), function () {
+        this.modifierPressed = false;
         return false;
       }.bind(this));
     }.bind(this);
@@ -383,9 +388,9 @@ function (
       );
 
       var kibo = new Kibo(this.domTextArea);
-      kibo.down('alt shift v', function () {
+      kibo.down(getShortcut('v'), function () {
         this.riftSandbox.toggleVrMode();
-        this.riftSandbox.effect.startFullscreen();
+        this.riftSandbox.vrManager.toggleVRMode();
         return false;
       }.bind(this));
 

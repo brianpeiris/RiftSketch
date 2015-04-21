@@ -11,11 +11,11 @@ function (
   var UPDATE_INTERVAL_MS = 500;
   var constr = function (domTextArea) {
     this.domTextArea = domTextArea;
-    
+
     this.canvasSize = CANVAS_SIZE_PX;
     var canvas = document.createElement('canvas');
     canvas.width = canvas.height = this.canvasSize;
-    
+
     this.context = canvas.getContext('2d');
     this.context.font = FONT_SIZE_PX + 'px Inconsolata,monospace';
     this.context.globalCompositeOperation = 'darker';
@@ -32,29 +32,29 @@ function (
     var textAreaMat = new THREE.MeshBasicMaterial(
       {map: this.textTexture, side: THREE.DoubleSide});
     textAreaMat.transparent = true;
-    
+
     this.object = new THREE.Mesh(
       new THREE.PlaneGeometry(2, 2),
       new THREE.MeshBasicMaterial(textAreaMat));
     this.object.rotation.y = Math.PI;
 
     this.setupInfoPane();
-    
+
     this.lastUpdate = Date.now();
     this.isBlinkOff = false;
   };
-    
+
   constr.prototype.setupInfoPane = function () {
     var canvas = document.createElement('canvas');
     canvas.width = this.canvasSize;
     canvas.height = 200;
-    
+
     this.infoContext = canvas.getContext('2d');
     this.infoContext.font = FONT_SIZE_PX + 'px Inconsolata,monospace';
     this.infoContext.fillStyle = 'hsla(200, 50%, 90%, 0.9)';
     this.infoContext.fillRect(0, 0, this.canvasSize, this.canvasSize);
     this.infoContext.fillStyle = 'hsl(0, 0%, 25%)';
-    this.infoContext.fillText('Alt + Shift + ...', 0, FONT_SIZE_PX * 2);
+    this.infoContext.fillText('Alt/Ctrl + Shift + ...', 0, FONT_SIZE_PX * 2);
     this.infoContext.fillText('v - VR | z - reset | e - editor', 0, FONT_SIZE_PX * 3);
     this.infoContext.fillText('j/k, u/i, n/m - change number', 0, FONT_SIZE_PX * 4);
 
@@ -63,7 +63,7 @@ function (
     var infoMat = new THREE.MeshBasicMaterial(
       {map: this.infoTexture, side: THREE.DoubleSide});
     infoMat.transparent = true;
-    
+
     var infoMesh = new THREE.Mesh(
       new THREE.PlaneGeometry(2, 0.5),
       new THREE.MeshBasicMaterial(infoMat));
@@ -84,7 +84,7 @@ function (
   constr.prototype.toggle = function (shouldBeVisible) {
     this.object.visible = shouldBeVisible;
   };
-  
+
   constr.prototype.getLines = function (){
     var start = this.domTextArea.selectionStart;
     var end = this.domTextArea.selectionEnd;
@@ -122,16 +122,16 @@ function (
       return lineObj;
     });
   };
-  
+
   constr.prototype.shouldUpdateTexture = function () {
     if (Date.now() - this.lastUpdate > UPDATE_INTERVAL_MS) {
       this.lastUpdate = Date.now();
       return true;
     }
     var newText = this.domTextArea.value;
-    if (this.oldText !== newText) { 
+    if (this.oldText !== newText) {
       this.oldText = this.domTextArea.value;
-      return true; 
+      return true;
     }
     var newStart = this.domTextArea.selectionStart;
     if (this.oldStart !== newStart) {
@@ -140,13 +140,13 @@ function (
     }
     var newEnd = this.domTextArea.selectionEnd;
     if (this.oldEnd !== newEnd) {
-      this.oldEnd = newEnd; 
+      this.oldEnd = newEnd;
       return true;
     }
   };
 
   constr.prototype.updateViewport = function (hasStartChanged, lines) {
-    var position = hasStartChanged ? 
+    var position = hasStartChanged ?
       this.domTextArea.selectionStart : this.domTextArea.selectionEnd;
     var substring = this.domTextArea.value.substring(0, position);
     var linesUpToPosition = substring.match(/\n/g) || [];
@@ -167,18 +167,18 @@ function (
       this.viewPort.col = col - this.numCols;
     }
   };
-  
+
   constr.prototype.update = function () {
     var hasStartChanged = this.domTextArea.selectionStart != this.oldStart;
     if (!this.shouldUpdateTexture()) { return; }
 
     var lines = this.getLines(this.domTextArea);
     this.updateViewport(hasStartChanged, lines);
-    
+
     this.context.clearRect(0, 0, this.canvasSize, this.canvasSize);
     this.context.fillStyle = 'hsla(0, 0%, 100%, 0.8)';
     this.context.fillRect(0, 0, this.canvasSize, this.canvasSize);
-    
+
     for (var i = this.viewPort.line; i < Math.min(this.viewPort.line + NUM_LINES, lines.length); i++){
       var j = i - this.viewPort.line;
       var line = lines[i];
@@ -188,7 +188,7 @@ function (
       this.context.fillText(lineText, 0, FONT_SIZE_PX + FONT_SIZE_PX * j);
 
       if (line.selectionStart === null) { continue; }
-      
+
       this.context.fillStyle = 'rgba(100, 100, 200, 0.8)';
       var width = (line.selectionEnd - line.selectionStart) * this.charWidth;
       if (width === 0) {
@@ -210,5 +210,5 @@ function (
     this.isBlinkOff = !this.isBlinkOff;
     this.textTexture.needsUpdate = true;
   };
-  return constr; 
+  return constr;
 });
