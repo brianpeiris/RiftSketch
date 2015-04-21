@@ -327,7 +327,6 @@ function (
       var $domTextArea = $(this.domTextArea);
       $domTextArea.on('blur', function () {
         $domTextArea.focus();
-        this.domTextArea.selectionStart = this.domTextArea.selectionEnd = 0;
       }.bind(this));
       $domTextArea.on('keydown', function (e) {
         // prevent VR polyfill from hijacking wasd.
