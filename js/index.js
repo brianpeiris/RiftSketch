@@ -81,7 +81,7 @@ function (
       this.sketch = {};
       this.firebaseRef = ref;
       ref.on('value', function (data) {
-        this.updateCode(data.val().contents);
+        this.readCode(data.val().contents);
       }.bind(this));
     }.bind(this);
 
@@ -146,14 +146,14 @@ function (
     var spinNumberAndKeepSelection = function (direction, amount) {
       var start = this.domTextArea.selectionStart;
       File.spinNumberAt(this.sketch, start, direction, amount);
-      this.updateCode(this.sketch.contents);
+      this.writeCode(this.sketch.contents);
       this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
     }.bind(this);
 
     var offsetNumberAndKeepSelection = function (offset) {
       var start = this.domTextArea.selectionStart;
       File.offsetOriginalNumber(this.sketch, offset);
-      this.updateCode(this.sketch.contents);
+      this.writeCode(this.sketch.contents);
       this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
     }.bind(this);
 
@@ -342,11 +342,10 @@ function (
         }.bind(this)
       );
 
-      this.updateCode = function (code) {
-        console.log('updating code');
+      this.readCode = function (code) {
         this.sketch.contents = code;
         this.domTextArea.value = code;
-        this.firebaseRef.set({contents: code});
+
         this.riftSandbox.clearScene();
         var _sketchLoop;
         this.riftSandbox.textArea.setInfo('');
@@ -366,12 +365,16 @@ function (
         if (_sketchLoop) {
           this.sketchLoop = _sketchLoop;
         }
-
       }.bind(this);
+
+      this.writeCode = function (code) {
+        this.firebaseRef.set({contents: code});
+      };
+
       $('#sketchContents').on('keyup', function (e) {
         var code = e.target.value;
         if (code === this.sketch.contents) { return; }
-        this.updateCode(code);
+        this.writeCode(code);
       }.bind(this));
 
       window.addEventListener(
