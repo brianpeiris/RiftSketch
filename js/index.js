@@ -10,7 +10,7 @@ require.config({
     oauth: 'bower_components/oauth-js/dist/oauth',
     lodash: 'bower_components/lodash/dist/lodash',
     kibo: 'lib/kibo',
-    Three: 'lib/ThreeJS/Three',
+    Three: 'lib/three',
     VRControls: 'lib/VRControls',
     VREffect: 'lib/VREffect',
     WebVRPolyfill: 'lib/webvr-polyfill',

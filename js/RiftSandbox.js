@@ -54,7 +54,7 @@ function (
     this.effect = new THREE.VREffect(this.renderer);
     this.effect.setSize(this.width, this.height);
 
-    this.vrManager = new WebVRManager(this.effect);
+    this.vrManager = new WebVRManager(this.renderer, this.effect);
 
     var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
@@ -121,10 +121,10 @@ function (
   };
 
   constr.prototype.render = function () {
-    this.vrManager.isHMDAvailable().then(function (isHMDAvailable) {
+    this.vrManager.getHMD().then(function (hmd) {
       this.textArea.update();
       this.controls.update();
-      if (!isHMDAvailable) {
+      if (!hmd) {
         this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
       }
 
