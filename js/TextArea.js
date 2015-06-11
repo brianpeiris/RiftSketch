@@ -29,11 +29,8 @@ function (
 
     this.textTexture = new THREE.Texture(canvas);
     this.textTexture.needsUpdate = true;
-    //vt add
-    // textTexture is the one that seems to cause the vast majority of the
-    // "THREE.WebGLRenderer: Texture is not power of two. Texture.minFilter" messages
     this.textTexture.minFilter = THREE.NearestFilter;
-    //vt end    
+    
     var textAreaMat = new THREE.MeshBasicMaterial(
       {map: this.textTexture, side: THREE.DoubleSide});
     textAreaMat.transparent = true;
@@ -65,9 +62,8 @@ function (
 
     this.infoTexture = new THREE.Texture(canvas);
     this.infoTexture.needsUpdate = true;
-    //vt add
     this.infoTexture.minFilter = THREE.NearestFilter;
-    //vt end
+    
     var infoMat = new THREE.MeshBasicMaterial(
       {map: this.infoTexture, side: THREE.DoubleSide});
     infoMat.transparent = true;

@@ -25,7 +25,7 @@ function (
       return cube;\n\
     };\n\
     \n\
-    var cube = makeCube(0, 2, 2);\n\
+    var cube = makeCube(0, 2, -2);\n\
     var i = 0;\n\
     return function () {\n\
       i += -0.02;\n\

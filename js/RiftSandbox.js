@@ -18,30 +18,21 @@ function (
 ) {
   'use strict';
   var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
-  //vt note: changing this will affect the non-hmd path only
   var BASE_ROTATION = new THREE.Quaternion().setFromEuler(
     new THREE.Euler(0, Math.PI, 0), 'YZX');
-  // var BASE_ROTATION = new THREE.Quaternion().setFromEuler(
-  //   new THREE.Euler(0, 0, 0), 'YZX');
-  //vt add
   var ONE_DEGREE = Math.PI / 180.0;
-  //vt end
+  
   var constr = function (width, height, domTextArea, callback) {
     this.width = width;
     this.height = height;
     this.domTextArea = domTextArea;
     window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
-    //vt going from -2 to 2 has an effect
-    //this.BasePosition = new THREE.Vector3(0, 1.5, -2); //vt-orig
+
     this.BasePosition = new THREE.Vector3(0, 1.5, 2);
     this.HMDPosition = new THREE.Vector3();
-    // this.BaseRotation = new THREE.Quaternion();
     this.plainRotation = new THREE.Vector3();
-    //this.BaseRotationEuler = new THREE.Euler(0, Math.PI);//vt-orig
     this.BaseRotationEuler = new THREE.Euler(0, 0,0); 
-    //vt add
     this.BaseRotation = new THREE.Quaternion();
-    //vt end
     this.scene = null;
     this.sceneStuff = [];
     this.renderer = null;
@@ -50,11 +41,6 @@ function (
     this._velocity = 0;
     this._rampUp = true;
     this._rampRate = 0;
-    //vt add
-    // this is disaster
-    // note hasVR is not set anywhere in the code base.  hmd is set by default though
-    this.hasVR = true;
-    //vt end
 
     this.initWebGL();
     this.initScene(callback);
@@ -74,13 +60,12 @@ function (
 
     var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
-    //var groundTexture = THREE.ImageUtils.loadTexture('/img/background.png');
+    
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set( 1000, 1000 );
-    //vt add
     groundTexture.minFilter = THREE.NearestFilter;
-    //vt end
+    
     var ground = new THREE.Mesh(
       new THREE.PlaneGeometry( 1000, 1000 ),
       new THREE.MeshBasicMaterial({map: groundTexture}) );
@@ -89,11 +74,8 @@ function (
 
     this.textArea = new TextArea(this.domTextArea);
     this.textArea.object.position.set(0, 1.5, 0);
-    //vt add
     this.textArea.object.name = "textArea";
-    // this obviously doesn't default to zero, as explicitly setting it to zero has an effect
     this.textArea.object.rotation.y = ONE_DEGREE * (0);
-    //vt end
     
     this.scene.add(this.textArea.object);
 
@@ -156,41 +138,13 @@ function (
         this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
       }
 
-      //vt add
-      //console.log("RiftSanbox.render: this.hasVR=" + this.hasVR);
-      //console.log("RiftSanbox.render: vrManager.hasVR=" + this.vrManager.hasVR);
-      //vt end
-      if (this.hasVR) {
-        //vt add
-        //console.log("vt:RiftSandbox.render: now in hmd path");
-        this.camera.position.copy(this.BasePosition);
-        //vt end        
-
-        //vtthis.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
-        var rotatedHMDPosition = new THREE.Vector3();
-        rotatedHMDPosition.copy(this.camera.position);
-        
-        //vtrotatedHMDPosition.applyQuaternion(BASE_ROTATION);
-        rotatedHMDPosition.applyQuaternion(this.BaseRotation);
-        //vtthis.camera.position.copy(BASE_POSITION).add(rotatedHMDPosition);
-        this.camera.quaternion.multiplyQuaternions(this.BaseRotation, this.camera.quaternion);
-
-        // //vt add
-        // var rotatedHMDPosition = new THREE.Vector3();
-        // rotatedHMDPosition.copy(this.camera.position);
-        
-        // rotatedHMDPosition.applyQuaternion(this.BaseRotation);
-        // //this.camera.position.copy(BASE_POSITION).add(rotatedHMDPosition);
-        // //vt-xthis.camera.position.copy(this.BasePosition).add(rotatedHMDPosition);
-        // //this.camera.position.copy(this.BasePosition).add(rotatedHMDPosition);
-        // this.camera.quaternion.multiplyQuaternions(this.BaseRotation, this.camera.quaternion);
-        //  //vt end
-
-        
-      }
-      else {
-        this.camera.position.copy(BASE_POSITION);
-      }
+      this.camera.position.copy(this.BasePosition);
+      
+      var rotatedHMDPosition = new THREE.Vector3();
+      rotatedHMDPosition.copy(this.camera.position);
+      rotatedHMDPosition.applyQuaternion(this.BaseRotation);
+      
+      this.camera.quaternion.multiplyQuaternions(this.BaseRotation, this.camera.quaternion);
 
       if (this.vrManager.isVRMode()) {
         this.effect.render(this.scene, this.camera);
