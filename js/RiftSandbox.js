@@ -20,17 +20,19 @@ function (
   var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
   var BASE_ROTATION = new THREE.Quaternion().setFromEuler(
     new THREE.Euler(0, Math.PI, 0), 'YZX');
-
+  var ONE_DEGREE = Math.PI / 180.0;
+  
   var constr = function (width, height, domTextArea, callback) {
     this.width = width;
     this.height = height;
     this.domTextArea = domTextArea;
     window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
-    this.BasePosition = new THREE.Vector3(0, 1.5, -2);
+
+    this.BasePosition = new THREE.Vector3(0, 1.5, 2);
     this.HMDPosition = new THREE.Vector3();
-    // this.BaseRotation = new THREE.Quaternion();
     this.plainRotation = new THREE.Vector3();
-    this.BaseRotationEuler = new THREE.Euler(0, Math.PI);
+    this.BaseRotationEuler = new THREE.Euler(0, 0,0); 
+    this.BaseRotation = new THREE.Quaternion();
     this.scene = null;
     this.sceneStuff = [];
     this.renderer = null;
@@ -58,9 +60,12 @@ function (
 
     var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
+    
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set( 1000, 1000 );
+    groundTexture.minFilter = THREE.NearestFilter;
+    
     var ground = new THREE.Mesh(
       new THREE.PlaneGeometry( 1000, 1000 ),
       new THREE.MeshBasicMaterial({map: groundTexture}) );
@@ -69,6 +74,9 @@ function (
 
     this.textArea = new TextArea(this.domTextArea);
     this.textArea.object.position.set(0, 1.5, 0);
+    this.textArea.object.name = "textArea";
+    this.textArea.object.rotation.y = ONE_DEGREE * (0);
+    
     this.scene.add(this.textArea.object);
 
     var oldAdd = this.scene.add;
@@ -76,6 +84,8 @@ function (
       this.sceneStuff.push(obj);
       oldAdd.call(this.scene, obj);
     }.bind(this);
+
+
   };
 
   constr.prototype.toggleTextArea = function (shouldBeVisible) {
@@ -128,16 +138,13 @@ function (
         this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
       }
 
-      if (this.hasVR) {
-        this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
-        var rotatedHMDPosition = new THREE.Vector3();
-        rotatedHMDPosition.copy(this.camera.position);
-        rotatedHMDPosition.applyQuaternion(BASE_ROTATION);
-        this.camera.position.copy(BASE_POSITION).add(rotatedHMDPosition);
-      }
-      else {
-        this.camera.position.copy(BASE_POSITION);
-      }
+      this.camera.position.copy(this.BasePosition);
+      
+      var rotatedHMDPosition = new THREE.Vector3();
+      rotatedHMDPosition.copy(this.camera.position);
+      rotatedHMDPosition.applyQuaternion(this.BaseRotation);
+      
+      this.camera.quaternion.multiplyQuaternions(this.BaseRotation, this.camera.quaternion);
 
       if (this.vrManager.isVRMode()) {
         this.effect.render(this.scene, this.camera);

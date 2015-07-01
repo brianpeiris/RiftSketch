@@ -5,7 +5,8 @@
     "jquery": "~2.1.1",
     "lodash": "~2.4.1",
     "requirejs-bower": "~2.1.15",
-    "backbone": "~1.1.2"
+    "backbone": "~1.1.2",
+    "jasmine": "~2.3.4"
   },
   "name": "RiftSketch",
   "private": true
