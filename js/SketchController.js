@@ -184,7 +184,7 @@ function (
           var contents = e.target.value;
           if (contents === file.contents) { return; }
           file.contents = contents;
-          this.executeCode();
+          this.firebaseRef.set(this.sketch);
         }.bind(this)).
         on('keydown', function (e) {
           e.stopPropagation();
@@ -380,10 +380,6 @@ function (
           this.sketchLoop = _sketchLoop;
         }
       }.bind(this);
-
-      this.writeCode = function (code) {
-        this.firebaseRef.set({contents: code});
-      };
 
       $('#sketchContents').on('keyup', function (e) {
         var code = e.target.value;
