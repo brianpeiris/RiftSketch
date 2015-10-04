@@ -38,8 +38,12 @@ function (
     this.hands = [];
     var setupVideoPassthrough = function () {
       this.domMonitor = document.getElementById('monitor');
-      navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-      navigator.getUserMedia(
+      var getUserMedia = (
+        (
+          navigator.webkitGetUserMedia &&
+          navigator.webkitGetUserMedia.bind(navigator)) ||
+        navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices));
+      getUserMedia(
         {video: {
           mandatory: {
             minWidth: 1280,
