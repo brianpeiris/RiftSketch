@@ -40,6 +40,18 @@ function (
       new THREE.MeshBasicMaterial(textAreaMat));
     this.object.rotation.y = Math.PI;
 
+    this.grabHandle = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.5, 0.5),
+      new THREE.MeshBasicMaterial({wireframe: true})
+    );
+    this.grabHandle.position.set(0.8, -1.2, -0.05);
+    var grabHandleCube = new THREE.Mesh(
+      new THREE.BoxGeometry(0.15, 0.15, 0.15),
+      new THREE.MeshLambertMaterial()
+    );
+    this.grabHandle.add(grabHandleCube);
+    this.object.add(this.grabHandle);
+
     this.setupInfoPane();
 
     this.lastUpdate = Date.now();

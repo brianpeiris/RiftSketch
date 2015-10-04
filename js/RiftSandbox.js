@@ -1,20 +1,22 @@
 define([
   'Three',
-
-  'TextArea',
-
   'VRControls',
   'VREffect',
   'WebVRPolyfill',
   'WebVRManager',
+
+  'js/TextArea',
+  'js/Monitor'
 ],
 function (
   THREE,
-  TextArea,
   VRControls,
   VREffect,
   WebVRPolyfill,
-  WebVRManager
+  WebVRManager,
+
+  TextArea,
+  Monitor
 ) {
   'use strict';
   var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
@@ -22,10 +24,16 @@ function (
     new THREE.Euler(0, Math.PI, 0), 'YZX');
   var ONE_DEGREE = Math.PI / 180.0;
   
-  var constr = function (width, height, domTextArea, callback) {
+  var constr = function (
+    width, height,
+    domTextAreas,
+    domMonitor,
+    callback
+  ) {
     this.width = width;
     this.height = height;
-    this.domTextArea = domTextArea;
+    this.domTextAreas = domTextAreas;
+    this.domMonitor = domMonitor;
     window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
 
     this.BasePosition = new THREE.Vector3(0, 1.5, 2);
@@ -50,7 +58,8 @@ function (
     this.scene = new THREE.Scene();
 
     this.camera = new THREE.PerspectiveCamera(
-      75, this.width / this.height, 1, 10000);
+      75, this.width / this.height, 0.1, 1000);
+    this.scene.add(this.camera);
 
     this.controls = new THREE.VRControls(this.camera);
     this.effect = new THREE.VREffect(this.renderer);
@@ -72,24 +81,51 @@ function (
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
 
-    this.textArea = new TextArea(this.domTextArea);
-    this.textArea.object.position.set(0, 1.5, 0);
-    this.textArea.object.name = "textArea";
-    this.textArea.object.rotation.y = ONE_DEGREE * (0);
-    
-    this.scene.add(this.textArea.object);
+    this.textAreas = this.domTextAreas.map(function (domTextArea, i) {
+      var textArea = new TextArea(domTextArea);
+      this.scene.add(textArea.object);
+      return textArea;
+    }.bind(this));
 
+    this.resetTextAreas();
+
+    this.monitor = new Monitor(this.domMonitor);
+    this.camera.add(this.monitor.object);
+  };
+
+  constr.prototype.resetTextAreas = function () {
+    this.textAreas.forEach(function(textArea, i) {
+      textArea.object.position.copy(BASE_POSITION);
+      textArea.object.rotation.set(0, Math.PI, 0);
+      textArea.object.rotateOnAxis(
+        new THREE.Vector3(0, 1, 0),
+        Math.PI / 4 * -(i + 1));
+      textArea.object.translateZ(-2.5);
+    });
+  };
+
+  constr.prototype.interceptScene = function () {
     var oldAdd = this.scene.add;
     this.scene.add = function (obj) {
       this.sceneStuff.push(obj);
       oldAdd.call(this.scene, obj);
     }.bind(this);
-
-
   };
 
   constr.prototype.toggleTextArea = function (shouldBeVisible) {
-    this.textArea.toggle(shouldBeVisible);
+    this.textAreas.forEach(function (textArea) {
+      textArea.toggle(shouldBeVisible);
+    });
+  };
+
+  constr.prototype.toggleMonitor = function () {
+    this.monitor.toggle();
+  };
+
+  constr.prototype.setInfo = function (msg) {
+    this.textAreas.forEach(function (textArea) {
+      textArea.setInfo(msg);
+    });
   };
 
   function angleRangeRad(angle) {
@@ -132,7 +168,8 @@ function (
 
   constr.prototype.render = function () {
     this.vrManager.getHMD().then(function (hmd) {
-      this.textArea.update();
+      this.textAreas.forEach(function (textArea) { textArea.update(); });
+      this.monitor.update();
       this.controls.update();
       if (!hmd) {
         this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);

@@ -1,4 +1,7 @@
 TODO
+
+- Do we still want Twitter/API integration?
+- Check Camera position/rotation works correctly in vr and non-vr mode.
 ----
 
 - Better UI for recent sketches (more info per sketch, paging)

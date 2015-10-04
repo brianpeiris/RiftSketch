@@ -4,7 +4,7 @@
 
 https://www.youtube.com/watch?v=db-7J5OaSag
 
-RiftSketch is an HTML5 live-coding environment for Virtual Reality.
+RiftSketch is a web-based live coding environment for Virtual Reality.
 
 It lets you code a "sketch" in JavaScript, using
 [ThreeJS](http://threejs.org/), and the world around you changes immediately
@@ -13,6 +13,14 @@ as you code.
 It's quite a niche application since you need to have an Oculus Rift, be a
 JavaScript programmer *and* be sufficiently familiar with Three.js but if you
 meet that criteria it's a surprisingly fun and engaging experience!
+
+## Features
+- Live-coding with real-time scene updates
+- Collaborative coding. Share your creations.
+- Convenient keyboard shortcuts
+- Leap motion support
+- Webcam pass-through
+- Leap motion
 
 ## Setup
 
