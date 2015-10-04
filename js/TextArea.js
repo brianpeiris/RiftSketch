@@ -38,7 +38,7 @@ function (
     this.object = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(2, 2),
       new THREE.MeshBasicMaterial(textAreaMat));
-    this.object.rotation.y = Math.PI;
+    this.object.position.y = 1.5;
 
     this.grabHandle = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(0.5, 0.5),

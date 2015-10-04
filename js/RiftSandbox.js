@@ -81,6 +81,10 @@ function (
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
 
+    var axis = new THREE.AxisHelper()
+    axis.position.y = 0.1;
+    this.scene.add(axis);
+
     this.textAreas = this.domTextAreas.map(function (domTextArea, i) {
       var textArea = new TextArea(domTextArea);
       this.scene.add(textArea.object);
@@ -95,8 +99,6 @@ function (
 
   constr.prototype.resetTextAreas = function () {
     this.textAreas.forEach(function(textArea, i) {
-      textArea.object.position.copy(BASE_POSITION);
-      textArea.object.rotation.set(0, Math.PI, 0);
       textArea.object.rotateOnAxis(
         new THREE.Vector3(0, 1, 0),
         Math.PI / 4 * -(i + 1));
