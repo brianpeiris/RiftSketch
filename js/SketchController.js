@@ -347,6 +347,8 @@ function (
         }.bind(this)
       );
 
+      this.riftSandbox.interceptScene();
+
       this.readCode = function (sketch) {
         this.sketch.set(sketch);
         this.domTextAreas.forEach(function (domTextArea, i) {

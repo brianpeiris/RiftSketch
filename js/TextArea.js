@@ -29,7 +29,7 @@ function (
 
     this.textTexture = new THREE.Texture(canvas);
     this.textTexture.needsUpdate = true;
-    this.textTexture.minFilter = THREE.NearestFilter;
+    this.textTexture.minFilter = THREE.LinearFilter;
     
     var textAreaMat = new THREE.MeshBasicMaterial(
       {map: this.textTexture, side: THREE.DoubleSide});
@@ -74,7 +74,7 @@ function (
 
     this.infoTexture = new THREE.Texture(canvas);
     this.infoTexture.needsUpdate = true;
-    this.infoTexture.minFilter = THREE.NearestFilter;
+    this.infoTexture.minFilter = THREE.LinearFilter;
     
     var infoMat = new THREE.MeshBasicMaterial(
       {map: this.infoTexture, side: THREE.DoubleSide});

@@ -73,7 +73,6 @@ function (
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set( 1000, 1000 );
-    groundTexture.minFilter = THREE.NearestFilter;
     
     var ground = new THREE.Mesh(
       new THREE.PlaneBufferGeometry( 1000, 1000 ),
