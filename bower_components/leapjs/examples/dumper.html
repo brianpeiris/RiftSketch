@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <title>Dumper - Leap</title>
+    <script src="../leap-0.6.4.js"></script>
+    <script>
+      console.log("LeapJS v" + Leap.version.full);
+      var state = 'play';
+      window.onkeypress = function(e) {
+        if (e.charCode == 32) { //spacebar
+          if (state == 'play') {
+            state = 'pausing';
+          }else{
+            state = 'play';
+          }
+        }
+      };
+      var haveLoggedFrame = false;
+      var controller = new Leap.Controller({enableGestures: true});
+      controller.loop(function(frame) {
+        if (state == 'paused') return;
+        if (state == 'pausing') {
+          document.getElementById('out').innerHTML = "<p><b>PAUSED</b></p><div>"+ frame.dump() + "</div>";
+          state = 'paused';
+        }else{
+          document.getElementById('out').innerHTML = "<p>spacebar to pause</p><div>"+ frame.dump() + "</div>";
+        }
+
+        if (haveLoggedFrame == false && frame.hands[0]){
+          console.log(frame);
+          haveLoggedFrame = true;
+        }
+
+      });
+
+      // Note that this means Leap is connected, but not streaming.  Use streamingStarted for that.
+      controller.on('ready', function() {
+        console.log("ready. Service version: " + controller.connection.protocol.serviceVersion);
+      });
+      controller.on('connect', function() {
+        console.log("connected with protocol v" + controller.connection.opts.requestProtocolVersion);
+      });
+      controller.on('disconnect', function() {
+        console.log("disconnect");
+      });
+      controller.on('focus', function() {
+        console.log("focus");
+      });
+      controller.on('blur', function() {
+        console.log("blur");
+      });
+
+      controller.on('deviceAttached', function(deviceInfo) {
+        console.log("deviceAttached", deviceInfo);
+      });
+      controller.on('deviceRemoved', function(deviceInfo) {
+        console.log("deviceRemoved", deviceInfo);
+      });
+      controller.on('deviceStreaming', function(deviceInfo) {
+        console.log("deviceStreaming", deviceInfo);
+      });
+      controller.on('deviceStopped', function(deviceInfo) {
+        console.log("deviceStopped", deviceInfo);
+      });
+      controller.on('streamingStarted', function(deviceInfo) {
+        console.log("streamingStarted", deviceInfo);
+      });
+      controller.on('streamingStopped', function(deviceInfo) {
+        console.log("streamingStopped", deviceInfo);
+      });
+
+      controller.on('deviceConnected', function() {
+        console.log("deviceConnected");
+      });
+      controller.on('deviceDisconnected', function() {
+        console.log("deviceDisconnected");
+      });
+
+      // This event is always called after other frame events, and is ideal for rendering WebGL scenes.
+      // The timestamp is from requestAnimationFrame and is when the pixels hit the screen.
+      controller.on('frameEnd', function(timestamp){
+
+//        console.log('frameEnd', timestamp);
+
+      });
+
+    </script>
+  </head>
+  <body>
+  <button onclick="controller.disconnect();">Disconnect</button>
+  <button onclick="controller.connect();">Connect</button>
+  <pre>
+    <div id="out"></div>
+  </pre>
+  </body>
+</html>

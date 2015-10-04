@@ -1,0 +1,39 @@
+{
+  "name": "leapjs-plugins",
+  "version": "0.1.11pre",
+  "description": "A collection of useful plugins for LeapJS",
+  "main": "main/leapjs-plugins-0.7.js",
+  "dependencies": {
+    "three": "^0.69.0"
+  },
+  "devDependencies": {
+    "coffee-script": ">=1.7.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-contrib-coffee": "~0.8.2",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-string-replace": "~0.2.7",
+    "grunt-banner": "git://github.com/pehrlich/grunt-banner.git",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt": "~0.4.2",
+    "grunt-bump": "0.0.13",
+    "load-grunt-tasks": "~0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/leapmotion/leapjs-plugins.git"
+  },
+  "keywords": [
+    "leap",
+    "leapjs",
+    "plugins",
+    "extensions",
+    "controller"
+  ],
+  "author": "pehrlich",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "http://github.com/leapmotion/leapjs-plugins/issues"
+  },
+  "homepage": "http://leapmotion.github.io/leapjs-plugins/docs"
+}

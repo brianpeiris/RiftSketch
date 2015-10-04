@@ -1,0 +1,180 @@
+<html>
+<head>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r70/three.js"></script>
+  <script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+  <script src="../leap-plugins-0.1.11pre.js"></script>
+  <script src="lib/OrbitControls.js"></script>
+
+  <style>
+    body {
+      margin: 10px;
+      font-family: Helvetica;
+    }
+    canvas.leap-boneHand {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: none;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    td, th {
+      vertical-align: top;
+      padding: 3px;
+    }
+    th {
+      color: #555;
+    }
+    #view-source {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 10px;
+    }
+  </style>
+
+</head>
+<body>
+
+<a id="view-source" href="#">View Source</a>
+
+<h1>Bone Hand</h1>
+<p>
+  Insert hand for live demo.
+</p>
+<p>
+  Allows adding a hand to your THREE.js scene in one line.
+</p>
+<p>
+  Creates a default scene for you, when time is of the essence.
+</p>
+<pre><code>
+  // At the simplest:
+  Leap.loop()
+    .use('boneHand', {
+      targetEl: document.body,
+      arm: true
+    });
+</code></pre>
+
+
+<h3>Options</h3>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Default</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>scene</td>
+    <td>undefined</td>
+    <td>
+      <p>Accepts a THREE.scene.  If undefined, a default scene will be created with some defaults (transparent canvas, three lights, mm units),
+      and rendered on every animation frame.  If null, the plugin will wait for the scene to be set explicitly at a future point.
+      </p>
+      <p>With the default scene, the renderer, camera, and scene will all be made available on the plugin scope. E.g., `myController.plugins.boneHand.scene`</p>
+    </td>
+  </tr>
+  <tr>
+    <td>targetEl</td>
+    <td>undefined</td>
+    <td>Accepts an element, such as `document.body`. </td>
+  </tr>
+  <tr>
+    <td>boneScale</td>
+    <td>1 / 6</td>
+    <td>The radius of the bones relative to the length of the proximal bone on the middle finger</td>
+  </tr>
+  <tr>
+    <td>jointScale</td>
+    <td>1 / 5</td>
+    <td>The radius of the bones relative to the length of the proximal bone on the middle finger</td>
+  </tr>
+  <tr>
+    <td>boneColor</td>
+    <td>(new THREE.Color).setHex(0xffffff)</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>jointColor</td>
+    <td>(new THREE.Color).setHex(0x5daa00)</td>
+    <td></td>
+  </tr>
+</table>
+
+<h3>Addendum</h3>
+
+<p>
+  THREE.js shadows are fully supported.
+</p>
+  <ul>
+    <li>If using the default scene, simply set <code>yourMesh.receivesShadow = true</code>, as
+      demonstrated in the source of this page.</li>
+    <li>If working with your own scene, be sure to have your <code>renderer.shadowMapEnabled = true</code>
+      and then, if you choose, call <code>myController.plugins.boneHand.addShadowCamera()</code>.  </li>
+  </ul>
+
+<p>
+    See the source for details.  <code>scope.light.shadowCameraVisible</code> is a nice tool to know about.
+</p>
+
+</body>
+
+<script>
+
+  // Set up plugins
+
+  Leap.loop()
+//    .use('transform', {vr: true})
+    .use('boneHand', {
+      targetEl: document.body,
+      arm: true,
+      opacity: 0.8
+    });
+
+
+
+  // Set up scene
+
+  var scene    = Leap.loopController.plugins.boneHand.scene;
+  var camera   = Leap.loopController.plugins.boneHand.camera;
+  var renderer = Leap.loopController.plugins.boneHand.renderer;
+
+  var plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(80,80),
+    new THREE.MeshPhongMaterial({wireframe: false, side: THREE.DoubleSide})
+  );
+
+  plane.scale.set(2,2,2);
+  plane.position.set(0,200,-100);
+  plane.receiveShadow = true;
+  scene.add(plane);
+
+  camera.lookAt( plane.position );
+
+  var axisHelper = new THREE.AxisHelper( 100 );
+  scene.add( axisHelper );
+
+  var controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+
+  Leap.loopController.on('handFound', function(hand) {
+    document.querySelector('canvas').style.display = 'block';
+  }).on('handLost', function(hand){
+    if (Leap.loopController.frame(0).hands.length === 0){
+      document.querySelector('canvas').style.display = 'none';
+    }
+  });
+
+  document.getElementById('view-source').href = "view-source:" + window.location.href
+
+
+</script>
+
+</html>

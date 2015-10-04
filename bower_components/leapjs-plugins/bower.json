@@ -1,0 +1,21 @@
+{
+  "name": "leapjs-plugins",
+  "main": "index.js",
+  "version": "0.1.11pre",
+  "homepage": "https://github.com/leapmotion/leapjs-plugins",
+  "description": "This repository holds a collection of independent plugins which extend the functionality of LeapJS itself.",
+  "keywords": [
+    "Leap",
+    "LeapMotion",
+    "Plugins"
+  ],
+  "license": "Apache License V2",
+  "ignore": [
+    "**/.*",
+    "test",
+    "Gruntfile.coffee"
+  ],
+  "dependencies": {
+    "leapjs": ">0.4.x"
+  }
+}

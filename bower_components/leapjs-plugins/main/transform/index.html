@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Leap Transform Plugin</title>
+
+  <style>
+    body{
+      margin: 0;
+      font-family: Helvetica;
+    }
+    canvas{
+      pointer-events: none;
+    }
+    input{
+      cursor: pointer;
+    }
+    #connect-leap{
+      bottom: 0;
+      top: auto !important;
+    }
+
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    table {
+      border-collapse: collapse;
+    }
+    td, th {
+      vertical-align: top;
+      padding: 3px;
+    }
+    th {
+      color: #555;
+    }
+    #view-source {
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 10px;
+    }
+  </style>
+
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.min.js"></script>
+  <script src="//js.leapmotion.com/leap-0.6.3.min.js"></script>
+  <script src="../leap-plugins-0.1.11pre.js"></script>
+  <script src="//js.leapmotion.com/leap.rigged-hand-0.1.5.min.js"></script>
+
+</head>
+<body>
+
+<a id="view-source" href="#">View Source</a>
+
+<h1>Transform Plugin</h1>
+<p>
+  Transforms Leap data based off of a rotation matrix or a THREE.js rotation and vectors.
+</p>
+<p>
+  Here we use the riggedHand to visualize the transformations, but it is not required.  All data in the frame is altered
+  by the transform plugin.
+</p>
+<p>
+  Parameters can be either static objects or methods which transform on every frame.
+</p>
+<p>
+  In this way, you can then transform individual hands based upon their id.
+</p>
+
+<br/>
+
+<div style="float: left;">
+  <label>Rotation: <span id="rotationOutput">0</span>π</label><br/>
+  <input id="rotationInput" type="range" min="-1" max="1" value="0" step="0.001">
+</div>
+
+<div style="float: left;">
+  <label>Z Position: <span id="positionOutput">0</span></label><br/>
+  <input id="positionInput" type="range" min="-1000" max="300" value="0" step="1">
+</div>
+
+<div style="float: left;">
+  <label>Scale: <span id="scaleOutput">0.3</span></label><br/>
+  <input id="scaleInput" type="range" min="0.1" max="1" value="0.3" step="0.01">
+  <!-- note - there seems to be a strange issue with THREEjs sections of the hand disappearing for scales larger than 1.
+       Scale set as an option for the riggedHand will cause the issue.  -->
+</div>
+<div style="float: left; padding: 10px">
+  <button id="showHide">Show/Hide</button>
+</div>
+
+<br/>
+
+<pre><code>
+  // At the simplest:
+  Leap.loop()
+    .use('transform', {
+      // move 20 cm back.
+      position: new THREE.Vector3(0,0,-200)
+    });
+</code></pre>
+
+<br/>
+
+<h3>Options</h3>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Default</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>VR</td>
+    <td>false</td>
+    <td>
+      Sets scale, position, and rotation transforms for HMD mode.  These are: units in meters, 8cm forward, and all x, y, and z axis flipped. Also tells tracking to use head-mounted device mode.
+    </td>
+  </tr>
+  <tr>
+    <td>position</td>
+    <td>undefined</td>
+    <td>A THREE.Vector3 position offset vector</td>
+  </tr>
+  <tr>
+    <td>quaternion</td>
+    <td>undefined</td>
+    <td>A THREE.Quaternion rotation</td>
+  </tr>
+  <tr>
+    <td>scale</td>
+    <td>undefined</td>
+    <td>A THREE.Vector scale vector, or a single scalar to be applied to all three axis.</td>
+  </tr>
+  <tr>
+    <td>effectiveParent</td>
+    <td>undefined</td>
+    <td>A THREE.Object3d, or anything which responds to `matrixWorld` and `scale`. This matrixWorld is applied to the
+      hand data as well as any transformations specified through the other options.  This allows hands to be "attached"
+      to a camera.</td>
+  </tr>
+</table>
+
+
+</body>
+
+
+
+<script>
+  // all units in mm
+  var initScene = function () {
+    window.scene = new THREE.Scene();
+    window.renderer = new THREE.WebGLRenderer({
+      alpha: true
+    });
+
+    window.renderer.setClearColor(0x000000, 0);
+    window.renderer.setSize(window.innerWidth, window.innerHeight);
+
+    window.renderer.domElement.style.position = 'fixed';
+    window.renderer.domElement.style.top = 0;
+    window.renderer.domElement.style.left = 0;
+    window.renderer.domElement.style.width = '100%';
+    window.renderer.domElement.style.height = '100%';
+
+    document.body.appendChild(window.renderer.domElement);
+
+    window.scene.add(new THREE.AmbientLight(0x888888));
+
+    var pointLight = new THREE.PointLight(0xFFffff);
+    pointLight.position = new THREE.Vector3(-20, 10, 100);
+    pointLight.lookAt(new THREE.Vector3(0, 0, 0));
+    window.scene.add(pointLight);
+
+    window.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+    window.camera.position.fromArray([0, 160, 400]);
+    window.camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    window.addEventListener('resize', function () {
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.render(scene, camera);
+
+    }, false);
+
+    scene.add(camera);
+
+
+    renderer.render(scene, camera);
+  };
+
+  initScene();
+
+
+
+
+  Leap.loop()
+  // note that transform must be _before_ rigged hand
+  .use('transform', {
+    quaternion: new THREE.Quaternion,
+    position: new THREE.Vector3,
+    scale: 0.3
+  })
+  .use('playback', {recording: 'finger-tap-54fps.json.lz'})
+  .use('riggedHand', {
+    dotsMode: false,
+    parent: scene,
+    renderFn: function(){
+      renderer.render(scene, camera);
+    }
+
+  })
+  .connect();
+
+  window.transformPlugin = Leap.loopController.plugins.transform;
+
+  document.getElementById('rotationInput').oninput = function(e){
+    var value = e.target.value;
+    transformPlugin.quaternion.setFromEuler(
+        new THREE.Euler(0, Math.PI * parseFloat(value,10) , 0)
+    );
+    document.getElementById('rotationOutput').innerHTML = value;
+  };
+
+  document.getElementById('positionInput').oninput = function(e){
+    var value = e.target.value;
+    transformPlugin.position.set(
+        0,0,parseInt(value, 10)
+    );
+    document.getElementById('positionOutput').innerHTML = value;
+  };
+
+  document.getElementById('scaleInput').oninput = function(e){
+    var value = parseFloat(e.target.value,10);
+    transformPlugin.scale.set(
+        value, value, value
+    );
+    document.getElementById('scaleOutput').innerHTML = value;
+  };
+
+  document.getElementById('showHide').onclick = function(){
+    var el = document.querySelector('canvas');
+    if (el.style.display == 'none'){
+      el.style.display = 'block'
+    }else {
+      el.style.display = 'none'
+    }
+  }
+
+  document.getElementById('view-source').href = 'view-source:' + window.location.href
+
+</script>
+
+</html>

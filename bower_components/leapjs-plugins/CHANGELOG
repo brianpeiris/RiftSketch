@@ -1,0 +1,60 @@
+# 0.1.10
+ - [transform] Do not allow duplicate transformations (important for LeapJS 0.6.4+ with playback, which can emit the same frame multiple times)
+ - [boneHand] Automatically scale the view frustum based upon scene scale.
+ - [boneHand] Render after leapmotion pipeline runs, expose scope.render method
+ - [boneHand] Expose HandMesh on scope
+ - [boneHand] Fix issue where including plugins would depend on THREE.js
+ - [boneHand] Fix issue where handMesh would not be cleaned up on hand lost
+ - [boneHand] fix issue where deferred scene creation would result in a one hand maximum
+
+# 0.1.9
+ - [bone hand] Added bone hand plugin.
+ - [bone hand] Optimized performance for new hands entering the scene.
+ - [transform] Added preset VR mode
+ - [transform] Add effectiveParent option
+ - [transform] Add arm support, bone lengths, bone bases
+ - [transform] Fix issue where rotations would be scaled
+ - [playback, plotter] Minor speedup, removing errant console assertions.
+ - [meta] Added grunt watch.
+
+# 0.1.8
+ - Add LeapDataPlotter utility
+ - Fix issue where bone tip position would not be transformed.
+ - Fix issue where playback would require globally accessible controller.
+
+# 0.1.7
+ - Transform plugin
+ - resumeOnHandLost option added to playback
+ - Fix an issue in playback which would cause the "connect leap" icon to be displayed incorrectly.
+
+# 0.1.6.1
+ - A couple of fixes for ie-compatibility with playback and hand-hold plugins
+ - Screen position now uses palm/tip position in by default, rather than their stabalized counterparts
+
+# 0.1.6
+ - Fix issue where hand data would incorrectly stash data, or values could not be nulled
+
+# 0.1.5
+ - Allow hand-hold to accept default values
+ - Upgrade playback to v0.2.0, now with better animations and 60% better file compression
+ - Playback will no longer crash when used in the header
+ - Version check has a more descriptive warning
+
+# 0.1.4
+ - Add playback
+ - Add Version check plugin
+ - Fix issue where multiple hands in frame on device-disconnect would misfire handLost
+ - Fix issue in hand-entry where handFound would not fire after reconnect
+
+# 0.1.3
+ - Compatibility with leapjs 0.4.2  (plugin pipeline now on animationFrames)
+
+# 0.1.2
+ - Include lost hand data in handLost event
+ - Add z-depth to screenPosition
+
+# 0.1.1
+ - Proximity Alert Plugin
+ - Better Comments on the tops of js files
+ - ScreenPosition now uses a top left origin rather than a bottom right one.
+ - Node support

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Leap Data Plotter</title>
+
+  <!-- What you need: -->
+  <script src="//js.leapmotion.com/leap-0.6.2.js"></script>
+  <script src="LeapDataPlotter.js"></script>
+
+  <!-- Out stuff - syntax highlighting: -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
+
+  <script>
+
+    // onload so we have a chance to get DOM element canvas
+    window.onload = function(){
+
+      window.plotter = new LeapDataPlotter({
+        el: document.getElementById('leap_data_plot')
+      });
+
+      Leap.loop(function(frame){
+
+        var hand = frame.hands[0];
+
+        if (!hand) return;
+
+        plotter.plot('height', hand.palmPosition[1],
+          {
+            precision: 3,
+            units: 'mm'
+          });
+
+        plotter.plot('y velocity', hand.palmVelocity[1],
+          {
+            precision: 4,
+            units: 'mm/s'
+          });
+
+
+        plotter.update()
+
+      });
+
+
+    }
+
+    hljs.initHighlightingOnLoad();
+
+  </script>
+
+  <style>
+    body {
+      font-family: Helvetica;
+    }
+
+    code{
+      width: 500px;
+    }
+
+    td {
+      vertical-align: top;
+    }
+
+    td.key {
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<h1>Leap Data Plotter</h1>
+
+<p>
+  Allows <strike>easy</strike> <i>super trivial</i> plotting of streaming data.
+</p>
+<p>
+  Dependencies: none.  RequireJS-compatible.
+</p>
+
+<ul>
+  <li>Canvas auto-created</li>
+  <li>On the four corners, clockwise: name, max, min, and current values.</li>
+  <li>At its core: <pre><code style="width: 460px;">plotter.plot('height', hand.palmPosition[1]);</code></pre></li>
+</ul>
+
+<br/>
+
+<div style="float: right;">
+  <h3>Live Example</h3>
+  <p>
+    (insert hand)
+  </p>
+
+  <canvas id="leap_data_plot"></canvas>
+
+  <h3>Screenshot</h3>
+
+  <img src="screenshot.png"/>
+</div>
+
+
+<h3>Usage:</h3>
+
+
+<pre>
+<code style="width: 500px;">
+  // call this once per page, after the DOM is ready.
+  window.plotter = new LeapDataPlotter();
+
+
+  Leap.loop(function(frame){
+    var hand = frame.hands[0];
+    if (!hand) return;
+
+
+    // call this once per frame per plot
+    plotter.plot('height', hand.palmPosition[1], {
+      precision: 3,
+      units: 'mm'
+    });
+
+
+    plotter.plot('y velocity', hand.palmVelocity[1], {
+      precision: 4,
+      units: 'mm/s'
+    });
+
+
+    // call this once per frame
+    plotter.update()
+
+  });
+
+</code>
+</pre>
+
+
+
+<h3>LeapDataPlotter:</h3>
+
+<p>
+ Calling plot will add a canvas to the page.  The canvas will simply be appended to the body of `document.body`,
+  with a classname of `leap-data-plotter`.   Alternatively, you can pass in your own canvas element:
+</p>
+
+<pre>
+<code style="width: 500px;">
+  // basic
+  window.plotter = new LeapDataPlotter();
+
+  // custom canvas
+  window.plotter = new LeapDataPlotter({
+    el: document.getElementById('my_canvas')
+  });
+
+</code>
+</pre>
+
+<h3>LeapDataPlotter#plot(id, data, opts)</h3>
+
+<table>
+  <tr>
+    <td class="key">id</td>
+    <td>
+      The name of the graph, persistent between frames
+      <br/>- The plot automatically resizes based upon input data
+    </td>
+  </tr>
+  <tr>
+    <td class="key">data</td>
+    <td>
+      The datapoint to be added to the plot
+    </td>
+  </tr>
+  <tr>
+    <td class="key">opts</td>
+    <td>
+      <table>
+        <tr>
+          <td><b>precision</b></td>
+          <td>decimal places to display in outputs [default: 5]</td>
+        </tr>
+        <tr>
+          <td><b>units</b></td>
+          <td>String suffix to print after the numeric output [default: '']</td>
+        </tr>
+        <tr>
+          <td><b>length</b></td>
+          <td>The number of data points which fit on to a graph. [default: 600]</td>
+        </tr>
+        <tr>
+          <td><b>width</b></td>
+          <td>[default: canvas width]</td>
+        </tr>
+        <tr>
+          <td><b>height</b></td>
+          <td>[default: 50]</td>
+        </tr>
+        <tr>
+          <td><b>color</b></td>
+          <td>Color of plotted line.  Hex string.  [default: auto]</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+
+<h3>LeapDataPlotter#update()</h3>
+
+<p>
+  Redraws the canvas, updating the plot.  Nothing will be visible without this being called.
+</p>
+<br/>
+
+<h2>Authors</h2>
+
+<p>
+  Thanks to <a href="https://github.com/nashira" target="_blank">@nashira</a> for authoring this library.
+</p>
+
+
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="//js.leapmotion.com/leap-0.6.3.js"></script>
+  <script src="../leap-plugins-0.1.11pre.js"></script>
+
+</head>
+<body>
+
+<p>
+  Open inspector to see logged events.
+</p>
+
+  <script type="text/javascript">
+
+    Leap
+        .loop()
+        .use('handEntry')
+        .on('handFound', function(){ console.log('hand found'); })
+        .on('handLost',  function(){ console.log('hand lost'); });
+  </script>
+
+</body>
+</html>
