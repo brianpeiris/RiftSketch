@@ -76,7 +76,7 @@ function (
     groundTexture.minFilter = THREE.NearestFilter;
     
     var ground = new THREE.Mesh(
-      new THREE.PlaneGeometry( 1000, 1000 ),
+      new THREE.PlaneBufferGeometry( 1000, 1000 ),
       new THREE.MeshBasicMaterial({map: groundTexture}) );
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);

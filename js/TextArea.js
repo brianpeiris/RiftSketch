@@ -36,12 +36,12 @@ function (
     textAreaMat.transparent = true;
 
     this.object = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 2),
+      new THREE.PlaneBufferGeometry(2, 2),
       new THREE.MeshBasicMaterial(textAreaMat));
     this.object.rotation.y = Math.PI;
 
     this.grabHandle = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.5, 0.5),
+      new THREE.PlaneBufferGeometry(0.5, 0.5),
       new THREE.MeshBasicMaterial({wireframe: true})
     );
     this.grabHandle.position.set(0.8, -1.2, -0.05);
@@ -81,7 +81,7 @@ function (
     infoMat.transparent = true;
 
     var infoMesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(2, 0.5),
+      new THREE.PlaneBufferGeometry(2, 0.5),
       new THREE.MeshBasicMaterial(infoMat));
     infoMesh.position.y = -1.3;
 

@@ -31,7 +31,7 @@ var Watch = function (obj, name) {
     {map: this.textTexture, side: THREE.DoubleSide});
 
   var watch = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 0.5),
+    new THREE.PlaneBufferGeometry(1, 0.5),
     new THREE.MeshBasicMaterial(textAreaMat));
   watch.rotation.y = Math.PI;
 

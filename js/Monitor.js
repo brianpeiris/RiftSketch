@@ -30,7 +30,7 @@ function (
     });
 
     this.object = new THREE.Mesh(
-      new THREE.PlaneGeometry(MESH_SIZE, MESH_SIZE * ASPECT, 1, 1),
+      new THREE.PlaneBufferGeometry(MESH_SIZE, MESH_SIZE * ASPECT, 1, 1),
       monitorMaterial
     );
     this.object.visible = false;
