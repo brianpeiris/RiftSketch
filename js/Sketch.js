@@ -20,5 +20,10 @@ function (
   constr.prototype.addFile = function () {
     this.files.push(new File('Untitled', ''));
   };
+  constr.prototype.set = function (sketch) {
+    sketch.files.forEach(function (file, i) {
+      this.files[i].contents = file.contents;
+    }.bind(this));
+  };
   return constr;
 });

@@ -65,17 +65,19 @@ var flockingBehavior = function (
       separate(otherBoid);
       align(otherBoid);
       adhere(otherBoid);
-      attractTo(hands);
+      if (hands) {
+        attractTo(hands);
+      }
     }
   });
 };
 
 var moveBehavior = function (boid) {
-  boid.obj.translateZ(0.0);
+  boid.obj.translateZ(0.05);
 };
 
 var returnToOrigin = function (boid) {
-  if (boid.obj.position.distanceTo(camera.position) > 4) {
-    boid.obj.lookAt(camera.position);
+  if (boid.obj.position.distanceTo(scene.position) > 4) {
+    boid.obj.lookAt(scene.position);
   }
 };

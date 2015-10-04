@@ -61,10 +61,9 @@ function (
     setupVideoPassthrough();
 
     var loadSketch = function (ref) {
-      this.sketch = {};
       this.firebaseRef = ref;
       ref.on('value', function (data) {
-        this.readCode(data.val().contents);
+        this.readCode(data.val());
       }.bind(this));
     }.bind(this);
 
@@ -193,7 +192,6 @@ function (
         on('keydown', function (e) {
           e.stopPropagation();
         }).
-        val(file.contents).
         get(0);
       this.bindKeyboardShortcuts(domTextArea, file);
       return domTextArea;
@@ -261,7 +259,7 @@ function (
         this.sketchLoop();
       }
       catch (err) {
-        this.riftSandbox.textArea.setInfo(err.toString());
+        this.riftSandbox.setInfo(err.toString());
       }
 
       this.riftSandbox.render();
@@ -339,18 +337,7 @@ function (
     document.addEventListener('webkitfullscreenchange', toggleVrMode, false);
 
     $(function () {
-      this.domTextArea = document.querySelector('textarea');
       this.bindKeyboardShortcuts();
-      var $domTextArea = $(this.domTextArea);
-      $domTextArea.on('blur', function () {
-        $domTextArea.focus();
-      }.bind(this));
-      $domTextArea.on('keydown', function (e) {
-        // prevent VR polyfill from hijacking wasd.
-        e.stopPropagation();
-      });
-      $domTextArea.focus();
-      this.domTextArea.selectionStart = this.domTextArea.selectionEnd = 0;
       this.riftSandbox = new RiftSandbox(
         window.innerWidth, window.innerHeight,
         this.domTextAreas,
@@ -360,9 +347,11 @@ function (
         }.bind(this)
       );
 
-      this.readCode = function (code) {
-        this.sketch.contents = code;
-        this.domTextArea.value = code;
+      this.readCode = function (sketch) {
+        this.sketch.set(sketch);
+        this.domTextAreas.forEach(function (domTextArea, i) {
+          domTextArea.value = this.sketch.files[i].contents;
+        }.bind(this));
 
         this.riftSandbox.clearScene();
         var _sketchLoop;
@@ -371,25 +360,19 @@ function (
           /* jshint -W054 */
           var _sketchFunc = new Function(
             'scene', 'camera', 'api',
-            '"use strict";\n' + code
+            '"use strict";\n' + this.sketch.getCode()
           );
           /* jshint +W054 */
           _sketchLoop = _sketchFunc(
             this.riftSandbox.scene, this.riftSandbox.cameraPivot, api);
         }
         catch (err) {
-          this.riftSandbox.textArea.setInfo(err.toString());
+          this.riftSandbox.setInfo(err.toString());
         }
         if (_sketchLoop) {
           this.sketchLoop = _sketchLoop;
         }
       }.bind(this);
-
-      $('#sketchContents').on('keyup', function (e) {
-        var code = e.target.value;
-        if (code === this.sketch.contents) { return; }
-        this.writeCode(code);
-      }.bind(this));
 
       window.addEventListener(
         'resize',

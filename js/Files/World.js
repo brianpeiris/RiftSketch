@@ -50,7 +50,7 @@ var Watch = function (obj, name) {
 var world = {
   boids: []
 };
-var numBoids = 0;
+var numBoids = 10;
 
 var positions = [
   new t3.Vector3(0.00, 1.60, -1.60),
@@ -75,6 +75,11 @@ for (var i = 0; i < numBoids; i++) {
 return function loop () {
   for (var i = 0; i < numBoids; i++) {
     var boid = world.boids[i];
-    boid.step(hands);
+    if (typeof hands !== 'undefined') {
+      boid.step(hands);
+    }
+    else {
+      boid.step();
+    }
   }
 };
