@@ -26,3 +26,7 @@ textarea {
   display: block;
   font-size: 12pt;
 }
+
+#monitor {
+  position: absolute;
+}
