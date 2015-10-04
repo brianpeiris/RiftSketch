@@ -8,7 +8,8 @@
     "requirejs-text": "~2.0.14",
     "backbone": "~1.1.2",
     "jasmine": "~2.3.4",
-    "leapjs-plugins": "158dbd7fdf6d53d21df515445d68fc0909c1d126"
+    "leapjs-plugins": "158dbd7fdf6d53d21df515445d68fc0909c1d126",
+    "threejs": "r72"
   },
   "name": "RiftSketch",
   "private": true

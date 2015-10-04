@@ -14,7 +14,7 @@ require.config({
     text: 'bower_components/requirejs-text/text',
 
     kibo: 'lib/kibo',
-    Three: 'lib/three',
+    Three: 'bower_components/threejs/build/three',
     VRControls: 'lib/VRControls',
     VREffect: 'lib/VREffect',
     WebVRPolyfill: 'lib/webvr-polyfill',
