@@ -39,8 +39,9 @@ function (
     this.BasePosition = new THREE.Vector3(0, 1.5, 2);
     this.HMDPosition = new THREE.Vector3();
     this.plainRotation = new THREE.Vector3();
-    this.BaseRotationEuler = new THREE.Euler(0, 0,0); 
-    this.BaseRotation = new THREE.Quaternion();
+    this.BaseRotationEuler = new THREE.Euler(0, Math.PI, 0); 
+    this.BaseRotation = new THREE.Quaternion().setFromEuler(
+      this.BaseRotationEuler);
     this.scene = null;
     this.sceneStuff = [];
     this.renderer = null;
