@@ -167,14 +167,14 @@ function (
     this.sceneStuff = [];
   };
 
-  constr.prototype.render = function () {
+  constr.prototype.render = function (timestamp) {
     this.textAreas.forEach(function (textArea) { textArea.update(); });
     this.monitor.update();
     this.controls.update();
 
     this.camera.position.copy(this.BasePosition);
 
-    this.vrManager.render(this.scene, this.camera);
+    this.vrManager.render(this.scene, this.camera, timestamp);
   };
 
   constr.prototype.resize = function () {

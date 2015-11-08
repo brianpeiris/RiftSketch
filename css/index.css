@@ -2,11 +2,15 @@ html, body {
   padding: 0;
   margin: 0;
   width: 100%;
-  overflow: hidden;
 }
 
 body {
   font-size: 10px;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
 }
 
 textarea {
@@ -34,7 +38,6 @@ textarea {
 
 .webvr-button {
   box-sizing: content-box;
-  background-color: red;
   filter: brightness(0) !important;
   -webkit-filter: brightness(0) !important;
 }
