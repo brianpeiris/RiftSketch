@@ -12,11 +12,8 @@
       href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="css/index.css" />
   </head>
-  <body
-    ng-class="{'modal-open': (!hasOverridenUnsupported && seemsUnsupported)}">
-
-
-    <div id="container" ng-class="{'not-fullscreen': !isInfullscreen}">
+  <body>
+    <div id="container">
       <canvas id="viewer"></canvas>
       <video id="monitor" autoplay></video>
     </div>

@@ -1,8 +1,5 @@
-<div
-  class="modal-backdrop fade in"
-  ng-show="!hasOverridenUnsupported && seemsUnsupported">
-</div>
-<div class="modal" ng-show="!hasOverridenUnsupported && seemsUnsupported">
+<div class="modal-backdrop fade in" ></div>
+<div class="modal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">RiftSketch - Unsupported Browser</div>
@@ -26,9 +23,7 @@
         </iframe>
       </div>
       <div class="modal-footer">
-        <button ng-click="hasOverridenUnsupported = true">
-          continue anyway
-        </button>
+        <button>continue anyway</button>
       </div>
     </div>
   </div>
