@@ -64,7 +64,8 @@ function (
     this.effect = new THREE.VREffect(this.renderer);
     this.effect.setSize(this.width, this.height);
 
-    this.vrManager = new WebVRManager(this.renderer, this.effect);
+    this.vrManager = new WebVRManager(
+      this.renderer, this.effect, {hideButton: false});
 
     var maxAnisotropy = this.renderer.getMaxAnisotropy();
     var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');

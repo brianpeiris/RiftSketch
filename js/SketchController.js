@@ -346,12 +346,14 @@ function (
         this.domMonitor
       );
 
-      if (
-        !this.riftSandbox.vrManager.isVRCompatible && 
-        !localStorage.getItem('alreadyIgnoredUnsupported')
-      ) {
-        $(document.body).append(new UnsupportedModal().render().el);
-      }
+      this.riftSandbox.vrManager.on('initialized', function () {
+        if (
+          !this.riftSandbox.vrManager.isVRCompatible && 
+          !localStorage.getItem('alreadyIgnoredUnsupported')
+        ) {
+          $(document.body).append(new UnsupportedModal().render().el);
+        }
+      }.bind(this));
 
       this.riftSandbox.interceptScene();
 
