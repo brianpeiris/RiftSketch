@@ -16,8 +16,7 @@ textarea {
   font-size: 11pt;
   position: absolute;
   left: -9999px;
-  top: 0;
-  overflow: auto;
+  top: -9999px;
   white-space: pre;
   word-wrap: normal;
 }
@@ -29,4 +28,17 @@ textarea {
 
 #monitor {
   position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+.webvr-button {
+  box-sizing: content-box;
+  background-color: red;
+  filter: brightness(0) !important;
+  -webkit-filter: brightness(0) !important;
+}
+.webvr-button:hover {
+  filter: drop-shadow(0 0 2px rgba(0,0,0,1))!important;
+  -webkit-filter: drop-shadow(0 0 2px rgba(0,0,0,1))!important;
 }
