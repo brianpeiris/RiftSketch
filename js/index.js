@@ -1,24 +1,27 @@
 /* global require */
+var bc = function (path) {
+  return 'bower_components/' + path;
+};
 
 require.config({
   waitSeconds: 30,
   baseUrl: '',
   urlArgs: 'bust=' + (new Date()).getTime(),
   paths: {
-    firebase: 'bower_components/firebase/firebase',
-    jquery: 'bower_components/jquery/dist/jquery',
-    leap: 'bower_components/leapjs/leap-0.6.4',
-    leapjsplugins: 'bower_components/leapjs-plugins/main/leap-plugins-0.1.11pre',
-    oauth: 'bower_components/oauth-js/dist/oauth',
-    lodash: 'bower_components/lodash/dist/lodash',
-    text: 'bower_components/requirejs-text/text',
+    firebase: bc('firebase/firebase'),
+    jquery: bc('jquery/dist/jquery'),
+    leap: bc('leapjs/leap-0.6.4'),
+    leapjsplugins: bc('leapjs-plugins/main/leap-plugins-0.1.11pre'),
+    oauth: bc('oauth-js/dist/oauth'),
+    lodash: bc('lodash/dist/lodash'),
+    text: bc('requirejs-text/text'),
 
     kibo: 'lib/kibo',
-    Three: 'bower_components/threejs/build/three',
-    VRControls: 'lib/VRControls',
-    VREffect: 'lib/VREffect',
-    WebVRPolyfill: 'lib/webvr-polyfill',
-    WebVRManager: 'lib/webvr-manager'
+    Three: bc('threejs/build/three'),
+    VRControls: bc('threejs/examples/js/controls/VRControls'),
+    VREffect: bc('threejs/examples/js/effects/VREffect'),
+    WebVRPolyfill: bc('webvr-polyfill/build/webvr-polyfill'),
+    WebVRManager: bc('webvr-boilerplate/build/webvr-manager')
   },
   shim: {
     firebase: {exports: 'Firebase'},
@@ -31,7 +34,7 @@ require.config({
     WebVRPolyfill: {deps: ['Three']},
     VRControls: {deps: ['Three']},
     VREffect: {deps: ['Three']},
-    WebVRManager: {exports: 'WebVRManager'}
+    WebVRManager: {deps: ['Three'], exports: 'WebVRManager'}
   }
 });
 

@@ -20,8 +20,6 @@ function (
 ) {
   'use strict';
   var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
-  var BASE_ROTATION = new THREE.Quaternion().setFromEuler(
-    new THREE.Euler(0, Math.PI, 0), 'YZX');
   var ONE_DEGREE = Math.PI / 180.0;
   
   var constr = function (
@@ -39,7 +37,7 @@ function (
     this.BasePosition = new THREE.Vector3(0, 1.5, 2);
     this.HMDPosition = new THREE.Vector3();
     this.plainRotation = new THREE.Vector3();
-    this.BaseRotationEuler = new THREE.Euler(0, Math.PI, 0); 
+    this.BaseRotationEuler = new THREE.Euler(0, Math.PI / 2, 0); 
     this.BaseRotation = new THREE.Quaternion().setFromEuler(
       this.BaseRotationEuler);
     this.scene = null;
@@ -169,29 +167,13 @@ function (
   };
 
   constr.prototype.render = function () {
-    this.vrManager.getHMD().then(function (hmd) {
-      this.textAreas.forEach(function (textArea) { textArea.update(); });
-      this.monitor.update();
-      this.controls.update();
-      if (!hmd) {
-        this.camera.quaternion.multiplyQuaternions(BASE_ROTATION, this.camera.quaternion);
-      }
+    this.textAreas.forEach(function (textArea) { textArea.update(); });
+    this.monitor.update();
+    this.controls.update();
 
-      this.camera.position.copy(this.BasePosition);
-      
-      var rotatedHMDPosition = new THREE.Vector3();
-      rotatedHMDPosition.copy(this.camera.position);
-      rotatedHMDPosition.applyQuaternion(this.BaseRotation);
-      
-      this.camera.quaternion.multiplyQuaternions(this.BaseRotation, this.camera.quaternion);
+    this.camera.position.copy(this.BasePosition);
 
-      if (this.vrManager.isVRMode()) {
-        this.effect.render(this.scene, this.camera);
-      }
-      else {
-        this.renderer.render(this.scene, this.camera);
-      }
-    }.bind(this));
+    this.vrManager.render(this.scene, this.camera);
   };
 
   constr.prototype.resize = function () {
