@@ -15,6 +15,8 @@ require.config({
     oauth: bc('oauth-js/dist/oauth'),
     lodash: bc('lodash/dist/lodash'),
     text: bc('requirejs-text/text'),
+    underscore: bc('underscore/underscore'),
+    Backbone: bc('backbone/backbone'),
 
     kibo: 'lib/kibo',
     Three: bc('threejs/build/three'),

@@ -10,6 +10,7 @@ define([
   'js/RiftSandbox',
   'js/File',
   'js/Sketch',
+  'js/UnsupportedModal',
 
   'text!js/Files/Behaviors.js',
   'text!js/Files/Boid.js',
@@ -27,6 +28,7 @@ function (
   RiftSandbox,
   File,
   Sketch,
+  UnsupportedModal,
 
   Behaviors,
   Boid,
@@ -341,11 +343,15 @@ function (
       this.riftSandbox = new RiftSandbox(
         window.innerWidth, window.innerHeight,
         this.domTextAreas,
-        this.domMonitor,
-        function (err) {
-          this.seemsUnsupported = !!err;
-        }.bind(this)
+        this.domMonitor
       );
+
+      if (
+        !this.riftSandbox.vrManager.isVRCompatible && 
+        !localStorage.getItem('alreadyIgnoredUnsupported')
+      ) {
+        $(document.body).append(new UnsupportedModal().render().el);
+      }
 
       this.riftSandbox.interceptScene();
 
