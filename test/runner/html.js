@@ -8,7 +8,7 @@ require.config({
       'jasmine': ['../bower_components/jasmine/lib/jasmine-core/jasmine'],
       'jasmine-html': ['../bower_components/jasmine/lib/jasmine-core/jasmine-html'],
       'jasmine-boot': ['../bower_components/jasmine/lib/jasmine-core/boot'],
-    // Note: the paths here are relative to the SpecRunnder.html dir not the dir this
+    // Note: the paths here are relative to the SpecRunner.html dir not the dir this
     // file is located in.
       Three: '../lib/three',
       VRControls: '../lib/VRControls',
