@@ -81,6 +81,7 @@ function (
 
   SketchController.prototype.setupDomTextArea = function (file) {
     var domTextArea = $('<textarea>').
+      attr('id', file.name).
       appendTo('body').
       on('keyup', function (e) {
         var contents = e.target.value;
@@ -283,6 +284,8 @@ function (
     this.keyboardHandler.riftSandbox = this.riftSandbox;
     this.keyboardHandler.bindKeyboardShortcuts(document);
 
+    this.riftSandbox.vrManager.button.on('vr', this.focusCurrentTextArea.bind(this));
+
     this.initializeUnsupportedModal();
 
     this.riftSandbox.interceptScene();
@@ -296,6 +299,10 @@ function (
     this.riftSandbox.resize();
 
     this.mainLoop();
+  };
+
+  SketchController.prototype.focusCurrentTextArea = function () {
+    this.currentDomTextArea.focus();
   };
 
   return SketchController;
