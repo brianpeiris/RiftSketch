@@ -284,7 +284,10 @@ function (
     this.keyboardHandler.riftSandbox = this.riftSandbox;
     this.keyboardHandler.bindKeyboardShortcuts(document);
 
-    this.riftSandbox.vrManager.button.on('vr', this.focusCurrentTextArea.bind(this));
+    var focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
+    this.riftSandbox.vrManager.button.on('vr', focusCurrentTextArea);
+    this.riftSandbox.vrManager.button.on('fs', focusCurrentTextArea);
+    $(document.body).on('click', focusCurrentTextArea);
 
     this.initializeUnsupportedModal();
 
