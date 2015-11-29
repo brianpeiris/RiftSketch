@@ -37,7 +37,7 @@ function (
     this.setupVideoPassthrough();
 
     this.is_editor_visible = true;
-    this.keyboardHandler = new KeyboardHandler();
+    this.keyboardHandler = new KeyboardHandler(this);
     this.setupSketch();
 
     this.sketchLoop = function () {};
@@ -162,7 +162,7 @@ function (
     try {
       /* jshint -W054 */
       var _sketchFunc = new Function(
-        'scene', 'camera', 
+        'scene', 'camera',
         '"use strict";\n' + this.sketch.getCode()
       );
       /* jshint +W054 */
@@ -303,6 +303,10 @@ function (
 
   SketchController.prototype.focusCurrentTextArea = function () {
     this.currentDomTextArea.focus();
+  };
+
+  SketchController.prototype.getCurrentSelectionStart = function () {
+    return this.currentDomTextArea.selectionStart;
   };
 
   return SketchController;

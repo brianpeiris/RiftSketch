@@ -31,6 +31,7 @@ function (
     this.width = width;
     this.height = height;
     this.domTextAreas = domTextAreas;
+    this.areTextAreasVisible = true;
     this.domMonitor = domMonitor;
     window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
 
@@ -80,7 +81,7 @@ function (
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
 
-    var axis = new THREE.AxisHelper()
+    var axis = new THREE.AxisHelper();
     axis.position.y = 0.1;
     this.scene.add(axis);
 
@@ -113,10 +114,11 @@ function (
     }.bind(this);
   };
 
-  constr.prototype.toggleTextArea = function (shouldBeVisible) {
+  constr.prototype.toggleTextAreas = function () {
+    this.areTextAreasVisible = !this.areTextAreasVisible;
     this.textAreas.forEach(function (textArea) {
-      textArea.toggle(shouldBeVisible);
-    });
+      textArea.toggle(this.areTextAreasVisible);
+    }.bind(this));
   };
 
   constr.prototype.toggleMonitor = function () {
