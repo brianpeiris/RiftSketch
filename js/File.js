@@ -23,6 +23,7 @@ function (
     index, direction, amount, originalNumber
   ) {
     var number = this.findNumberAt(index);
+    if (number === undefined) { return; }
     originalNumber = originalNumber || number;
     var newNumber = this.spinNumber(originalNumber, direction, amount);
     this.contents = (
@@ -32,8 +33,10 @@ function (
     );
   };
   File.prototype.recordOriginalNumberAt = function (index) {
+    var number = this.findNumberAt(index);
+    if (number === undefined) { return; }
+    this.originalNumber = number;
     this.originalIndex = index;
-    this.originalNumber = this.findNumberAt(index);
   };
   File.prototype.offsetOriginalNumber = function (offset) {
     this.spinNumberAt(this.originalIndex, 1, offset, this.originalNumber);
