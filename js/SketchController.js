@@ -189,18 +189,18 @@ function (
     );
   };
 
-  SketchController.prototype.spinNumberAndKeepSelection = function (direction, amount) {
-    var start = this.domTextArea.selectionStart;
-    File.spinNumberAt(this.sketch, start, direction, amount);
-    this.writeCode(this.sketch.contents);
-    this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
+  SketchController.prototype.spinNumberAndKeepSelection = function (domTextArea, file, direction, amount) {
+    var start = domTextArea.selectionStart;
+    file.spinNumberAt(start, direction, amount);
+    this.firebaseRef.set(this.sketch);
+    domTextArea.selectionStart = domTextArea.selectionEnd = start;
   };
 
-  SketchController.prototype.offsetNumberAndKeepSelection = function (offset) {
-    var start = this.domTextArea.selectionStart;
-    File.offsetOriginalNumber(this.sketch, offset);
-    this.writeCode(this.sketch.contents);
-    this.domTextArea.selectionStart = this.domTextArea.selectionEnd = start;
+  SketchController.prototype.offsetNumberAndKeepSelection = function (domTextArea, file, offset) {
+    var start = domTextArea.selectionStart;
+    file.offsetOriginalNumber(offset);
+    this.firebaseRef.set(this.sketch);
+    domTextArea.selectionStart = domTextArea.selectionEnd = start;
   };
 
   SketchController.prototype.handleLeapMotionFrame = function (frame) {

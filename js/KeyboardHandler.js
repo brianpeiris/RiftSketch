@@ -61,31 +61,31 @@ define([
     }.bind(this));
   };
 
-  KeyboardHandler.prototype.bindNumberShortcuts = function (kibo) {
+  KeyboardHandler.prototype.bindNumberShortcuts = function (domTextArea, file, kibo) {
     kibo.down(getShortcut('u'), function () {
-      spinNumberAndKeepSelection(-1, 10);
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 10);
       return false;
-    });
+    }.bind(this));
     kibo.down(getShortcut('i'), function () {
-      spinNumberAndKeepSelection(1, 10);
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 10);
       return false;
-    });
+    }.bind(this));
     kibo.down(getShortcut('j'), function () {
-      spinNumberAndKeepSelection(-1, 1);
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 1);
       return false;
-    });
+    }.bind(this));
     kibo.down(getShortcut('k'), function () {
-      spinNumberAndKeepSelection(1, 1);
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 1);
       return false;
-    });
+    }.bind(this));
     kibo.down(getShortcut('n'), function () {
-      spinNumberAndKeepSelection(-1, 0.1);
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 0.1);
       return false;
-    });
+    }.bind(this));
     kibo.down(getShortcut('m'), function () {
-      spinNumberAndKeepSelection(1, 0.1);
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 0.1);
       return false;
-    });
+    }.bind(this));
   };
 
   KeyboardHandler.prototype.bindKeyboardShortcuts = function (domTextArea, file) {
@@ -105,7 +105,7 @@ define([
       return false;
     }.bind(this));
 
-    this.bindNumberShortcuts(kibo);
+    this.bindNumberShortcuts(domTextArea, file, kibo);
     this.bindMovementShortcuts(kibo);
 
     kibo.down(getShortcut(), function () {
