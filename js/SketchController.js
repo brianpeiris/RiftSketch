@@ -275,12 +275,13 @@ function (
   };
 
   SketchController.prototype.init = function () {
-    this.keyboardHandler.bindKeyboardShortcuts();
     this.riftSandbox = new RiftSandbox(
       window.innerWidth, window.innerHeight,
       this.domTextAreas,
       this.domMonitor
     );
+    this.keyboardHandler.riftSandbox = this.riftSandbox;
+    this.keyboardHandler.bindKeyboardShortcuts(document);
 
     this.initializeUnsupportedModal();
 

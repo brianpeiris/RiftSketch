@@ -123,6 +123,6 @@ define([
       this.modifierPressed = false;
       return false;
     }.bind(this));
-  }.bind(this);
+  };
   return KeyboardHandler;
 });
