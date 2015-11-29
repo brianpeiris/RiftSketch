@@ -12,9 +12,7 @@ define([
   'js/Sketch',
   'js/UnsupportedModal',
 
-  'text!js/Files/Behaviors.js',
-  'text!js/Files/Boid.js',
-  'text!js/Files/World.js'
+  'text!js/Files/Cube.js',
 ],
 function (
   Firebase,
@@ -30,9 +28,7 @@ function (
   Sketch,
   UnsupportedModal,
 
-  Behaviors,
-  Boid,
-  World
+  Cube
 ) {
   'use strict';
 
@@ -102,9 +98,7 @@ function (
 
   SketchController.prototype.setupSketch = function () {
     this.sketch = new Sketch('', [
-      new File('Behaviors', Behaviors),
-      new File('Boid', Boid),
-      new File('World', World)
+      new File('Cube', Cube)
     ]);
     this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
     this.currentDomTextArea = this.domTextAreas[0];
