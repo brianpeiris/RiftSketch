@@ -57,7 +57,7 @@ function (
     this.scene = new THREE.Scene();
 
     this.camera = new THREE.PerspectiveCamera(
-      75, this.width / this.height, 0.1, 1000);
+      75, this.width / this.height, 0.1, 200);
     this.scene.add(this.camera);
 
     this.controls = new THREE.VRControls(this.camera);
@@ -72,10 +72,10 @@ function (
     
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-    groundTexture.repeat.set( 1000, 1000 );
+    groundTexture.repeat.set( 200, 200 );
     
     var ground = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry( 1000, 1000 ),
+      new THREE.PlaneBufferGeometry( 200, 200 ),
       new THREE.MeshBasicMaterial({map: groundTexture}) );
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
