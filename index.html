@@ -9,15 +9,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 
-    <link
-      href='//fonts.googleapis.com/css?family=Inconsolata'
-      rel='stylesheet' type='text/css' />
+    <script>WebFontConfig = { google: { families: [ 'Inconsolata::latin' ] } };</script>
+    <script src="//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"></script>
     <link
       rel="stylesheet"
       href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
+    <span id="textMeasurementDummy">sup?</span>
     <div id="container">
       <canvas id="viewer"></canvas>
       <video id="monitor" autoplay></video>

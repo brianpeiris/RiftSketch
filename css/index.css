@@ -13,7 +13,7 @@ canvas {
   display: block;
 }
 
-textarea {
+textarea, #textMeasurementDummy {
   height: 200px;
   width: 400px;
   font-family: Inconsolata, Consolas, monospace;
