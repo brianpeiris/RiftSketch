@@ -16,7 +16,7 @@ canvas {
 textarea, #textMeasurementDummy {
   height: 200px;
   width: 400px;
-  font-family: Inconsolata, Consolas, monospace;
+  font-family: Ubuntu Mono, monospace;
   font-size: 11pt;
   position: absolute;
   left: -9999px;

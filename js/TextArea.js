@@ -17,7 +17,7 @@ function (
     canvas.width = canvas.height = this.canvasSize;
 
     this.context = canvas.getContext('2d');
-    this.context.font = FONT_SIZE_PX + 'px Inconsolata,monospace';
+    this.context.font = FONT_SIZE_PX + 'px Ubuntu Mono, monospace';
     this.context.globalCompositeOperation = 'darker';
     var textMetrics = this.context.measureText('0');
     this.charWidth = textMetrics.width;
@@ -64,7 +64,7 @@ function (
     canvas.height = 200;
 
     this.infoContext = canvas.getContext('2d');
-    this.infoContext.font = FONT_SIZE_PX + 'px Inconsolata,monospace';
+    this.infoContext.font = FONT_SIZE_PX + 'px Ubuntu Mono, monospace';
     this.infoContext.fillStyle = 'hsla(200, 50%, 90%, 0.9)';
     this.infoContext.fillRect(0, 0, this.canvasSize, this.canvasSize);
     this.infoContext.fillStyle = 'hsl(0, 0%, 25%)';
