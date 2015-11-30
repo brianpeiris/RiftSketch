@@ -24,13 +24,12 @@ function (
   
   var constr = function (
     width, height,
-    domTextAreas,
     domMonitor,
     callback
   ) {
     this.width = width;
     this.height = height;
-    this.domTextAreas = domTextAreas;
+    this.textAreas = null;
     this.areTextAreasVisible = true;
     this.domMonitor = domMonitor;
     window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
@@ -85,6 +84,12 @@ function (
     axis.position.y = 0.1;
     this.scene.add(axis);
 
+    this.monitor = new Monitor(this.domMonitor);
+    this.camera.add(this.monitor.object);
+  };
+
+  constr.prototype.setTextAreas = function (domTextAreas) {
+    this.domTextAreas = domTextAreas;
     this.textAreas = this.domTextAreas.map(function (domTextArea, i) {
       var textArea = new TextArea(domTextArea);
       this.scene.add(textArea.object);
@@ -92,9 +97,6 @@ function (
     }.bind(this));
 
     this.resetTextAreas();
-
-    this.monitor = new Monitor(this.domMonitor);
-    this.camera.add(this.monitor.object);
   };
 
   constr.prototype.resetTextAreas = function () {
@@ -170,7 +172,9 @@ function (
   };
 
   constr.prototype.render = function (timestamp) {
-    this.textAreas.forEach(function (textArea) { textArea.update(); });
+    if (this.textAreas) {
+      this.textAreas.forEach(function (textArea) { textArea.update(); });
+    }
     this.monitor.update();
     this.controls.update();
 

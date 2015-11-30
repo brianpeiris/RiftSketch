@@ -32,13 +32,12 @@ function (
 ) {
   'use strict';
 
-  var SketchController = function() {
+  var constr = function() {
     this.hands = [];
     this.setupVideoPassthrough();
 
     this.is_editor_visible = true;
     this.keyboardHandler = new KeyboardHandler(this);
-    this.setupSketch();
 
     this.sketchLoop = function () {};
     this.startLeapMotionLoop();
@@ -49,7 +48,7 @@ function (
     $(document).ready(this.init.bind(this));
   };
 
-  SketchController.prototype.setupVideoPassthrough = function () {
+  constr.prototype.setupVideoPassthrough = function () {
     this.domMonitor = document.getElementById('monitor');
     var getUserMedia = (
       (
@@ -72,14 +71,28 @@ function (
     );
   };
 
-  SketchController.prototype.loadSketch = function (ref) {
+  constr.prototype.initializeSketch = function (data) {
+    this.sketch = new Sketch();
+    this.sketch.set(data.val());
+    this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
+    this.currentDomTextArea = this.domTextAreas[0];
+    this.currentDomTextArea.focus();
+    this.currentFile = this.sketch.files[0];
+    this.riftSandbox.setTextAreas(this.domTextAreas);
+    this.riftSandbox.interceptScene();
+    this.firebaseRef.off('value', this.initializeSketch);
+  };
+
+  constr.prototype.loadSketch = function (ref) {
     this.firebaseRef = ref;
+    this.initializeSketch = this.initializeSketch.bind(this);
+    ref.on('value', this.initializeSketch);
     ref.on('value', function (data) {
       this.readCode(data.val());
     }.bind(this));
   };
 
-  SketchController.prototype.setupDomTextArea = function (file) {
+  constr.prototype.setupDomTextArea = function (file) {
     var domTextArea = $('<textarea>').
       attr('id', file.name).
       appendTo('body').
@@ -97,18 +110,11 @@ function (
     return domTextArea;
   };
 
-  SketchController.prototype.setupSketch = function () {
-    this.sketch = new Sketch('', [
-      new File('Cube', Cube)
-    ]);
-    this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
-    this.currentDomTextArea = this.domTextAreas[0];
-    this.currentDomTextArea.focus();
-    this.currentFile = this.sketch.files[0];
-
+  constr.prototype.setupSketch = function () {
     var sketches_base = 'https://riftsketch2.firebaseio.com/sketches/';
     var ref;
     if (!window.location.hash) {
+      this.sketch = new Sketch('', [ new File('Cube', Cube) ]);
       ref = new Firebase(sketches_base);
       ref = ref.push(
         this.sketch,
@@ -124,7 +130,7 @@ function (
     }
   };
 
-  SketchController.prototype.mainLoop = function () {
+  constr.prototype.mainLoop = function () {
     window.requestAnimationFrame( this.mainLoop.bind(this) );
 
     // Apply movement
@@ -150,7 +156,7 @@ function (
     this.riftSandbox.render();
   };
 
-  SketchController.prototype.readCode = function (sketch) {
+  constr.prototype.readCode = function (sketch) {
     this.sketch.set(sketch);
     this.domTextAreas.forEach(function (domTextArea, i) {
       domTextArea.value = this.sketch.files[i].contents;
@@ -177,7 +183,7 @@ function (
     }
   };
 
-  SketchController.prototype.startRecordingMousePos = function () {
+  constr.prototype.startRecordingMousePos = function () {
     this.mousePos = {x: 0, y: 0};
     window.addEventListener(
       'mousemove',
@@ -189,21 +195,21 @@ function (
     );
   };
 
-  SketchController.prototype.spinNumberAndKeepSelection = function (domTextArea, file, direction, amount) {
+  constr.prototype.spinNumberAndKeepSelection = function (domTextArea, file, direction, amount) {
     var start = domTextArea.selectionStart;
     file.spinNumberAt(start, direction, amount);
     this.firebaseRef.set(this.sketch);
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
   };
 
-  SketchController.prototype.offsetNumberAndKeepSelection = function (domTextArea, file, offset) {
+  constr.prototype.offsetNumberAndKeepSelection = function (domTextArea, file, offset) {
     var start = domTextArea.selectionStart;
     file.offsetOriginalNumber(offset);
     this.firebaseRef.set(this.sketch);
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
   };
 
-  SketchController.prototype.handleLeapMotionFrame = function (frame) {
+  constr.prototype.handleLeapMotionFrame = function (frame) {
     if (frame.hands.length) {
       this.handCurrent = frame;
       if (this.modifierPressed && this.handStart) {
@@ -217,13 +223,13 @@ function (
     this.previousFrame = frame;
   };
 
-  SketchController.prototype.startLeapMotionLoop = function () {
+  constr.prototype.startLeapMotionLoop = function () {
     this.handStart = this.handCurrent = null;
     this.modifierPressed = this.shiftPressed = false;
     Leap.loop({}, this.handleLeapMotionFrame.bind(this));
   };
 
-  SketchController.prototype.initializeApiAccess = function () {
+  constr.prototype.initializeApiAccess = function () {
     OAuth.initialize('bnVXi9ZBNKekF-alA1aF7PQEpsU');
     var apiCache = {};
     this.api = _.throttle(function (provider, url, data, callback) {
@@ -251,7 +257,7 @@ function (
     }, 1000);
   };
 
-  SketchController.prototype.toggleVrMode = function () {
+  constr.prototype.toggleVrMode = function () {
     if (
       !(document.mozFullScreenElement || document.webkitFullScreenElement) &&
       this.riftSandbox.vrMode
@@ -264,7 +270,7 @@ function (
     }
   };
 
-  SketchController.prototype.initializeUnsupportedModal = function () {
+  constr.prototype.initializeUnsupportedModal = function () {
     this.riftSandbox.vrManager.on('initialized', function () {
       if (
         !this.riftSandbox.vrManager.isVRCompatible &&
@@ -275,12 +281,12 @@ function (
     }.bind(this));
   };
 
-  SketchController.prototype.init = function () {
+  constr.prototype.init = function () {
     this.riftSandbox = new RiftSandbox(
       window.innerWidth, window.innerHeight,
-      this.domTextAreas,
       this.domMonitor
     );
+    this.setupSketch();
     this.keyboardHandler.riftSandbox = this.riftSandbox;
     this.keyboardHandler.bindKeyboardShortcuts(document);
 
@@ -290,8 +296,6 @@ function (
     $(document.body).on('click', focusCurrentTextArea);
 
     this.initializeUnsupportedModal();
-
-    this.riftSandbox.interceptScene();
 
     window.addEventListener(
       'resize',
@@ -304,13 +308,13 @@ function (
     this.mainLoop();
   };
 
-  SketchController.prototype.focusCurrentTextArea = function () {
+  constr.prototype.focusCurrentTextArea = function () {
     this.currentDomTextArea.focus();
   };
 
-  SketchController.prototype.getCurrentSelectionStart = function () {
+  constr.prototype.getCurrentSelectionStart = function () {
     return this.currentDomTextArea.selectionStart;
   };
 
-  return SketchController;
+  return constr;
 });
