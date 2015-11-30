@@ -104,7 +104,7 @@ function (
       textArea.object.rotateOnAxis(
         new THREE.Vector3(0, 1, 0),
         Math.PI / 4 * -(i + 1));
-      textArea.object.translateZ(-2.5);
+      textArea.object.translateZ(-1.5);
     });
   };
 
