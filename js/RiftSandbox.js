@@ -63,6 +63,7 @@ function (
     this.effect = new THREE.VREffect(this.renderer);
     this.effect.setSize(this.width, this.height);
 
+    WebVRConfig.FORCE_DISTORTION = true;
     this.vrManager = new WebVRManager(
       this.renderer, this.effect, {hideButton: false});
 
@@ -151,6 +152,7 @@ function (
           antialias: true,
           canvas: document.getElementById('viewer')
       });
+      this.renderer.setPixelRatio(devicePixelRatio);
     }
     catch(e){
       alert('This application needs WebGL enabled!');
@@ -215,6 +217,7 @@ function (
 
   constr.prototype.startVrMode = function () {
     this.vrManager.anyModeToVR();
+    this.vrManager.setMode_(3);
   };
 
   // constr.prototype.updateCameraPositionRotation = function () {
