@@ -6,7 +6,7 @@ var bc = function (path) {
 require.config({
   waitSeconds: 30,
   baseUrl: '',
-  urlArgs: 'bust=' + (new Date()).getTime(),
+  // urlArgs: 'bust=' + (new Date()).getTime(),
   paths: {
     firebase: bc('firebase/firebase'),
     jquery: bc('jquery/dist/jquery'),

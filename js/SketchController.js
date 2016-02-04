@@ -41,9 +41,6 @@ function (
     this.sketchLoop = function () {};
     this.startLeapMotionLoop();
 
-    document.addEventListener('mozfullscreenchange', this.toggleVrMode.bind(this), false);
-    document.addEventListener('webkitfullscreenchange', this.toggleVrMode.bind(this), false);
-
     $(document).ready(this.init.bind(this));
   };
 
@@ -256,17 +253,12 @@ function (
     }, 1000);
   };
 
-  constr.prototype.toggleVrMode = function () {
-    if (
-      !(document.mozFullScreenElement || document.webkitFullScreenElement) &&
-      this.riftSandbox.vrMode
-    ) {
-      this.isInfullscreen = false;
-      this.riftSandbox.toggleVrMode();
-    }
-    else {
-      this.isInfullscreen = true;
-    }
+  constr.prototype.resetSensor = function () {
+    this.riftSandbox.resetSensor();
+  };
+
+  constr.prototype.startVrMode = function () {
+    this.riftSandbox.startVrMode();
   };
 
   constr.prototype.initializeUnsupportedModal = function () {
@@ -305,6 +297,10 @@ function (
     this.riftSandbox.resize();
 
     this.mainLoop();
+
+    if (location.search.indexOf('vr=on') !== -1) {
+      this.startVrMode();
+    }
   };
 
   constr.prototype.toggleTextAreas = function () {

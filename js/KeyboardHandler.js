@@ -91,7 +91,7 @@ define([
   KeyboardHandler.prototype.bindKeyboardShortcuts = function (domTextArea, file) {
     var kibo = new Kibo(domTextArea);
     kibo.down(getShortcut('z'), function () {
-      this.riftSandbox.controls.zeroSensor();
+      this.sketchController.resetSensor();
       return false;
     }.bind(this));
     kibo.down(getShortcut('e'), function () {
@@ -100,8 +100,7 @@ define([
     }.bind(this));
 
     kibo.down(getShortcut('v'), function () {
-      this.riftSandbox.toggleVrMode();
-      this.riftSandbox.vrManager.toggleVRMode();
+      this.sketchController.startVrMode();
       return false;
     }.bind(this));
 
