@@ -36,7 +36,6 @@ function (
     this.hands = [];
     this.setupVideoPassthrough();
 
-    this.is_editor_visible = true;
     this.keyboardHandler = new KeyboardHandler(this);
 
     this.sketchLoop = function () {};
@@ -306,6 +305,16 @@ function (
     this.riftSandbox.resize();
 
     this.mainLoop();
+  };
+
+  constr.prototype.toggleTextAreas = function () {
+    if (this.riftSandbox.areTextAreasVisible) {
+      this.currentDomTextArea.blur();
+    }
+    else {
+      this.focusCurrentTextArea();
+    }
+    this.riftSandbox.toggleTextAreas();
   };
 
   constr.prototype.focusCurrentTextArea = function () {

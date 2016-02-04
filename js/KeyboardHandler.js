@@ -95,7 +95,7 @@ define([
       return false;
     }.bind(this));
     kibo.down(getShortcut('e'), function () {
-      this.sketchController.riftSandbox.toggleTextAreas();
+      this.sketchController.toggleTextAreas();
       return false;
     }.bind(this));
 
@@ -105,7 +105,9 @@ define([
       return false;
     }.bind(this));
 
-    this.bindNumberShortcuts(domTextArea, file, kibo);
+    if (file) {
+      this.bindNumberShortcuts(domTextArea, file, kibo);
+    }
     this.bindMovementShortcuts(kibo);
 
     kibo.down(getShortcut(), function () {
@@ -121,7 +123,9 @@ define([
     kibo.down(getShortcut(), function () {
       if (this.modifierPressed) { return false; }
       var start = this.sketchController.getCurrentSelectionStart();
-      file.recordOriginalNumberAt(start);
+      if (file) {
+        file.recordOriginalNumberAt(start);
+      }
       this.handStart = this.handCurrent;
       this.modifierPressed = true;
       return false;
