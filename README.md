@@ -21,8 +21,12 @@ meet that criteria it's surprisingly fun and engaging!
 - Webcam pass-through
 
 ## Setup
-If you happen to have an Oculus Rift and you want to try it out yourself, download a
+If you happen to have a VR headset and you want to try it out yourself, download a
 developer build of Firefox or Chrome that includes the WebVR APIs from
 [MozVR](http://mozvr.com/downloads) or
 [the Chrome dev build share](https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list)
-and visit http://brian.peiris.io/RiftSketch/ with your Rift hooked up.
+and visit http://brian.peiris.io/RiftSketch/
+
+RiftSketch should also work on mobile phones, with Google Cardboard. Currently,
+Firefox Nightly for Android and Chrome Dev for Android work the best. Bug reports
+are welcome!
