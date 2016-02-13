@@ -63,7 +63,6 @@ function (
     this.effect = new THREE.VREffect(this.renderer);
     this.effect.setSize(this.width, this.height);
 
-    WebVRConfig.FORCE_DISTORTION = true;
     this.vrManager = new WebVRManager(
       this.renderer, this.effect, {hideButton: false});
 
