@@ -1,12 +1,12 @@
 define([
-  'Three',
-  'VRControls',
-  'VREffect',
-  'WebVRPolyfill',
-  'WebVRManager',
+  'three',
+  'imports?THREE=three!three/examples/js/controls/VRControls',
+  'imports?THREE=three!three/examples/js/effects/VREffect',
+  'webvr-polyfill',
+  'exports?WebVRManager!webvr-boilerplate',
 
-  'js/TextArea',
-  'js/Monitor'
+  './TextArea',
+  './Monitor'
 ],
 function (
   THREE,

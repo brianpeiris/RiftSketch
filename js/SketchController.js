@@ -1,25 +1,23 @@
 define([
   'firebase',
   'jquery',
-  'leap',
-  'leapjsplugins',
-  'oauth',
+  'leapjs',
+  'leapjs-plugins',
   'lodash',
 
-  'js/KeyboardHandler',
-  'js/RiftSandbox',
-  'js/File',
-  'js/Sketch',
-  'js/UnsupportedModal',
+  './KeyboardHandler',
+  './RiftSandbox',
+  './File',
+  './Sketch',
+  './UnsupportedModal',
 
-  'text!js/Files/Cube.js',
+  'raw!./Files/Cube.js',
 ],
 function (
   Firebase,
   $,
   Leap,
   leapjsplugins,
-  OAuth,
   _,
 
   KeyboardHandler,

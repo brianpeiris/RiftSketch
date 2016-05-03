@@ -1,5 +1,5 @@
 define([
-  'Three'
+  'three'
 ],
 function (
   THREE

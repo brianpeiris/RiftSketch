@@ -1,7 +1,8 @@
 TODO
 
+- webfonts
+
 - Check Camera position/rotation works correctly in vr and non-vr mode.
-- Do we still want Twitter/API integration?
 
 ----
 

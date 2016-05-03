@@ -1,5 +1,5 @@
 define([
-  'js/File'
+  './File'
 ],
 function (
   File

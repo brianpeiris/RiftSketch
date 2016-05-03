@@ -1,6 +1,6 @@
 define([
-  'Backbone',
-  'text!templates/unsupported_modal.html'
+  'backbone',
+  'raw!../templates/unsupported_modal.html'
 ],
 function (Backbone, template) {
   'use strict';
