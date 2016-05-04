@@ -4,6 +4,7 @@ define([
   'leapjs',
   'leapjs-plugins',
   'lodash',
+  'three',
 
   './KeyboardHandler',
   './RiftSandbox',
@@ -19,6 +20,7 @@ function (
   Leap,
   leapjsplugins,
   _,
+  THREE,
 
   KeyboardHandler,
   RiftSandbox,
@@ -162,12 +164,12 @@ function (
     try {
       /* jshint -W054 */
       var _sketchFunc = new Function(
-        'scene', 'camera',
+        'THREE', 'scene', 'camera',
         '"use strict";\n' + this.sketch.getCode()
       );
       /* jshint +W054 */
       _sketchLoop = _sketchFunc(
-        this.riftSandbox.scene, this.riftSandbox.cameraPivot);
+        THREE, this.riftSandbox.scene, this.riftSandbox.cameraPivot);
     }
     catch (err) {
       this.riftSandbox.setInfo(err.toString());
