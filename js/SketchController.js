@@ -248,7 +248,8 @@ function (
   constr.prototype.initializeUnsupportedModal = function () {
     this.riftSandbox.vrManager.on('initialized', function () {
       if (
-        !this.riftSandbox.vrManager.isVRCompatible &&
+        (!this.riftSandbox.vrManager.isVRCompatible ||
+         this.riftSandbox.vrManager.hmd.isPolyfilled) &&
         !localStorage.getItem('alreadyIgnoredUnsupported')
       ) {
         $(document.body).append(new UnsupportedModal().render().el);

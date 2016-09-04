@@ -23,8 +23,8 @@ meet that criteria it's surprisingly fun and engaging!
 ## Setup
 If you happen to have a VR headset and you want to try it out yourself, download a
 developer build of Firefox or Chrome that includes the WebVR APIs from
-[MozVR](http://mozvr.com/downloads) or
-[the Chrome dev build share](https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list)
+[MozVR](https://mozvr.com/#start) or
+[Chrome WebVR](https://webvr.info/)
 and visit http://brian.peiris.io/RiftSketch/
 
 RiftSketch should also work on mobile phones, with Google Cardboard. Currently,
