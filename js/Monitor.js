@@ -7,8 +7,8 @@ function (
   'use strict';
 
   var MESH_SIZE = 0.5;
-  var WIDTH = 1280;
-  var HEIGHT = 720;
+  var WIDTH = 1024;
+  var HEIGHT = 512;
   var ASPECT = HEIGHT / WIDTH;
 
   var constr = function (domMonitor) {

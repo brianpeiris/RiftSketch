@@ -30,7 +30,7 @@ function (
     this.textTexture = new THREE.Texture(canvas);
     this.textTexture.needsUpdate = true;
     this.textTexture.minFilter = THREE.LinearFilter;
-    
+
     var textAreaMat = new THREE.MeshBasicMaterial(
       {map: this.textTexture, side: THREE.DoubleSide});
     textAreaMat.transparent = true;
@@ -69,13 +69,13 @@ function (
     this.infoContext.fillRect(0, 0, this.canvasSize, this.canvasSize);
     this.infoContext.fillStyle = 'hsl(0, 0%, 25%)';
     this.infoContext.fillText('Alt/Ctrl + Shift + ...', 0, FONT_SIZE_PX * 2);
-    this.infoContext.fillText('v - VR | z - reset | e - editor', 0, FONT_SIZE_PX * 3);
+    this.infoContext.fillText('v: VR | z: reset | e: editor | r: webcam', 0, FONT_SIZE_PX * 3);
     this.infoContext.fillText('j/k, u/i, n/m - change number', 0, FONT_SIZE_PX * 4);
 
     this.infoTexture = new THREE.Texture(canvas);
     this.infoTexture.needsUpdate = true;
     this.infoTexture.minFilter = THREE.LinearFilter;
-    
+
     var infoMat = new THREE.MeshBasicMaterial(
       {map: this.infoTexture, side: THREE.DoubleSide});
     infoMat.transparent = true;

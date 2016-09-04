@@ -46,25 +46,9 @@ function (
 
   constr.prototype.setupVideoPassthrough = function () {
     this.domMonitor = document.getElementById('monitor');
-    var getUserMedia = (
-      (
-        navigator.webkitGetUserMedia &&
-        navigator.webkitGetUserMedia.bind(navigator)) ||
-      navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices));
-    getUserMedia(
-      {video: {
-        mandatory: {
-          minWidth: 1280,
-          minHeight: 720
-        }
-      }},
-      function (stream) {
+    navigator.mediaDevices.getUserMedia({video: true}).then(function (stream) {
         this.domMonitor.src = window.URL.createObjectURL(stream);
-      }.bind(this),
-      function () {
-        // video pass-through is optional.
-      }
-    );
+    }.bind(this));
   };
 
   constr.prototype.initializeSketch = function (data) {

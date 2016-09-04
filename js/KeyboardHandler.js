@@ -98,6 +98,10 @@ define([
       this.sketchController.toggleTextAreas();
       return false;
     }.bind(this));
+    kibo.down(getShortcut('r'), function () {
+      this.riftSandbox.toggleMonitor();
+      return false;
+    }.bind(this));
 
     kibo.down(getShortcut('v'), function () {
       this.sketchController.startVrMode();
