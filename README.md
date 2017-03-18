@@ -30,3 +30,9 @@ and visit http://brian.peiris.io/RiftSketch/
 RiftSketch should also work on mobile phones, with Google Cardboard. Currently,
 Firefox Nightly for Android and Chrome Dev for Android work the best. Bug reports
 are welcome!
+
+## Development
+```
+$ npm install
+$ npm run start
+```
