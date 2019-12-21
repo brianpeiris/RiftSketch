@@ -6,9 +6,7 @@ import RiftSandbox from "./RiftSandbox";
 import File from "./File";
 import Sketch from "./Sketch";
 
-import Behaviors from "raw-loader!./Files/Behaviors.js";
-import Boid from "raw-loader!./Files/Boid.js";
-import World from "raw-loader!./Files/World.js";
+import Cube from "raw-loader!./Files/Cube.js";
 
 export default class SketchController {
   constructor() {
@@ -37,7 +35,7 @@ export default class SketchController {
       .getUserMedia({ video: true })
       .then(
         function(stream) {
-          this.domMonitor.src = window.URL.createObjectURL(stream);
+          this.domMonitor.srcObject = stream;
         }.bind(this)
       )
       .catch(e => {
@@ -46,7 +44,7 @@ export default class SketchController {
   }
 
   initializeSketch() {
-    this.sketch = new Sketch("", [new File("Behaviors", Behaviors), new File("Boid", Boid), new File("World", World)]);
+    this.sketch = new Sketch("", [new File("Cube", Cube)]);
     this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
     this.currentDomTextArea = this.domTextAreas[0];
     this.currentDomTextArea.focus();

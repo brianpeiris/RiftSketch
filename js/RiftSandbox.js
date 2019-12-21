@@ -41,8 +41,8 @@ export default class RiftSandbox {
     this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 200);
     this.scene.add(this.camera);
 
-    const maxAnisotropy = this.renderer.getMaxAnisotropy();
-    const groundTexture = THREE.ImageUtils.loadTexture("img/background.png");
+    const maxAnisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    const groundTexture = new THREE.TextureLoader().load("img/background.png");
 
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
@@ -55,7 +55,7 @@ export default class RiftSandbox {
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
 
-    const axis = new THREE.AxisHelper();
+    const axis = new THREE.AxesHelper();
     axis.position.y = 0.1;
     this.scene.add(axis);
 
