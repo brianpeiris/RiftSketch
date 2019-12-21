@@ -1,8 +1,8 @@
 import * as THREE from "three";
-var MESH_SIZE = 0.5;
-var WIDTH = 1024;
-var HEIGHT = 512;
-var ASPECT = HEIGHT / WIDTH;
+const MESH_SIZE = 0.5;
+const WIDTH = 1024;
+const HEIGHT = 512;
+const ASPECT = HEIGHT / WIDTH;
 export default class Monitor {
   constructor(domMonitor) {
     this.domMonitor = domMonitor;
@@ -15,7 +15,7 @@ export default class Monitor {
     this.monitorTexture = new THREE.Texture(this.canvas);
     this.monitorTexture.needsUpdate = true;
 
-    var monitorMaterial = new THREE.MeshBasicMaterial({
+    const monitorMaterial = new THREE.MeshBasicMaterial({
       map: this.monitorTexture,
       side: THREE.DoubleSide,
       transparent: true,

@@ -1,21 +1,21 @@
 import * as THREE from "three";
 
-var FONT_SIZE_PX = 40;
-var NUM_LINES = 20;
-var CANVAS_SIZE_PX = NUM_LINES * FONT_SIZE_PX + FONT_SIZE_PX * 0.2;
-var UPDATE_INTERVAL_MS = 500;
+const FONT_SIZE_PX = 40;
+const NUM_LINES = 20;
+const CANVAS_SIZE_PX = NUM_LINES * FONT_SIZE_PX + FONT_SIZE_PX * 0.2;
+const UPDATE_INTERVAL_MS = 500;
 export default class TextArea {
   constructor(domTextArea) {
     this.domTextArea = domTextArea;
 
     this.canvasSize = CANVAS_SIZE_PX;
-    var canvas = document.createElement("canvas");
+    const canvas = document.createElement("canvas");
     canvas.width = canvas.height = this.canvasSize;
 
     this.context = canvas.getContext("2d");
     this.context.font = FONT_SIZE_PX + "px Ubuntu Mono, monospace";
     this.context.globalCompositeOperation = "darker";
-    var textMetrics = this.context.measureText("0");
+    const textMetrics = this.context.measureText("0");
     this.charWidth = textMetrics.width;
     this.numCols = Math.floor(CANVAS_SIZE_PX / this.charWidth);
 
@@ -28,7 +28,7 @@ export default class TextArea {
     this.textTexture.needsUpdate = true;
     this.textTexture.minFilter = THREE.LinearFilter;
 
-    var textAreaMat = new THREE.MeshBasicMaterial({ map: this.textTexture, side: THREE.DoubleSide });
+    const textAreaMat = new THREE.MeshBasicMaterial({ map: this.textTexture, side: THREE.DoubleSide });
     textAreaMat.transparent = true;
 
     this.object = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), new THREE.MeshBasicMaterial(textAreaMat));
@@ -39,7 +39,7 @@ export default class TextArea {
       new THREE.MeshBasicMaterial({ wireframe: true })
     );
     this.grabHandle.position.set(0.8, -1.2, -0.05);
-    var grabHandleCube = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.15), new THREE.MeshLambertMaterial());
+    const grabHandleCube = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.15), new THREE.MeshLambertMaterial());
     this.grabHandle.add(grabHandleCube);
     this.object.add(this.grabHandle);
 
@@ -50,7 +50,7 @@ export default class TextArea {
   }
 
   setupInfoPane() {
-    var canvas = document.createElement("canvas");
+    const canvas = document.createElement("canvas");
     canvas.width = this.canvasSize;
     canvas.height = 200;
 
@@ -67,10 +67,10 @@ export default class TextArea {
     this.infoTexture.needsUpdate = true;
     this.infoTexture.minFilter = THREE.LinearFilter;
 
-    var infoMat = new THREE.MeshBasicMaterial({ map: this.infoTexture, side: THREE.DoubleSide });
+    const infoMat = new THREE.MeshBasicMaterial({ map: this.infoTexture, side: THREE.DoubleSide });
     infoMat.transparent = true;
 
-    var infoMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 0.5), new THREE.MeshBasicMaterial(infoMat));
+    const infoMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 0.5), new THREE.MeshBasicMaterial(infoMat));
     infoMesh.position.y = -1.3;
 
     this.object.add(infoMesh);
@@ -90,17 +90,16 @@ export default class TextArea {
   }
 
   getLines() {
-    var start = this.domTextArea.selectionStart;
-    var end = this.domTextArea.selectionEnd;
+    const start = this.domTextArea.selectionStart;
+    const end = this.domTextArea.selectionEnd;
 
-    var charsSeen = 0,
-      charsSeenWithNewLines = 0;
+    let charsSeenWithNewLines = 0;
 
-    var lines = this.domTextArea.value.split("\n");
+    const lines = this.domTextArea.value.split("\n");
     return lines.map(function(line) {
-      var isLineSelected = start <= charsSeenWithNewLines + line.length && end >= charsSeenWithNewLines;
+      const isLineSelected = start <= charsSeenWithNewLines + line.length && end >= charsSeenWithNewLines;
 
-      var lineStart = 0,
+      let lineStart = 0,
         lineEnd = line.length;
       if (isLineSelected) {
         if (start >= charsSeenWithNewLines) {
@@ -114,9 +113,8 @@ export default class TextArea {
       }
 
       charsSeenWithNewLines += line.length + 1;
-      charsSeen += line.length;
 
-      var lineObj = {
+      const lineObj = {
         text: line,
         selectionStart: lineStart,
         selectionEnd: lineEnd
@@ -131,17 +129,17 @@ export default class TextArea {
       this.lastUpdate = Date.now();
       return true;
     }
-    var newText = this.domTextArea.value;
+    const newText = this.domTextArea.value;
     if (this.oldText !== newText) {
       this.oldText = this.domTextArea.value;
       return true;
     }
-    var newStart = this.domTextArea.selectionStart;
+    const newStart = this.domTextArea.selectionStart;
     if (this.oldStart !== newStart) {
       this.oldStart = newStart;
       return true;
     }
-    var newEnd = this.domTextArea.selectionEnd;
+    const newEnd = this.domTextArea.selectionEnd;
     if (this.oldEnd !== newEnd) {
       this.oldEnd = newEnd;
       return true;
@@ -149,10 +147,10 @@ export default class TextArea {
   }
 
   updateViewport(hasStartChanged, lines) {
-    var position = hasStartChanged ? this.domTextArea.selectionStart : this.domTextArea.selectionEnd;
-    var substring = this.domTextArea.value.substring(0, position);
-    var linesUpToPosition = substring.match(/\n/g) || [];
-    var line = linesUpToPosition.length + 1;
+    const position = hasStartChanged ? this.domTextArea.selectionStart : this.domTextArea.selectionEnd;
+    const substring = this.domTextArea.value.substring(0, position);
+    const linesUpToPosition = substring.match(/\n/g) || [];
+    let line = linesUpToPosition.length + 1;
     if (line < this.viewPort.line + 1) {
       this.viewPort.line = line - 1;
     } else if (line > this.viewPort.line + NUM_LINES) {
@@ -160,7 +158,7 @@ export default class TextArea {
     }
 
     line = lines[line - 1];
-    var col = hasStartChanged ? line.selectionStart : line.selectionEnd;
+    const col = hasStartChanged ? line.selectionStart : line.selectionEnd;
     if (col < this.viewPort.col) {
       this.viewPort.col = col;
     } else if (col > this.viewPort.col + this.numCols) {
@@ -169,23 +167,23 @@ export default class TextArea {
   }
 
   update() {
-    var hasStartChanged = this.domTextArea.selectionStart != this.oldStart;
+    const hasStartChanged = this.domTextArea.selectionStart != this.oldStart;
     if (!this.shouldUpdateTexture()) {
       return;
     }
 
-    var lines = this.getLines(this.domTextArea);
+    const lines = this.getLines(this.domTextArea);
     this.updateViewport(hasStartChanged, lines);
 
     this.context.clearRect(0, 0, this.canvasSize, this.canvasSize);
     this.context.fillStyle = "hsla(0, 0%, 100%, 0.8)";
     this.context.fillRect(0, 0, this.canvasSize, this.canvasSize);
 
-    for (var i = this.viewPort.line; i < Math.min(this.viewPort.line + NUM_LINES, lines.length); i++) {
-      var j = i - this.viewPort.line;
-      var line = lines[i];
+    for (let i = this.viewPort.line; i < Math.min(this.viewPort.line + NUM_LINES, lines.length); i++) {
+      const j = i - this.viewPort.line;
+      const line = lines[i];
       this.context.fillStyle = "hsl(0, 0%, 25%)";
-      var lineText = line.text.substring(this.viewPort.col, this.viewPort.col + this.numCols);
+      const lineText = line.text.substring(this.viewPort.col, this.viewPort.col + this.numCols);
       this.context.fillText(lineText, 0, FONT_SIZE_PX + FONT_SIZE_PX * j);
 
       if (line.selectionStart === null) {
@@ -193,11 +191,11 @@ export default class TextArea {
       }
 
       this.context.fillStyle = "rgba(100, 100, 200, 0.8)";
-      var width = (line.selectionEnd - line.selectionStart) * this.charWidth;
+      let width = (line.selectionEnd - line.selectionStart) * this.charWidth;
       if (width === 0) {
         width = 5;
-        var nextLine = lines[i + 1];
-        var isLastSelectedLine = !nextLine || nextLine.selectionStart === null;
+        const nextLine = lines[i + 1];
+        const isLastSelectedLine = !nextLine || nextLine.selectionStart === null;
         if (isLastSelectedLine && this.isBlinkOff) {
           continue;
         }

@@ -1,6 +1,6 @@
 import Kibo from "@brianpeiris/kibo";
 
-var getShortcut = function(key) {
+const getShortcut = function(key) {
   key = key || "";
   return ["alt shift " + key, "ctrl shift " + key];
 };
@@ -11,8 +11,8 @@ export default class KeyboardHandler {
   }
 
   bindMovementShortcuts(kibo) {
-    var MOVEMENT_RATE = 0.01;
-    var ROTATION_RATE = 0.01;
+    const MOVEMENT_RATE = 0.01;
+    const ROTATION_RATE = 0.01;
 
     kibo.down(
       "w",
@@ -129,7 +129,7 @@ export default class KeyboardHandler {
   }
 
   bindKeyboardShortcuts(domTextArea, file) {
-    var kibo = new Kibo(domTextArea);
+    const kibo = new Kibo(domTextArea);
     kibo.down(
       getShortcut("z"),
       function() {
@@ -189,7 +189,7 @@ export default class KeyboardHandler {
         if (this.modifierPressed) {
           return false;
         }
-        var start = this.sketchController.getCurrentSelectionStart();
+        const start = this.sketchController.getCurrentSelectionStart();
         if (file) {
           file.recordOriginalNumberAt(start);
         }

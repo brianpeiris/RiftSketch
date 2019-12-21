@@ -5,7 +5,7 @@ export default class File {
     this.selected = true;
   }
   findNumberAt(index) {
-    var match = this.contents.substring(index).match(/-?\d+\.?\d*/);
+    const match = this.contents.substring(index).match(/-?\d+\.?\d*/);
     if (match) {
       return match[0];
     }
@@ -18,16 +18,16 @@ export default class File {
     }
   }
   spinNumberAt(index, direction, amount, originalNumber) {
-    var number = this.findNumberAt(index);
+    const number = this.findNumberAt(index);
     if (number === undefined) {
       return;
     }
     originalNumber = originalNumber || number;
-    var newNumber = this.spinNumber(originalNumber, direction, amount);
+    const newNumber = this.spinNumber(originalNumber, direction, amount);
     this.contents = this.contents.substring(0, index) + newNumber + this.contents.substring(index + number.length);
   }
   recordOriginalNumberAt(index) {
-    var number = this.findNumberAt(index);
+    const number = this.findNumberAt(index);
     if (number === undefined) {
       return;
     }

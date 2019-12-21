@@ -5,7 +5,10 @@ import KeyboardHandler from "./KeyboardHandler";
 import RiftSandbox from "./RiftSandbox";
 import File from "./File";
 import Sketch from "./Sketch";
-import Cube from "raw-loader!./Files/Cube.js";
+
+import Behaviors from "raw-loader!./Files/Behaviors.js";
+import Boid from "raw-loader!./Files/Boid.js";
+import World from "raw-loader!./Files/World.js";
 
 export default class SketchController {
   constructor() {
@@ -43,7 +46,7 @@ export default class SketchController {
   }
 
   initializeSketch() {
-    this.sketch = new Sketch("", [new File("Cube", Cube)]);
+    this.sketch = new Sketch("", [new File("Behaviors", Behaviors), new File("Boid", Boid), new File("World", World)]);
     this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
     this.currentDomTextArea = this.domTextAreas[0];
     this.currentDomTextArea.focus();
@@ -56,7 +59,7 @@ export default class SketchController {
     const domTextArea = document.createElement("textarea");
     domTextArea.id = file.name;
     domTextArea.addEventListener("keyup", e => {
-      var contents = e.target.value;
+      const contents = e.target.value;
       if (contents === file.contents) {
         return;
       }
@@ -77,6 +80,7 @@ export default class SketchController {
     try {
       this.sketchLoop();
     } catch (err) {
+      console.log("Sketch Error", err);
       this.riftSandbox.setInfo(err.toString());
     }
 
@@ -91,14 +95,14 @@ export default class SketchController {
     );
 
     this.riftSandbox.clearScene();
-    var _sketchLoop;
+    let _sketchLoop;
     this.riftSandbox.setInfo("");
     try {
-      /* jshint -W054 */
-      var _sketchFunc = new Function("THREE", "scene", "camera", '"use strict";\n' + this.sketch.getCode());
-      /* jshint +W054 */
-      _sketchLoop = _sketchFunc(THREE, this.riftSandbox.scene, this.riftSandbox.cameraPivot);
+      const _sketchFunc = new Function("THREE", "scene", "camera", "sketch", '"use strict";\n' + this.sketch.getCode());
+      _sketchFunc(THREE, this.riftSandbox.scene, this.riftSandbox.cameraPivot, this.sketch);
+      _sketchLoop = this.sketch.loop;
     } catch (err) {
+      console.log("Sketch Error", err);
       this.riftSandbox.setInfo(err.toString());
     }
     if (_sketchLoop) {
@@ -119,13 +123,13 @@ export default class SketchController {
   }
 
   spinNumberAndKeepSelection(domTextArea, file, direction, amount) {
-    var start = domTextArea.selectionStart;
+    const start = domTextArea.selectionStart;
     file.spinNumberAt(start, direction, amount);
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
   }
 
   offsetNumberAndKeepSelection(domTextArea, file, offset) {
-    var start = domTextArea.selectionStart;
+    const start = domTextArea.selectionStart;
     file.offsetOriginalNumber(offset);
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
   }
@@ -153,7 +157,7 @@ export default class SketchController {
     this.keyboardHandler.riftSandbox = this.riftSandbox;
     this.keyboardHandler.bindKeyboardShortcuts(document);
 
-    var focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
+    const focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
     // TODO Focus on VR entry or fullscreen
     document.body.addEventListener("click", focusCurrentTextArea);
 

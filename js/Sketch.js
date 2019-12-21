@@ -5,8 +5,8 @@ export default class Sketch {
     this.files = files || [new File()];
   }
   getCode() {
-    var code = "";
-    for (var i = 0; i < this.files.length; i++) {
+    let code = "";
+    for (let i = 0; i < this.files.length; i++) {
       code += this.files[i].contents;
     }
     return code;

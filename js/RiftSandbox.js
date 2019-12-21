@@ -3,16 +3,14 @@ import * as THREE from "three";
 import TextArea from "./TextArea";
 import Monitor from "./Monitor";
 
-var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
-var ONE_DEGREE = Math.PI / 180.0;
-
 function angleRangeRad(angle) {
   while (angle > Math.PI) angle -= 2 * Math.PI;
   while (angle <= -Math.PI) angle += 2 * Math.PI;
   return angle;
 }
+
 export default class RiftSandbox {
-  constructor(width, height, domMonitor, callback) {
+  constructor(width, height, domMonitor) {
     this.width = width;
     this.height = height;
     this.textAreas = null;
@@ -34,30 +32,30 @@ export default class RiftSandbox {
     this._rampRate = 0;
 
     this.initWebGL();
-    this.initScene(callback);
+    this.initScene();
   }
 
-  initScene(callback) {
+  initScene() {
     this.scene = new THREE.Scene();
 
     this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 200);
     this.scene.add(this.camera);
 
-    var maxAnisotropy = this.renderer.getMaxAnisotropy();
-    var groundTexture = THREE.ImageUtils.loadTexture("img/background.png");
+    const maxAnisotropy = this.renderer.getMaxAnisotropy();
+    const groundTexture = THREE.ImageUtils.loadTexture("img/background.png");
 
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set(200, 200);
 
-    var ground = new THREE.Mesh(
+    const ground = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(200, 200),
       new THREE.MeshBasicMaterial({ map: groundTexture })
     );
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
 
-    var axis = new THREE.AxisHelper();
+    const axis = new THREE.AxisHelper();
     axis.position.y = 0.1;
     this.scene.add(axis);
 
@@ -68,8 +66,8 @@ export default class RiftSandbox {
   setTextAreas(domTextAreas) {
     this.domTextAreas = domTextAreas;
     this.textAreas = this.domTextAreas.map(
-      function(domTextArea, i) {
-        var textArea = new TextArea(domTextArea);
+      function(domTextArea) {
+        const textArea = new TextArea(domTextArea);
         this.scene.add(textArea.object);
         return textArea;
       }.bind(this)
@@ -86,7 +84,7 @@ export default class RiftSandbox {
   }
 
   interceptScene() {
-    var oldAdd = this.scene.add;
+    const oldAdd = this.scene.add;
     this.scene.add = function(obj) {
       this.sceneStuff.push(obj);
       oldAdd.call(this.scene, obj);
@@ -136,7 +134,7 @@ export default class RiftSandbox {
   }
 
   clearScene() {
-    for (var i = 0; i < this.sceneStuff.length; i++) {
+    for (let i = 0; i < this.sceneStuff.length; i++) {
       this.scene.remove(this.sceneStuff[i]);
     }
     this.sceneStuff = [];
@@ -171,10 +169,10 @@ export default class RiftSandbox {
     if (!vrState) {
       return;
     }
-    var rotation = vrState.orientation;
-    var position = vrState.position;
+    const rotation = vrState.orientation;
+    const position = vrState.position;
     this.HMDRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
-    var VR_POSITION_SCALE = 1;
+    const VR_POSITION_SCALE = 1;
     if (position) {
       this.HMDPosition.set(
         position.x * VR_POSITION_SCALE,
@@ -205,7 +203,7 @@ export default class RiftSandbox {
     } else if (!this._rampUp && this._velocity > this._targetVelocity) {
       this._velocity -= this._rampRate;
     }
-    var movementVector = new THREE.Vector3(0, 0, -1);
+    const movementVector = new THREE.Vector3(0, 0, -1);
     movementVector.applyQuaternion(this.BaseRotation);
     movementVector.multiplyScalar(this._velocity);
     this.BasePosition.add(movementVector);
