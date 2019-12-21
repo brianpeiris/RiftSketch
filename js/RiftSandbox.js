@@ -1,32 +1,18 @@
-define([
-  'three',
-  'imports?THREE=three!three/examples/js/controls/VRControls',
-  'imports?THREE=three!three/examples/js/effects/VREffect',
-  'webvr-polyfill',
-  'exports?WebVRManager!webvr-boilerplate',
+import * as THREE from "three";
 
-  './TextArea',
-  './Monitor'
-],
-function (
-  THREE,
-  VRControls,
-  VREffect,
-  WebVRPolyfill,
-  WebVRManager,
+import TextArea from "./TextArea";
+import Monitor from "./Monitor";
 
-  TextArea,
-  Monitor
-) {
-  'use strict';
-  var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
-  var ONE_DEGREE = Math.PI / 180.0;
-  
-  var constr = function (
-    width, height,
-    domMonitor,
-    callback
-  ) {
+var BASE_POSITION = new THREE.Vector3(0, 1.5, -2);
+var ONE_DEGREE = Math.PI / 180.0;
+
+function angleRangeRad(angle) {
+  while (angle > Math.PI) angle -= 2 * Math.PI;
+  while (angle <= -Math.PI) angle += 2 * Math.PI;
+  return angle;
+}
+export default class RiftSandbox {
+  constructor(width, height, domMonitor, callback) {
     this.width = width;
     this.height = height;
     this.textAreas = null;
@@ -37,9 +23,8 @@ function (
     this.BasePosition = new THREE.Vector3(0, 1.5, 2);
     this.HMDPosition = new THREE.Vector3();
     this.plainRotation = new THREE.Vector3();
-    this.BaseRotationEuler = new THREE.Euler(0, Math.PI / 2, 0); 
-    this.BaseRotation = new THREE.Quaternion().setFromEuler(
-      this.BaseRotationEuler);
+    this.BaseRotationEuler = new THREE.Euler(0, Math.PI / 2, 0);
+    this.BaseRotation = new THREE.Quaternion().setFromEuler(this.BaseRotationEuler);
     this.scene = null;
     this.sceneStuff = [];
     this.renderer = null;
@@ -50,32 +35,25 @@ function (
 
     this.initWebGL();
     this.initScene(callback);
-  };
+  }
 
-  constr.prototype.initScene = function (callback) {
+  initScene(callback) {
     this.scene = new THREE.Scene();
 
-    this.camera = new THREE.PerspectiveCamera(
-      75, this.width / this.height, 0.1, 200);
+    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 200);
     this.scene.add(this.camera);
 
-    this.controls = new THREE.VRControls(this.camera);
-    this.effect = new THREE.VREffect(this.renderer);
-    this.effect.setSize(this.width, this.height);
-
-    this.vrManager = new WebVRManager(
-      this.renderer, this.effect, {hideButton: false});
-
     var maxAnisotropy = this.renderer.getMaxAnisotropy();
-    var groundTexture = THREE.ImageUtils.loadTexture('img/background.png');
-    
+    var groundTexture = THREE.ImageUtils.loadTexture("img/background.png");
+
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-    groundTexture.repeat.set( 200, 200 );
-    
+    groundTexture.repeat.set(200, 200);
+
     var ground = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry( 200, 200 ),
-      new THREE.MeshBasicMaterial({map: groundTexture}) );
+      new THREE.PlaneBufferGeometry(200, 200),
+      new THREE.MeshBasicMaterial({ map: groundTexture })
+    );
     ground.rotation.x = -Math.PI / 2;
     this.scene.add(ground);
 
@@ -85,118 +63,114 @@ function (
 
     this.monitor = new Monitor(this.domMonitor);
     this.camera.add(this.monitor.object);
-  };
+  }
 
-  constr.prototype.setTextAreas = function (domTextAreas) {
+  setTextAreas(domTextAreas) {
     this.domTextAreas = domTextAreas;
-    this.textAreas = this.domTextAreas.map(function (domTextArea, i) {
-      var textArea = new TextArea(domTextArea);
-      this.scene.add(textArea.object);
-      return textArea;
-    }.bind(this));
+    this.textAreas = this.domTextAreas.map(
+      function(domTextArea, i) {
+        var textArea = new TextArea(domTextArea);
+        this.scene.add(textArea.object);
+        return textArea;
+      }.bind(this)
+    );
 
     this.resetTextAreas();
-  };
+  }
 
-  constr.prototype.resetTextAreas = function () {
+  resetTextAreas() {
     this.textAreas.forEach(function(textArea, i) {
-      textArea.object.rotateOnAxis(
-        new THREE.Vector3(0, 1, 0),
-        Math.PI / 4 * -(i + 1));
+      textArea.object.rotateOnAxis(new THREE.Vector3(0, 1, 0), (Math.PI / 4) * -(i + 1));
       textArea.object.translateZ(-1.5);
     });
-  };
+  }
 
-  constr.prototype.interceptScene = function () {
+  interceptScene() {
     var oldAdd = this.scene.add;
-    this.scene.add = function (obj) {
+    this.scene.add = function(obj) {
       this.sceneStuff.push(obj);
       oldAdd.call(this.scene, obj);
     }.bind(this);
-  };
-
-  constr.prototype.toggleTextAreas = function () {
-    this.areTextAreasVisible = !this.areTextAreasVisible;
-    this.textAreas.forEach(function (textArea) {
-      textArea.toggle(this.areTextAreasVisible);
-    }.bind(this));
-  };
-
-  constr.prototype.toggleMonitor = function () {
-    this.monitor.toggle();
-  };
-
-  constr.prototype.setInfo = function (msg) {
-    this.textAreas.forEach(function (textArea) {
-      textArea.setInfo(msg);
-    });
-  };
-
-  function angleRangeRad(angle) {
-    while (angle > Math.PI) angle -= 2*Math.PI;
-    while (angle <= -Math.PI) angle += 2*Math.PI;
-    return angle;
   }
 
-  constr.prototype.setBaseRotation = function () {
-    this.BaseRotationEuler.set(
-      angleRangeRad(this.BaseRotationEuler.x),
-      angleRangeRad(this.BaseRotationEuler.y), 0.0 );
-    this.BaseRotation.setFromEuler(this.BaseRotationEuler, 'YZX');
-  };
+  toggleTextAreas() {
+    this.areTextAreasVisible = !this.areTextAreasVisible;
+    this.textAreas.forEach(
+      function(textArea) {
+        textArea.toggle(this.areTextAreasVisible);
+      }.bind(this)
+    );
+  }
 
-  constr.prototype.initWebGL = function () {
+  toggleMonitor() {
+    this.monitor.toggle();
+  }
+
+  setInfo(msg) {
+    this.textAreas.forEach(function(textArea) {
+      textArea.setInfo(msg);
+    });
+  }
+
+  setBaseRotation() {
+    this.BaseRotationEuler.set(angleRangeRad(this.BaseRotationEuler.x), angleRangeRad(this.BaseRotationEuler.y), 0.0);
+    this.BaseRotation.setFromEuler(this.BaseRotationEuler, "YZX");
+  }
+
+  initWebGL() {
     try {
       this.renderer = new THREE.WebGLRenderer({
-          antialias: true,
-          canvas: document.getElementById('viewer')
+        antialias: true,
+        canvas: document.getElementById("viewer")
       });
       this.renderer.setPixelRatio(devicePixelRatio);
-    }
-    catch(e){
-      alert('This application needs WebGL enabled!');
+    } catch (e) {
+      alert("This application needs WebGL enabled!");
       return false;
     }
 
-    this.renderer.setClearColor(0xD3D3D3, 1.0);
+    this.renderer.setClearColor(0xd3d3d3, 1.0);
     this.renderer.setSize(this.width, this.height);
 
-    this.container = document.getElementById('container');
-  };
+    this.container = document.getElementById("container");
+  }
 
-  constr.prototype.clearScene = function () {
+  clearScene() {
     for (var i = 0; i < this.sceneStuff.length; i++) {
       this.scene.remove(this.sceneStuff[i]);
     }
     this.sceneStuff = [];
-  };
+  }
 
-  constr.prototype.render = function (timestamp) {
+  render(timestamp) {
     if (this.textAreas) {
-      this.textAreas.forEach(function (textArea) { textArea.update(); });
+      this.textAreas.forEach(function(textArea) {
+        textArea.update();
+      });
     }
     this.monitor.update();
-    this.controls.update();
 
     this.camera.position.copy(this.BasePosition);
 
-    this.vrManager.render(this.scene, this.camera, timestamp);
-  };
+    this.renderer.render(this.scene, this.camera, timestamp);
+  }
 
-  constr.prototype.resize = function () {
+  resize() {
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.camera.aspect = this.width / this.height;
     this.camera.updateProjectionMatrix();
-    this.effect.setSize(this.width, this.height);
-  };
+    this.renderer.setSize(this.width, this.height);
+  }
 
-  constr.prototype.setRotation = function (rotation) {
+  setRotation(rotation) {
     this.plainRotation.set(0, rotation.y, 0);
-  };
+  }
 
-  constr.prototype.setHmdPositionRotation = function (vrState) {
-    if (!vrState) { return; }
+  setHmdPositionRotation(vrState) {
+    if (!vrState) {
+      return;
+    }
     var rotation = vrState.orientation;
     var position = vrState.position;
     this.HMDRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -208,35 +182,32 @@ function (
         position.z * VR_POSITION_SCALE
       );
     }
-  };
+  }
 
-  constr.prototype.resetSensor = function () {
+  resetSensor() {
     this.controls.resetSensor();
-  };
+  }
 
-  constr.prototype.startVrMode = function () {
+  startVrMode() {
     this.vrManager.anyModeToVR();
     this.vrManager.setMode_(3);
-  };
+  }
 
-  constr.prototype.setVelocity = function (velocity) {
+  setVelocity(velocity) {
     this._rampUp = velocity > this._targetVelocity;
     this._rampRate = Math.abs(velocity - this._targetVelocity) * 0.1;
     this._targetVelocity = velocity;
-  };
+  }
 
-  constr.prototype._move = function () {
+  _move() {
     if (this._rampUp && this._velocity < this._targetVelocity) {
       this._velocity += this._rampRate;
-    }
-    else if (!this._rampUp && this._velocity > this._targetVelocity) {
+    } else if (!this._rampUp && this._velocity > this._targetVelocity) {
       this._velocity -= this._rampRate;
     }
     var movementVector = new THREE.Vector3(0, 0, -1);
     movementVector.applyQuaternion(this.BaseRotation);
     movementVector.multiplyScalar(this._velocity);
     this.BasePosition.add(movementVector);
-  };
-
-  return constr;
-});
+  }
+}

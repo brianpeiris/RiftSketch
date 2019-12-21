@@ -5,12 +5,10 @@ const selfsigned = require("selfsigned");
 module.exports = {
   entry: "./js/index.js",
   output: {
-    path: "./",
+    path: __dirname,
     filename: "bundle.js"
   },
-  module: {
-    loaders: [{ test: /\.(eot|ttf|woff|woff2|svg)$/, loader: "url-loader" }]
-  },
+  devtool: "inline-source-map",
   devServer: {
     host: "0.0.0.0",
     https: createHTTPSConfig(),

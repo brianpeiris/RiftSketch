@@ -1,54 +1,34 @@
-define([
-  "jquery",
-  "leapjs",
-  "leapjs-plugins",
-  "lodash",
-  "three",
-  "webfontloader",
+import * as THREE from "three";
+import WebFont from "webfontloader";
 
-  "./KeyboardHandler",
-  "./RiftSandbox",
-  "./File",
-  "./Sketch",
-  "./UnsupportedModal",
+import KeyboardHandler from "./KeyboardHandler";
+import RiftSandbox from "./RiftSandbox";
+import File from "./File";
+import Sketch from "./Sketch";
+import Cube from "raw-loader!./Files/Cube.js";
 
-  "raw!./Files/Cube.js"
-], function(
-  $,
-  Leap,
-  leapjsplugins,
-  _,
-  THREE,
-  WebFont,
-
-  KeyboardHandler,
-  RiftSandbox,
-  File,
-  Sketch,
-  UnsupportedModal,
-
-  Cube
-) {
-  "use strict";
-
-  var constr = function() {
+export default class SketchController {
+  constructor() {
     this.hands = [];
     this.setupVideoPassthrough();
 
     this.keyboardHandler = new KeyboardHandler(this);
 
     this.sketchLoop = function() {};
-    this.startLeapMotionLoop();
 
     WebFont.load({
       google: { families: ["Ubuntu Mono"] },
       active: () => {
-        $(document).ready(this.init.bind(this));
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", this.init.bind(this));
+        } else {
+          this.init();
+        }
       }
     });
-  };
+  }
 
-  constr.prototype.setupVideoPassthrough = function() {
+  setupVideoPassthrough() {
     this.domMonitor = document.getElementById("monitor");
     navigator.mediaDevices
       .getUserMedia({ video: true })
@@ -60,9 +40,9 @@ define([
       .catch(e => {
         console.info("Could not get video passthrough", e);
       });
-  };
+  }
 
-  constr.prototype.initializeSketch = function() {
+  initializeSketch() {
     this.sketch = new Sketch("", [new File("Cube", Cube)]);
     this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
     this.currentDomTextArea = this.domTextAreas[0];
@@ -70,32 +50,28 @@ define([
     this.currentFile = this.sketch.files[0];
     this.riftSandbox.setTextAreas(this.domTextAreas);
     this.riftSandbox.interceptScene();
-  };
+  }
 
-  constr.prototype.setupDomTextArea = function(file) {
-    var domTextArea = $("<textarea>")
-      .attr("id", file.name)
-      .appendTo("body")
-      .on(
-        "keyup",
-        function(e) {
-          var contents = e.target.value;
-          if (contents === file.contents) {
-            return;
-          }
-          file.contents = contents;
-          this.readCode();
-        }.bind(this)
-      )
-      .on("keydown", function(e) {
-        e.stopPropagation();
-      })
-      .get(0);
+  setupDomTextArea(file) {
+    const domTextArea = document.createElement("textarea");
+    domTextArea.id = file.name;
+    domTextArea.addEventListener("keyup", e => {
+      var contents = e.target.value;
+      if (contents === file.contents) {
+        return;
+      }
+      file.contents = contents;
+      this.readCode();
+    });
+    domTextArea.addEventListener("keydown", e => {
+      e.stopPropagation();
+    });
+    document.body.append(domTextArea);
     this.keyboardHandler.bindKeyboardShortcuts(domTextArea, file);
     return domTextArea;
-  };
+  }
 
-  constr.prototype.mainLoop = function() {
+  mainLoop() {
     window.requestAnimationFrame(this.mainLoop.bind(this));
 
     try {
@@ -105,9 +81,9 @@ define([
     }
 
     this.riftSandbox.render();
-  };
+  }
 
-  constr.prototype.readCode = function() {
+  readCode() {
     this.domTextAreas.forEach(
       function(domTextArea, i) {
         domTextArea.value = this.sketch.files[i].contents;
@@ -128,9 +104,9 @@ define([
     if (_sketchLoop) {
       this.sketchLoop = _sketchLoop;
     }
-  };
+  }
 
-  constr.prototype.startRecordingMousePos = function() {
+  startRecordingMousePos() {
     this.mousePos = { x: 0, y: 0 };
     window.addEventListener(
       "mousemove",
@@ -140,85 +116,37 @@ define([
       }.bind(this),
       false
     );
-  };
+  }
 
-  constr.prototype.spinNumberAndKeepSelection = function(domTextArea, file, direction, amount) {
+  spinNumberAndKeepSelection(domTextArea, file, direction, amount) {
     var start = domTextArea.selectionStart;
     file.spinNumberAt(start, direction, amount);
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
-  };
+  }
 
-  constr.prototype.offsetNumberAndKeepSelection = function(domTextArea, file, offset) {
+  offsetNumberAndKeepSelection(domTextArea, file, offset) {
     var start = domTextArea.selectionStart;
     file.offsetOriginalNumber(offset);
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
-  };
+  }
 
-  constr.prototype.handleLeapMotionFrame = function(frame) {
-    if (frame.hands.length) {
-      this.handCurrent = frame;
-      if (this.modifierPressed && this.handStart) {
-        var hand = frame.hands[0];
-        var handTranslation = hand.translation(this.handStart);
-        var factor = this.shiftPressed ? 10 : 100;
-        var offset = Math.round((handTranslation[1] / factor) * 1000) / 1000;
-        offsetNumberAndKeepSelection(offset);
-      }
-    }
-    this.previousFrame = frame;
-  };
-
-  constr.prototype.startLeapMotionLoop = function() {
-    this.handStart = this.handCurrent = null;
-    this.modifierPressed = this.shiftPressed = false;
-    Leap.loop({}, this.handleLeapMotionFrame.bind(this));
-  };
-
-  constr.prototype.initializeApiAccess = function() {
-    OAuth.initialize("bnVXi9ZBNKekF-alA1aF7PQEpsU");
-    var apiCache = {};
-    this.api = _.throttle(function(provider, url, data, callback) {
-      var cacheKey = url + JSON.stringify(data);
-      var cacheEntry = apiCache[cacheKey];
-      if (cacheEntry && Date.now() - cacheEntry.lastCall < 1000 * 60 * 5) {
-        callback(cacheEntry.data);
-        return;
-      }
-      OAuth.popup(provider, { cache: true }).done(function(result) {
-        result.get(url, { data: data, cache: true }).done(function(data) {
-          apiCache[cacheKey] = {
-            lastCall: Date.now(),
-            data: data
-          };
-          callback(data);
-        });
-      });
-    }, 1000);
-  };
-
-  constr.prototype.resetSensor = function() {
+  resetSensor() {
     this.riftSandbox.resetSensor();
-  };
+  }
 
-  constr.prototype.startVrMode = function() {
+  startVrMode() {
     this.riftSandbox.startVrMode();
-  };
+  }
 
-  constr.prototype.initializeUnsupportedModal = function() {
-    this.riftSandbox.vrManager.on(
-      "initialized",
-      function() {
-        if (
-          (!this.riftSandbox.vrManager.isVRCompatible || this.riftSandbox.vrManager.hmd.isPolyfilled) &&
-          !localStorage.getItem("alreadyIgnoredUnsupported")
-        ) {
-          $(document.body).append(new UnsupportedModal().render().el);
-        }
-      }.bind(this)
-    );
-  };
+  initializeUnsupportedModal() {
+    // TODO Determine VR support
+    const supportsVR = false;
+    if (!supportsVR && !localStorage.getItem("alreadyIgnoredUnsupported")) {
+      // TODO Unsupported UI
+    }
+  }
 
-  constr.prototype.init = function() {
+  init() {
     this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight, this.domMonitor);
     this.initializeSketch();
     this.readCode();
@@ -226,9 +154,8 @@ define([
     this.keyboardHandler.bindKeyboardShortcuts(document);
 
     var focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
-    this.riftSandbox.vrManager.button.on("vr", focusCurrentTextArea);
-    this.riftSandbox.vrManager.button.on("fs", focusCurrentTextArea);
-    $(document.body).on("click", focusCurrentTextArea);
+    // TODO Focus on VR entry or fullscreen
+    document.body.addEventListener("click", focusCurrentTextArea);
 
     this.initializeUnsupportedModal();
 
@@ -241,24 +168,22 @@ define([
     if (location.search.indexOf("vr=on") !== -1) {
       this.startVrMode();
     }
-  };
+  }
 
-  constr.prototype.toggleTextAreas = function() {
+  toggleTextAreas() {
     if (this.riftSandbox.areTextAreasVisible) {
       this.currentDomTextArea.blur();
     } else {
       this.focusCurrentTextArea();
     }
     this.riftSandbox.toggleTextAreas();
-  };
+  }
 
-  constr.prototype.focusCurrentTextArea = function() {
+  focusCurrentTextArea() {
     this.currentDomTextArea.focus();
-  };
+  }
 
-  constr.prototype.getCurrentSelectionStart = function() {
+  getCurrentSelectionStart() {
     return this.currentDomTextArea.selectionStart;
-  };
-
-  return constr;
-});
+  }
+}
