@@ -24,6 +24,7 @@ export default class SketchController {
           document.addEventListener("DOMContentLoaded", this.init.bind(this));
         } else {
           this.init();
+          document.getElementById("loading").style.display = "none";
         }
       }
     });
