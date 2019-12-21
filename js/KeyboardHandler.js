@@ -1,5 +1,5 @@
 define([
-  'exports?Kibo!kibo/kibo'
+  'exports?Kibo!@brianpeiris/kibo'
 ], function (
   Kibo
 ) {

@@ -219,20 +219,6 @@ function (
     this.vrManager.setMode_(3);
   };
 
-  // constr.prototype.updateCameraPositionRotation = function () {
-  //   this._move();
-  //   if (!this.vrMode) {
-  //     this.camera.rotation.set(0 , this.plainRotation.y, 0);
-  //   }
-  //   this.cameraPivot.quaternion.multiplyQuaternions(
-  //     this.BaseRotation, this.HMDRotation);
-  //
-  //   var rotatedHMDPosition = new THREE.Vector3();
-  //   rotatedHMDPosition.copy(this.HMDPosition);
-  //   rotatedHMDPosition.applyQuaternion(this.BaseRotation);
-  //   this.cameraPivot.position.copy(this.BasePosition).add(rotatedHMDPosition);
-  // };
-
   constr.prototype.setVelocity = function (velocity) {
     this._rampUp = velocity > this._targetVelocity;
     this._rampRate = Math.abs(velocity - this._targetVelocity) * 0.1;

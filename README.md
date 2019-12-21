@@ -33,6 +33,6 @@ are welcome!
 
 ## Development
 ```
-$ npm install
+$ npm ci
 $ npm run start
 ```

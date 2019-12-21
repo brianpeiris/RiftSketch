@@ -1,6 +1,0 @@
-{
-  "ignore": [
-    "lib/**",
-    "bower_components/**"
-  ]
-}

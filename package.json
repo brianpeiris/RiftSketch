@@ -7,17 +7,13 @@
   },
   "license": "MIT",
   "scripts": {
-    "install": "napa",
     "start": "webpack-dev-server",
     "build": "webpack"
   },
-  "napa": {
-    "kibo": "marquete/kibo#1.1.0"
-  },
   "dependencies": {
+    "@brianpeiris/kibo": "^1.1.0",
     "backbone": "^1.3.3",
     "bootstrap": "^3.3.6",
-    "firebase": "^2.4.2",
     "jquery": "^2.2.3",
     "leapjs": "^0.6.4",
     "leapjs-plugins": "^0.1.11",
@@ -31,11 +27,12 @@
     "exports-loader": "^0.6.3",
     "file-loader": "^0.10.1",
     "imports-loader": "^0.6.5",
-    "napa": "^2.3.0",
+    "prettier": "^1.19.1",
     "raw-loader": "^0.5.1",
+    "selfsigned": "^1.10.7",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
-    "webfontloader": "^1.6.24",
+    "webfontloader": "^1.6.28",
     "webpack": "^1.14.0",
     "webpack-dev-server": "^1.16.3"
   }
