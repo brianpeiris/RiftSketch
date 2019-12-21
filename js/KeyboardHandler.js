@@ -14,196 +14,130 @@ export default class KeyboardHandler {
     const MOVEMENT_RATE = 0.01;
     const ROTATION_RATE = 0.01;
 
-    kibo.down(
-      "w",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.setVelocity(MOVEMENT_RATE);
-        }
-      }.bind(this)
-    );
-    kibo.up(
-      "w",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.setVelocity(0);
-        }
-      }.bind(this)
-    );
+    kibo.down("w", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.setVelocity(MOVEMENT_RATE);
+      }
+    });
+    kibo.up("w", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.setVelocity(0);
+      }
+    });
 
-    kibo.down(
-      "s",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.setVelocity(-MOVEMENT_RATE);
-        }
-      }.bind(this)
-    );
-    kibo.up(
-      "s",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.setVelocity(0);
-        }
-      }.bind(this)
-    );
+    kibo.down("s", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.setVelocity(-MOVEMENT_RATE);
+      }
+    });
+    kibo.up("s", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.setVelocity(0);
+      }
+    });
 
-    kibo.down(
-      "a",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.BaseRotationEuler.y += ROTATION_RATE;
-        }
-      }.bind(this)
-    );
-    kibo.down(
-      "d",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.BaseRotationEuler.y -= ROTATION_RATE;
-        }
-      }.bind(this)
-    );
+    kibo.down("a", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.BaseRotationEuler.y += ROTATION_RATE;
+      }
+    });
+    kibo.down("d", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.BaseRotationEuler.y -= ROTATION_RATE;
+      }
+    });
 
-    kibo.down(
-      "q",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.BaseRotationEuler.y += Math.PI / 4;
-        }
-      }.bind(this)
-    );
-    kibo.down(
-      "e",
-      function() {
-        if (!this.is_editor_visible) {
-          this.riftSandbox.BaseRotationEuler.y -= Math.PI / 4;
-        }
-      }.bind(this)
-    );
+    kibo.down("q", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.BaseRotationEuler.y += Math.PI / 4;
+      }
+    });
+    kibo.down("e", () => {
+      if (!this.is_editor_visible) {
+        this.riftSandbox.BaseRotationEuler.y -= Math.PI / 4;
+      }
+    });
   }
 
   bindNumberShortcuts(domTextArea, file, kibo) {
-    kibo.down(
-      getShortcut("u"),
-      function() {
-        this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 10);
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("i"),
-      function() {
-        this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 10);
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("j"),
-      function() {
-        this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 1);
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("k"),
-      function() {
-        this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 1);
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("n"),
-      function() {
-        this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 0.1);
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("m"),
-      function() {
-        this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 0.1);
-        return false;
-      }.bind(this)
-    );
+    kibo.down(getShortcut("u"), () => {
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 10);
+      return false;
+    });
+    kibo.down(getShortcut("i"), () => {
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 10);
+      return false;
+    });
+    kibo.down(getShortcut("j"), () => {
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 1);
+      return false;
+    });
+    kibo.down(getShortcut("k"), () => {
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 1);
+      return false;
+    });
+    kibo.down(getShortcut("n"), () => {
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, -1, 0.1);
+      return false;
+    });
+    kibo.down(getShortcut("m"), () => {
+      this.sketchController.spinNumberAndKeepSelection(domTextArea, file, 1, 0.1);
+      return false;
+    });
   }
 
   bindKeyboardShortcuts(domTextArea, file) {
     const kibo = new Kibo(domTextArea);
-    kibo.down(
-      getShortcut("z"),
-      function() {
-        this.sketchController.resetSensor();
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("e"),
-      function() {
-        this.sketchController.toggleTextAreas();
-        return false;
-      }.bind(this)
-    );
-    kibo.down(
-      getShortcut("r"),
-      function() {
-        this.riftSandbox.toggleMonitor();
-        return false;
-      }.bind(this)
-    );
+    kibo.down(getShortcut("z"), () => {
+      this.sketchController.resetSensor();
+      return false;
+    });
+    kibo.down(getShortcut("e"), () => {
+      this.sketchController.toggleTextAreas();
+      return false;
+    });
+    kibo.down(getShortcut("r"), () => {
+      this.riftSandbox.toggleMonitor();
+      return false;
+    });
 
-    kibo.down(
-      getShortcut("v"),
-      function() {
-        this.sketchController.startVrMode();
-        return false;
-      }.bind(this)
-    );
+    kibo.down(getShortcut("v"), () => {
+      this.sketchController.startVrMode();
+      return false;
+    });
 
     if (file) {
       this.bindNumberShortcuts(domTextArea, file, kibo);
     }
     this.bindMovementShortcuts(kibo);
 
-    kibo.down(
-      getShortcut(),
-      function() {
-        if (this.shiftPressed) {
-          return false;
-        }
-        this.shiftPressed = true;
+    kibo.down(getShortcut(), () => {
+      if (this.shiftPressed) {
         return false;
-      }.bind(this)
-    );
-    kibo.up(
-      "shift",
-      function() {
-        this.shiftPressed = false;
-        return false;
-      }.bind(this)
-    );
+      }
+      this.shiftPressed = true;
+      return false;
+    });
+    kibo.up("shift", () => {
+      this.shiftPressed = false;
+      return false;
+    });
 
-    kibo.down(
-      getShortcut(),
-      function() {
-        if (this.modifierPressed) {
-          return false;
-        }
-        const start = this.sketchController.getCurrentSelectionStart();
-        if (file) {
-          file.recordOriginalNumberAt(start);
-        }
-        this.handStart = this.handCurrent;
-        this.modifierPressed = true;
+    kibo.down(getShortcut(), () => {
+      if (this.modifierPressed) {
         return false;
-      }.bind(this)
-    );
-    kibo.up(
-      getShortcut(),
-      function() {
-        this.modifierPressed = false;
-        return false;
-      }.bind(this)
-    );
+      }
+      const start = this.sketchController.getCurrentSelectionStart();
+      if (file) {
+        file.recordOriginalNumberAt(start);
+      }
+      this.handStart = this.handCurrent;
+      this.modifierPressed = true;
+      return false;
+    });
+    kibo.up(getShortcut(), () => {
+      this.modifierPressed = false;
+      return false;
+    });
   }
 }

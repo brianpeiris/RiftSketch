@@ -15,10 +15,8 @@ export default class Sketch {
     this.files.push(new File("Untitled", ""));
   }
   set(sketch) {
-    sketch.files.forEach(
-      function(file, i) {
-        this.files[i].contents = file.contents;
-      }.bind(this)
-    );
+    sketch.files.forEach((file, i) => {
+      this.files[i].contents = file.contents;
+    });
   }
 }

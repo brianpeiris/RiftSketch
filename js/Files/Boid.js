@@ -15,9 +15,7 @@ const Boid = function(world) {
   this.obj = boid;
 };
 Boid.prototype.step = function(hands) {
-  this.behaviors.forEach(
-    function(behavior) {
-      behavior(this, this.world, hands);
-    }.bind(this)
-  );
+  this.behaviors.forEach(behavior => {
+    behavior(this, this.world, hands);
+  });
 };

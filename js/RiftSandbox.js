@@ -33,6 +33,8 @@ export default class RiftSandbox {
 
     this.initWebGL();
     this.initScene();
+
+    this.resize = this.resize.bind(this);
   }
 
   initScene() {
@@ -65,13 +67,11 @@ export default class RiftSandbox {
 
   setTextAreas(domTextAreas) {
     this.domTextAreas = domTextAreas;
-    this.textAreas = this.domTextAreas.map(
-      function(domTextArea) {
-        const textArea = new TextArea(domTextArea);
-        this.scene.add(textArea.object);
-        return textArea;
-      }.bind(this)
-    );
+    this.textAreas = this.domTextAreas.map(domTextArea => {
+      const textArea = new TextArea(domTextArea);
+      this.scene.add(textArea.object);
+      return textArea;
+    });
 
     this.resetTextAreas();
   }
@@ -85,19 +85,17 @@ export default class RiftSandbox {
 
   interceptScene() {
     const oldAdd = this.scene.add;
-    this.scene.add = function(obj) {
+    this.scene.add = obj => {
       this.sceneStuff.push(obj);
       oldAdd.call(this.scene, obj);
-    }.bind(this);
+    };
   }
 
   toggleTextAreas() {
     this.areTextAreasVisible = !this.areTextAreasVisible;
-    this.textAreas.forEach(
-      function(textArea) {
-        textArea.toggle(this.areTextAreasVisible);
-      }.bind(this)
-    );
+    this.textAreas.forEach(textArea => {
+      textArea.toggle(this.areTextAreasVisible);
+    });
   }
 
   toggleMonitor() {

@@ -21,24 +21,26 @@ export default class SketchController {
       google: { families: ["Ubuntu Mono"] },
       active: () => {
         if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", this.init.bind(this));
+          document.addEventListener("DOMContentLoaded", () => this.init());
         } else {
           this.init();
           document.getElementById("loading").style.display = "none";
         }
       }
     });
+
+    this.setupDomTextArea = this.setupDomTextArea.bind(this);
+    this.mainLoop = this.mainLoop.bind(this);
+    this.focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
   }
 
   setupVideoPassthrough() {
     this.domMonitor = document.getElementById("monitor");
     navigator.mediaDevices
       .getUserMedia({ video: true })
-      .then(
-        function(stream) {
-          this.domMonitor.srcObject = stream;
-        }.bind(this)
-      )
+      .then(stream => {
+        this.domMonitor.srcObject = stream;
+      })
       .catch(e => {
         console.info("Could not get video passthrough", e);
       });
@@ -46,7 +48,7 @@ export default class SketchController {
 
   initializeSketch() {
     this.sketch = new Sketch("", [new File("Cube", Cube)]);
-    this.domTextAreas = this.sketch.files.map(this.setupDomTextArea.bind(this));
+    this.domTextAreas = this.sketch.files.map(this.setupDomTextArea);
     this.currentDomTextArea = this.domTextAreas[0];
     this.currentDomTextArea.focus();
     this.currentFile = this.sketch.files[0];
@@ -74,7 +76,7 @@ export default class SketchController {
   }
 
   mainLoop() {
-    window.requestAnimationFrame(this.mainLoop.bind(this));
+    window.requestAnimationFrame(this.mainLoop);
 
     try {
       this.sketchLoop();
@@ -87,11 +89,9 @@ export default class SketchController {
   }
 
   readCode() {
-    this.domTextAreas.forEach(
-      function(domTextArea, i) {
-        domTextArea.value = this.sketch.files[i].contents;
-      }.bind(this)
-    );
+    this.domTextAreas.forEach((domTextArea, i) => {
+      domTextArea.value = this.sketch.files[i].contents;
+    });
 
     this.riftSandbox.clearScene();
     let _sketchLoop;
@@ -113,10 +113,10 @@ export default class SketchController {
     this.mousePos = { x: 0, y: 0 };
     window.addEventListener(
       "mousemove",
-      function(e) {
+      e => {
         this.mousePos.x = e.clientX;
         this.mousePos.y = e.clientY;
-      }.bind(this),
+      },
       false
     );
   }
@@ -156,13 +156,13 @@ export default class SketchController {
     this.keyboardHandler.riftSandbox = this.riftSandbox;
     this.keyboardHandler.bindKeyboardShortcuts(document);
 
-    const focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
+    const focusCurrentTextArea = this.focusCurrentTextArea;
     // TODO Focus on VR entry or fullscreen
     document.body.addEventListener("click", focusCurrentTextArea);
 
     this.initializeUnsupportedModal();
 
-    window.addEventListener("resize", this.riftSandbox.resize.bind(this.riftSandbox), false);
+    window.addEventListener("resize", this.riftSandbox.resize, false);
 
     this.riftSandbox.resize();
 
