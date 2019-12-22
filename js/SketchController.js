@@ -74,8 +74,6 @@ export default class SketchController {
   }
 
   _mainLoop() {
-    window.requestAnimationFrame(this._mainLoop);
-
     try {
       this._sketchLoop();
     } catch (err) {
@@ -151,7 +149,7 @@ export default class SketchController {
 
     this._riftSandbox.resize();
 
-    this._mainLoop();
+    this._riftSandbox.renderer.setAnimationLoop(this._mainLoop);
 
     if (location.search.indexOf("vr=on") !== -1) {
       this.startVrMode();

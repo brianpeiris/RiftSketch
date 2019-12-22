@@ -14,7 +14,7 @@ export default class RiftSandbox {
 
     this.scene = null;
     this._sceneStuff = [];
-    this._renderer = null;
+    this.renderer = null;
 
     this._initWebGL();
     this._initScene();
@@ -33,7 +33,7 @@ export default class RiftSandbox {
     dolly.add(this._camera);
     this.scene.add(dolly);
 
-    const maxAnisotropy = this._renderer.capabilities.getMaxAnisotropy();
+    const maxAnisotropy = this.renderer.capabilities.getMaxAnisotropy();
     const groundTexture = new THREE.TextureLoader().load("img/ground.png");
 
     groundTexture.anisotropy = maxAnisotropy;
@@ -100,20 +100,20 @@ export default class RiftSandbox {
 
   _initWebGL() {
     try {
-      this._renderer = new THREE.WebGLRenderer({
+      this.renderer = new THREE.WebGLRenderer({
         antialias: true,
         canvas: document.getElementById("viewer")
       });
-      this._renderer.setPixelRatio(devicePixelRatio);
-      this._renderer.vr.enabled = true;
-      document.body.append(VRButton.createButton(this._renderer));
+      this.renderer.setPixelRatio(devicePixelRatio);
+      this.renderer.vr.enabled = true;
+      document.body.append(VRButton.createButton(this.renderer));
     } catch (e) {
       alert("This application needs WebGL enabled!");
       return false;
     }
 
-    this._renderer.setClearColor(0xd3d3d3, 1.0);
-    this._renderer.setSize(this._width, this._height);
+    this.renderer.setClearColor(0xd3d3d3, 1.0);
+    this.renderer.setSize(this._width, this._height);
 
     this.container = document.getElementById("container");
   }
@@ -133,7 +133,7 @@ export default class RiftSandbox {
     }
     this._monitor.update();
 
-    this._renderer.render(this.scene, this._camera);
+    this.renderer.render(this.scene, this._camera);
   }
 
   resize() {
@@ -141,7 +141,7 @@ export default class RiftSandbox {
     this._height = window.innerHeight;
     this._camera.aspect = this._width / this._height;
     this._camera.updateProjectionMatrix();
-    this._renderer.setSize(this._width, this._height);
+    this.renderer.setSize(this._width, this._height);
   }
 
   resetSensor() {
