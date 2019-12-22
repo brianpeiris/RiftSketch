@@ -10,53 +10,51 @@ import Cube from "raw-loader!./Files/Cube.js";
 
 export default class SketchController {
   constructor() {
-    this.hands = [];
-    this.setupVideoPassthrough();
+    this._setupVideoPassthrough();
 
-    this.keyboardHandler = new KeyboardHandler(this);
+    this._keyboardHandler = new KeyboardHandler(this);
 
-    this.sketchLoop = function() {};
+    this._sketchLoop = function() {};
 
     WebFont.load({
       google: { families: ["Ubuntu Mono"] },
       active: () => {
         if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", () => this.init());
+          document.addEventListener("DOMContentLoaded", () => this._init());
         } else {
-          this.init();
+          this._init();
           document.getElementById("loading").style.display = "none";
         }
       }
     });
 
-    this.setupDomTextArea = this.setupDomTextArea.bind(this);
-    this.mainLoop = this.mainLoop.bind(this);
-    this.focusCurrentTextArea = this.focusCurrentTextArea.bind(this);
+    this._setupDomTextArea = this._setupDomTextArea.bind(this);
+    this._mainLoop = this._mainLoop.bind(this);
+    this._focusCurrentTextArea = this._focusCurrentTextArea.bind(this);
   }
 
-  setupVideoPassthrough() {
-    this.domMonitor = document.getElementById("monitor");
+  _setupVideoPassthrough() {
+    this._domMonitor = document.getElementById("monitor");
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then(stream => {
-        this.domMonitor.srcObject = stream;
+        this._domMonitor.srcObject = stream;
       })
       .catch(e => {
         console.info("Could not get video passthrough", e);
       });
   }
 
-  initializeSketch() {
-    this.sketch = new Sketch("", [new File("Cube", Cube)]);
-    this.domTextAreas = this.sketch.files.map(this.setupDomTextArea);
-    this.currentDomTextArea = this.domTextAreas[0];
-    this.currentDomTextArea.focus();
-    this.currentFile = this.sketch.files[0];
-    this.riftSandbox.setTextAreas(this.domTextAreas);
-    this.riftSandbox.interceptScene();
+  _initializeSketch() {
+    this._sketch = new Sketch("", [new File("Cube", Cube)]);
+    this._domTextAreas = this._sketch.files.map(this._setupDomTextArea);
+    this._currentDomTextArea = this._domTextAreas[0];
+    this._currentDomTextArea.focus();
+    this._riftSandbox.setTextAreas(this._domTextAreas);
+    this._riftSandbox.interceptScene();
   }
 
-  setupDomTextArea(file) {
+  _setupDomTextArea(file) {
     const domTextArea = document.createElement("textarea");
     domTextArea.id = file.name;
     domTextArea.addEventListener("keyup", e => {
@@ -65,60 +63,54 @@ export default class SketchController {
         return;
       }
       file.contents = contents;
-      this.readCode();
+      this._readCode();
     });
     domTextArea.addEventListener("keydown", e => {
       e.stopPropagation();
     });
     document.body.append(domTextArea);
-    this.keyboardHandler.bindKeyboardShortcuts(domTextArea, file);
+    this._keyboardHandler.bindKeyboardShortcuts(domTextArea, file);
     return domTextArea;
   }
 
-  mainLoop() {
-    window.requestAnimationFrame(this.mainLoop);
+  _mainLoop() {
+    window.requestAnimationFrame(this._mainLoop);
 
     try {
-      this.sketchLoop();
+      this._sketchLoop();
     } catch (err) {
       console.log("Sketch Error", err);
-      this.riftSandbox.setInfo(err.toString());
+      this._riftSandbox.setInfo(err.toString());
     }
 
-    this.riftSandbox.render();
+    this._riftSandbox.render();
   }
 
-  readCode() {
-    this.domTextAreas.forEach((domTextArea, i) => {
-      domTextArea.value = this.sketch.files[i].contents;
+  _readCode() {
+    this._domTextAreas.forEach((domTextArea, i) => {
+      domTextArea.value = this._sketch.files[i].contents;
     });
 
-    this.riftSandbox.clearScene();
+    this._riftSandbox.clearScene();
     let _sketchLoop;
-    this.riftSandbox.setInfo("");
+    this._riftSandbox.setInfo("");
     try {
-      const _sketchFunc = new Function("THREE", "scene", "camera", "sketch", '"use strict";\n' + this.sketch.getCode());
-      _sketchFunc(THREE, this.riftSandbox.scene, this.riftSandbox.cameraPivot, this.sketch);
-      _sketchLoop = this.sketch.loop;
+      const _sketchFunc = new Function(
+        "THREE",
+        "scene",
+        "camera",
+        "sketch",
+        '"use strict";\n' + this._sketch.getCode()
+      );
+      _sketchFunc(THREE, this._riftSandbox.scene, this._riftSandbox.cameraPivot, this._sketch);
+      _sketchLoop = this._sketch.loop;
     } catch (err) {
       console.log("Sketch Error", err);
-      this.riftSandbox.setInfo(err.toString());
+      this._riftSandbox.setInfo(err.toString());
     }
     if (_sketchLoop) {
-      this.sketchLoop = _sketchLoop;
+      this._sketchLoop = _sketchLoop;
     }
-  }
-
-  startRecordingMousePos() {
-    this.mousePos = { x: 0, y: 0 };
-    window.addEventListener(
-      "mousemove",
-      e => {
-        this.mousePos.x = e.clientX;
-        this.mousePos.y = e.clientY;
-      },
-      false
-    );
   }
 
   spinNumberAndKeepSelection(domTextArea, file, direction, amount) {
@@ -127,21 +119,15 @@ export default class SketchController {
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
   }
 
-  offsetNumberAndKeepSelection(domTextArea, file, offset) {
-    const start = domTextArea.selectionStart;
-    file.offsetOriginalNumber(offset);
-    domTextArea.selectionStart = domTextArea.selectionEnd = start;
-  }
-
   resetSensor() {
-    this.riftSandbox.resetSensor();
+    this._riftSandbox.resetSensor();
   }
 
   startVrMode() {
-    this.riftSandbox.startVrMode();
+    this._riftSandbox.startVrMode();
   }
 
-  initializeUnsupportedModal() {
+  _initializeUnsupportedModal() {
     // TODO Determine VR support
     const supportsVR = false;
     if (!supportsVR && !localStorage.getItem("alreadyIgnoredUnsupported")) {
@@ -149,24 +135,23 @@ export default class SketchController {
     }
   }
 
-  init() {
-    this.riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight, this.domMonitor);
-    this.initializeSketch();
-    this.readCode();
-    this.keyboardHandler.riftSandbox = this.riftSandbox;
-    this.keyboardHandler.bindKeyboardShortcuts(document);
+  _init() {
+    this._riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight, this._domMonitor);
+    this._initializeSketch();
+    this._readCode();
+    this._keyboardHandler.riftSandbox = this._riftSandbox;
+    this._keyboardHandler.bindKeyboardShortcuts(document);
 
-    const focusCurrentTextArea = this.focusCurrentTextArea;
     // TODO Focus on VR entry or fullscreen
-    document.body.addEventListener("click", focusCurrentTextArea);
+    document.body.addEventListener("click", this._focusCurrentTextArea);
 
-    this.initializeUnsupportedModal();
+    this._initializeUnsupportedModal();
 
-    window.addEventListener("resize", this.riftSandbox.resize, false);
+    window.addEventListener("resize", this._riftSandbox.resize, false);
 
-    this.riftSandbox.resize();
+    this._riftSandbox.resize();
 
-    this.mainLoop();
+    this._mainLoop();
 
     if (location.search.indexOf("vr=on") !== -1) {
       this.startVrMode();
@@ -174,19 +159,19 @@ export default class SketchController {
   }
 
   toggleTextAreas() {
-    if (this.riftSandbox.areTextAreasVisible) {
-      this.currentDomTextArea.blur();
+    if (this._riftSandbox.areTextAreasVisible) {
+      this._currentDomTextArea.blur();
     } else {
-      this.focusCurrentTextArea();
+      this._focusCurrentTextArea();
     }
-    this.riftSandbox.toggleTextAreas();
+    this._riftSandbox.toggleTextAreas();
   }
 
-  focusCurrentTextArea() {
-    this.currentDomTextArea.focus();
+  _focusCurrentTextArea() {
+    this._currentDomTextArea.focus();
   }
 
   getCurrentSelectionStart() {
-    return this.currentDomTextArea.selectionStart;
+    return this._currentDomTextArea.selectionStart;
   }
 }

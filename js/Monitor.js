@@ -5,18 +5,18 @@ const HEIGHT = 512;
 const ASPECT = HEIGHT / WIDTH;
 export default class Monitor {
   constructor(domMonitor) {
-    this.domMonitor = domMonitor;
+    this._domMonitor = domMonitor;
 
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = WIDTH;
-    this.canvas.height = HEIGHT;
-    this.context = this.canvas.getContext("2d");
+    this._canvas = document.createElement("canvas");
+    this._canvas.width = WIDTH;
+    this._canvas.height = HEIGHT;
+    this.context = this._canvas.getContext("2d");
 
-    this.monitorTexture = new THREE.Texture(this.canvas);
-    this.monitorTexture.needsUpdate = true;
+    this._monitorTexture = new THREE.Texture(this._canvas);
+    this._monitorTexture.needsUpdate = true;
 
     const monitorMaterial = new THREE.MeshBasicMaterial({
-      map: this.monitorTexture,
+      map: this._monitorTexture,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: 0.8
@@ -33,7 +33,7 @@ export default class Monitor {
   }
 
   update() {
-    this.context.drawImage(this.domMonitor, 0, 0, WIDTH, HEIGHT);
-    this.monitorTexture.needsUpdate = true;
+    this.context.drawImage(this._domMonitor, 0, 0, WIDTH, HEIGHT);
+    this._monitorTexture.needsUpdate = true;
   }
 }

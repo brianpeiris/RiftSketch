@@ -11,12 +11,4 @@ export default class Sketch {
     }
     return code;
   }
-  addFile() {
-    this.files.push(new File("Untitled", ""));
-  }
-  set(sketch) {
-    sketch.files.forEach((file, i) => {
-      this.files[i].contents = file.contents;
-    });
-  }
 }

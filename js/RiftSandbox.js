@@ -3,48 +3,37 @@ import * as THREE from "three";
 import TextArea from "./TextArea";
 import Monitor from "./Monitor";
 
-function angleRangeRad(angle) {
-  while (angle > Math.PI) angle -= 2 * Math.PI;
-  while (angle <= -Math.PI) angle += 2 * Math.PI;
-  return angle;
-}
-
 export default class RiftSandbox {
   constructor(width, height, domMonitor) {
-    this.width = width;
-    this.height = height;
-    this.textAreas = null;
+    this._width = width;
+    this._height = height;
+    this._textAreas = null;
     this.areTextAreasVisible = true;
-    this.domMonitor = domMonitor;
-    window.HMDRotation = this.HMDRotation = new THREE.Quaternion();
+    this._domMonitor = domMonitor;
 
-    this.BasePosition = new THREE.Vector3(0, 1.5, 2);
-    this.HMDPosition = new THREE.Vector3();
-    this.plainRotation = new THREE.Vector3();
-    this.BaseRotationEuler = new THREE.Euler(0, Math.PI / 2, 0);
-    this.BaseRotation = new THREE.Quaternion().setFromEuler(this.BaseRotationEuler);
     this.scene = null;
-    this.sceneStuff = [];
-    this.renderer = null;
-    this._targetVelocity = 0;
-    this._velocity = 0;
-    this._rampUp = true;
-    this._rampRate = 0;
+    this._sceneStuff = [];
+    this._renderer = null;
 
-    this.initWebGL();
-    this.initScene();
+    this._initWebGL();
+    this._initScene();
 
     this.resize = this.resize.bind(this);
   }
 
-  initScene() {
+  _initScene() {
     this.scene = new THREE.Scene();
 
-    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 200);
-    this.scene.add(this.camera);
+    this._camera = new THREE.PerspectiveCamera(75, this._width / this._height, 0.1, 200);
+    this._camera.position.y = 1.6;
 
-    const maxAnisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    const groundTexture = new THREE.TextureLoader().load("img/background.png");
+    const dolly = new THREE.Group();
+    dolly.position.z = 2;
+    dolly.add(this._camera);
+    this.scene.add(dolly);
+
+    const maxAnisotropy = this._renderer.capabilities.getMaxAnisotropy();
+    const groundTexture = new THREE.TextureLoader().load("img/ground.png");
 
     groundTexture.anisotropy = maxAnisotropy;
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
@@ -61,23 +50,23 @@ export default class RiftSandbox {
     axis.position.y = 0.1;
     this.scene.add(axis);
 
-    this.monitor = new Monitor(this.domMonitor);
-    this.camera.add(this.monitor.object);
+    this._monitor = new Monitor(this._domMonitor);
+    this._camera.add(this._monitor.object);
   }
 
   setTextAreas(domTextAreas) {
     this.domTextAreas = domTextAreas;
-    this.textAreas = this.domTextAreas.map(domTextArea => {
+    this._textAreas = this.domTextAreas.map(domTextArea => {
       const textArea = new TextArea(domTextArea);
       this.scene.add(textArea.object);
       return textArea;
     });
 
-    this.resetTextAreas();
+    this._resetTextAreas();
   }
 
-  resetTextAreas() {
-    this.textAreas.forEach(function(textArea, i) {
+  _resetTextAreas() {
+    this._textAreas.forEach(function(textArea, i) {
       textArea.object.rotateOnAxis(new THREE.Vector3(0, 1, 0), (Math.PI / 4) * -(i + 1));
       textArea.object.translateZ(-1.5);
     });
@@ -86,124 +75,78 @@ export default class RiftSandbox {
   interceptScene() {
     const oldAdd = this.scene.add;
     this.scene.add = obj => {
-      this.sceneStuff.push(obj);
+      this._sceneStuff.push(obj);
       oldAdd.call(this.scene, obj);
     };
   }
 
   toggleTextAreas() {
     this.areTextAreasVisible = !this.areTextAreasVisible;
-    this.textAreas.forEach(textArea => {
+    this._textAreas.forEach(textArea => {
       textArea.toggle(this.areTextAreasVisible);
     });
   }
 
   toggleMonitor() {
-    this.monitor.toggle();
+    this._monitor.toggle();
   }
 
   setInfo(msg) {
-    this.textAreas.forEach(function(textArea) {
+    this._textAreas.forEach(function(textArea) {
       textArea.setInfo(msg);
     });
   }
 
-  setBaseRotation() {
-    this.BaseRotationEuler.set(angleRangeRad(this.BaseRotationEuler.x), angleRangeRad(this.BaseRotationEuler.y), 0.0);
-    this.BaseRotation.setFromEuler(this.BaseRotationEuler, "YZX");
-  }
-
-  initWebGL() {
+  _initWebGL() {
     try {
-      this.renderer = new THREE.WebGLRenderer({
+      this._renderer = new THREE.WebGLRenderer({
         antialias: true,
         canvas: document.getElementById("viewer")
       });
-      this.renderer.setPixelRatio(devicePixelRatio);
+      this._renderer.setPixelRatio(devicePixelRatio);
+      this._renderer.vr.enabled = true;
     } catch (e) {
       alert("This application needs WebGL enabled!");
       return false;
     }
 
-    this.renderer.setClearColor(0xd3d3d3, 1.0);
-    this.renderer.setSize(this.width, this.height);
+    this._renderer.setClearColor(0xd3d3d3, 1.0);
+    this._renderer.setSize(this._width, this._height);
 
     this.container = document.getElementById("container");
   }
 
   clearScene() {
-    for (let i = 0; i < this.sceneStuff.length; i++) {
-      this.scene.remove(this.sceneStuff[i]);
+    for (let i = 0; i < this._sceneStuff.length; i++) {
+      this.scene.remove(this._sceneStuff[i]);
     }
-    this.sceneStuff = [];
+    this._sceneStuff = [];
   }
 
-  render(timestamp) {
-    if (this.textAreas) {
-      this.textAreas.forEach(function(textArea) {
+  render() {
+    if (this._textAreas) {
+      this._textAreas.forEach(function(textArea) {
         textArea.update();
       });
     }
-    this.monitor.update();
+    this._monitor.update();
 
-    this.camera.position.copy(this.BasePosition);
-
-    this.renderer.render(this.scene, this.camera, timestamp);
+    this._renderer.render(this.scene, this._camera);
   }
 
   resize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(this.width, this.height);
-  }
-
-  setRotation(rotation) {
-    this.plainRotation.set(0, rotation.y, 0);
-  }
-
-  setHmdPositionRotation(vrState) {
-    if (!vrState) {
-      return;
-    }
-    const rotation = vrState.orientation;
-    const position = vrState.position;
-    this.HMDRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
-    const VR_POSITION_SCALE = 1;
-    if (position) {
-      this.HMDPosition.set(
-        position.x * VR_POSITION_SCALE,
-        position.y * VR_POSITION_SCALE,
-        position.z * VR_POSITION_SCALE
-      );
-    }
+    this._width = window.innerWidth;
+    this._height = window.innerHeight;
+    this._camera.aspect = this._width / this._height;
+    this._camera.updateProjectionMatrix();
+    this._renderer.setSize(this._width, this._height);
   }
 
   resetSensor() {
-    this.controls.resetSensor();
+    // TODO Is this still valid with WebXR?
   }
 
   startVrMode() {
-    this.vrManager.anyModeToVR();
-    this.vrManager.setMode_(3);
-  }
-
-  setVelocity(velocity) {
-    this._rampUp = velocity > this._targetVelocity;
-    this._rampRate = Math.abs(velocity - this._targetVelocity) * 0.1;
-    this._targetVelocity = velocity;
-  }
-
-  _move() {
-    if (this._rampUp && this._velocity < this._targetVelocity) {
-      this._velocity += this._rampRate;
-    } else if (!this._rampUp && this._velocity > this._targetVelocity) {
-      this._velocity -= this._rampRate;
-    }
-    const movementVector = new THREE.Vector3(0, 0, -1);
-    movementVector.applyQuaternion(this.BaseRotation);
-    movementVector.multiplyScalar(this._velocity);
-    this.BasePosition.add(movementVector);
+    // TODO Enter VR
   }
 }
