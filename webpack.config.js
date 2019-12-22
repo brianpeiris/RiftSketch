@@ -4,19 +4,23 @@ const fs = require("fs");
 const path = require("path");
 const selfsigned = require("selfsigned");
 
-module.exports = {
+module.exports = (env, argv) => ({
   entry: "./js/index.js",
   output: {
-    path: __dirname,
-    filename: "bundle.js"
+    path: __dirname
   },
-  devtool: "inline-source-map",
+  optimization: {
+    splitChunks: {
+      chunks: "all"
+    }
+  },
+  devtool: argv.mode === "production" ? "source-map" : "inline-source-map",
   devServer: {
     host: "0.0.0.0",
     https: createHTTPSConfig(),
     disableHostCheck: true
   }
-};
+});
 
 function createHTTPSConfig() {
   if (fs.existsSync(path.join(__dirname, "certs"))) {

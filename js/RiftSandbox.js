@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { VRButton } from "three/examples/jsm/webxr/VRButton";
 
 import TextArea from "./TextArea";
 import Monitor from "./Monitor";
@@ -105,6 +106,7 @@ export default class RiftSandbox {
       });
       this._renderer.setPixelRatio(devicePixelRatio);
       this._renderer.vr.enabled = true;
+      document.body.append(VRButton.createButton(this._renderer));
     } catch (e) {
       alert("This application needs WebGL enabled!");
       return false;

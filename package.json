@@ -4,7 +4,7 @@
   "scripts": {
     "start": "webpack-dev-server",
     "lint": "eslint 'js/**/*.js' '*.js'",
-    "build": "webpack"
+    "build": "webpack --mode production"
   },
   "dependencies": {
     "@brianpeiris/kibo": "^1.2.0",
