@@ -35,6 +35,7 @@ export default class SketchController {
 
   _setupVideoPassthrough() {
     this._domMonitor = document.getElementById("monitor");
+    if (navigator.mediaDevices) {
     navigator.mediaDevices
       .getUserMedia({ video: true })
       .then(stream => {
@@ -43,6 +44,7 @@ export default class SketchController {
       .catch(e => {
         console.info("Could not get video passthrough", e);
       });
+    }
   }
 
   _initializeSketch() {
