@@ -2,7 +2,7 @@
   "name": "riftsketch",
   "private": true,
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --https",
     "lint": "eslint 'js/**/*.js' '*.js'",
     "build": "webpack --mode production"
   },
