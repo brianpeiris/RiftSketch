@@ -60,35 +60,5 @@ export default class KeyboardHandler {
     if (file) {
       this._bindNumberShortcuts(domTextArea, file, kibo);
     }
-
-    // TODO Character movement keys
-
-    kibo.down(getShortcut(), () => {
-      if (this._shiftPressed) {
-        return false;
-      }
-      this._shiftPressed = true;
-      return false;
-    });
-    kibo.up("shift", () => {
-      this._shiftPressed = false;
-      return false;
-    });
-
-    kibo.down(getShortcut(), () => {
-      if (this._modifierPressed) {
-        return false;
-      }
-      const start = this._sketchController.getCurrentSelectionStart();
-      if (file) {
-        file.recordOriginalNumberAt(start);
-      }
-      this._modifierPressed = true;
-      return false;
-    });
-    kibo.up(getShortcut(), () => {
-      this._modifierPressed = false;
-      return false;
-    });
   }
 }

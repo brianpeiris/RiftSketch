@@ -17,21 +17,12 @@ export default class File {
       return (parseFloat(number) + direction * amount).toFixed(2);
     }
   }
-  spinNumberAt(index, direction, amount, originalNumber) {
+  spinNumberAt(index, direction, amount) {
     const number = this._findNumberAt(index);
     if (number === undefined) {
       return;
     }
-    originalNumber = originalNumber || number;
-    const newNumber = this._spinNumber(originalNumber, direction, amount);
+    const newNumber = this._spinNumber(number, direction, amount);
     this.contents = this.contents.substring(0, index) + newNumber + this.contents.substring(index + number.length);
-  }
-  recordOriginalNumberAt(index) {
-    const number = this._findNumberAt(index);
-    if (number === undefined) {
-      return;
-    }
-    this.originalNumber = number;
-    this.originalIndex = index;
   }
 }

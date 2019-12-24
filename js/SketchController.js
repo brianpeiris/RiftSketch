@@ -36,14 +36,14 @@ export default class SketchController {
   _setupVideoPassthrough() {
     this._domMonitor = document.getElementById("monitor");
     if (navigator.mediaDevices) {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then(stream => {
-        this._domMonitor.srcObject = stream;
-      })
-      .catch(e => {
-        console.info("Could not get video passthrough", e);
-      });
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then(stream => {
+          this._domMonitor.srcObject = stream;
+        })
+        .catch(e => {
+          console.info("Could not get video passthrough", e);
+        });
     }
   }
 
@@ -116,7 +116,9 @@ export default class SketchController {
   spinNumberAndKeepSelection(domTextArea, file, direction, amount) {
     const start = domTextArea.selectionStart;
     file.spinNumberAt(start, direction, amount);
+    domTextArea.value = file.contents;
     domTextArea.selectionStart = domTextArea.selectionEnd = start;
+    this._readCode();
   }
 
   resetSensor() {
