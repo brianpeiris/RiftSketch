@@ -7,6 +7,8 @@ export default class Sketch {
     this.uuid = uuid || Math.generateUUID();
     this.name = name || "Example Sketch";
     this.files = files || [new File()];
+    this.initialized = false;
+    this.state = {};
   }
   getCode() {
     let code = "";
@@ -14,6 +16,20 @@ export default class Sketch {
       code += this.files[i].contents;
     }
     return code;
+  }
+  initialState(obj) {
+    if (this.initialized) return;
+    for (const key in obj) {
+      if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+      this.state[key] = obj[key];
+    }
+  }
+  toJSON() {
+    return {
+      uuid: this.uuid,
+      name: this.name,
+      files: this.files
+    };
   }
   static fromJSON(obj) {
     return new Sketch(

@@ -92,7 +92,7 @@ export default class SketchController {
   }
 
   _readCode() {
-    localStorage.setItem("sketches_v1", JSON.stringify([this._sketch]));
+    localStorage.setItem("sketches_v1", JSON.stringify([this._sketch.toJSON()]));
     this._domTextAreas.forEach((domTextArea, i) => {
       domTextArea.value = this._sketch.files[i].contents;
     });
@@ -117,6 +117,8 @@ export default class SketchController {
     if (_sketchLoop) {
       this._sketchLoop = _sketchLoop;
     }
+
+    this._sketch.initialized = true;
   }
 
   spinNumberAndKeepSelection(domTextArea, file, direction, amount) {
