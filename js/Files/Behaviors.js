@@ -1,36 +1,64 @@
 /* global t3 */
 /* exported flockingBehavior, moveBehavior, returnToOrigin */
-const flockingBehavior = function(boid, world, hands) {
-  const getLookAtQuaternion = function(otherBoid) {
+const flockingBehavior = function(
+  boid,
+  world,
+  hands
+) {
+  const getLookAtQuaternion = function(
+    otherBoid
+  ) {
     const q = new t3.Quaternion();
     q.copy(boid.obj.quaternion);
     const m1 = new t3.Matrix4();
-    m1.lookAt(otherBoid.obj.position, boid.obj.position, boid.obj.up);
+    m1.lookAt(
+      otherBoid.obj.position,
+      boid.obj.position,
+      boid.obj.up
+    );
     q.setFromRotationMatrix(m1);
     return q;
   };
 
   const separate = function(otherBoid) {
-    if (otherBoid.obj.position.distanceTo(boid.obj.position) < 0.1) {
+    if (
+      otherBoid.obj.position.distanceTo(
+        boid.obj.position
+      ) < 0.1
+    ) {
       return;
     }
-    const q = getLookAtQuaternion(otherBoid);
+    const q = getLookAtQuaternion(
+      otherBoid
+    );
     q.conjugate();
 
     const SEPARATION = 0.1;
 
-    boid.obj.quaternion.slerp(q, SEPARATION);
+    boid.obj.quaternion.slerp(
+      q,
+      SEPARATION
+    );
   };
 
   const align = function(otherBoid) {
-    boid.obj.quaternion.slerp(otherBoid.obj.quaternion, 0.01);
+    boid.obj.quaternion.slerp(
+      otherBoid.obj.quaternion,
+      0.01
+    );
   };
 
   const adhere = function(otherBoid) {
-    if (otherBoid.obj.position.distanceTo(boid.obj.position) > 0.2) {
+    if (
+      otherBoid.obj.position.distanceTo(
+        boid.obj.position
+      ) > 0.2
+    ) {
       return;
     }
-    const q = getLookAtQuaternion(otherBoid);
+    const q = getLookAtQuaternion(
+      otherBoid
+    );
     boid.obj.quaternion.slerp(q, 0.005);
   };
 
@@ -39,12 +67,20 @@ const flockingBehavior = function(boid, world, hands) {
     if (!hand) {
       return;
     }
-    const q = getLookAtQuaternion({ obj: { position: hand } });
+    const q = getLookAtQuaternion({
+      obj: { position: hand }
+    });
     boid.obj.quaternion.slerp(q, 0.05);
   };
 
-  world.boids.forEach(function(otherBoid) {
-    if (otherBoid.obj.position.distanceTo(boid.obj.position) < 0.5) {
+  world.boids.forEach(function(
+    otherBoid
+  ) {
+    if (
+      otherBoid.obj.position.distanceTo(
+        boid.obj.position
+      ) < 0.5
+    ) {
       separate(otherBoid);
       align(otherBoid);
       adhere(otherBoid);
@@ -60,7 +96,11 @@ const moveBehavior = function(boid) {
 };
 
 const returnToOrigin = function(boid) {
-  if (boid.obj.position.distanceTo(scene.position) > 4) {
+  if (
+    boid.obj.position.distanceTo(
+      scene.position
+    ) > 4
+  ) {
     boid.obj.lookAt(scene.position);
   }
 };

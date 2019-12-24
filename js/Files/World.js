@@ -5,10 +5,17 @@ const light = new t3.PointLight();
 light.position.set(0, 1, 0);
 scene.add(light);
 
-scene.add(new t3.AmbientLight(0xaaaaaa));
+scene.add(
+  new t3.AmbientLight(0xaaaaaa)
+);
 
 const makeCube = function() {
-  const cube = new t3.Mesh(new t3.BoxGeometry(1, 1, 1), new t3.MeshLambertMaterial({ color: "red" }));
+  const cube = new t3.Mesh(
+    new t3.BoxGeometry(1, 1, 1),
+    new t3.MeshLambertMaterial({
+      color: "red"
+    })
+  );
   cube.position.set(1, 1, 1);
   scene.add(cube);
   return cube;
@@ -16,29 +23,63 @@ const makeCube = function() {
 
 const Watch = function(obj, name) {
   this.canvasSize = 128;
-  const canvas = document.createElement("canvas");
+  const canvas = document.createElement(
+    "canvas"
+  );
   canvas.width = this.canvasSize;
   canvas.height = this.canvasSize / 2;
 
   document.body.append(canvas);
 
-  this.context = canvas.getContext("2d");
-  this.context.font = "40px Ubuntu Mono, monospace";
-  this.textTexture = new THREE.Texture(canvas);
+  this.context = canvas.getContext(
+    "2d"
+  );
+  this.context.font =
+    "40px Ubuntu Mono, monospace";
+  this.textTexture = new THREE.Texture(
+    canvas
+  );
   this.textTexture.needsUpdate = true;
-  const textAreaMat = new THREE.MeshBasicMaterial({ map: this.textTexture, side: THREE.DoubleSide });
+  const textAreaMat = new THREE.MeshBasicMaterial(
+    {
+      map: this.textTexture,
+      side: THREE.DoubleSide
+    }
+  );
 
-  const watch = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 0.5), new THREE.MeshBasicMaterial(textAreaMat));
+  const watch = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(
+      1,
+      0.5
+    ),
+    new THREE.MeshBasicMaterial(
+      textAreaMat
+    )
+  );
   watch.rotation.y = Math.PI;
 
   scene.add(watch);
 
   this.update = function() {
-    this.context.clearRect(0, 0, this.canvasSize, this.canvasSize);
+    this.context.clearRect(
+      0,
+      0,
+      this.canvasSize,
+      this.canvasSize
+    );
     this.context.fillStyle = "white";
-    this.context.fillRect(0, 0, this.canvasSize, this.canvasSize);
+    this.context.fillRect(
+      0,
+      0,
+      this.canvasSize,
+      this.canvasSize
+    );
     this.context.fillStyle = "black";
-    this.context.fillText(obj[name], 0, 40);
+    this.context.fillText(
+      obj[name],
+      0,
+      40
+    );
     this.textTexture.needsUpdate = true;
   };
 };
@@ -66,11 +107,18 @@ makeCube();
 for (let i = 0; i < numBoids; i++) {
   const boid = new Boid(world);
   boid.obj.position.copy(positions[i]);
-  boid.visual.material.color.setHSL(i / 10, 1, 0.5);
+  boid.visual.material.color.setHSL(
+    i / 10,
+    1,
+    0.5
+  );
   world.boids.push(boid);
 }
 
-const watch = new Watch(world.boids[0].obj.position, "x");
+const watch = new Watch(
+  world.boids[0].obj.position,
+  "x"
+);
 
 sketch.loop = () => {
   for (let i = 0; i < numBoids; i++) {
