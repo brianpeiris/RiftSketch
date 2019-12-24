@@ -10,7 +10,7 @@ import Cube from "raw-loader!./Files/Cube.js";
 
 export default class SketchController {
   constructor() {
-    this._setupVideoPassthrough();
+    //this._setupVideoPassthrough();
 
     this._keyboardHandler = new KeyboardHandler(this);
 

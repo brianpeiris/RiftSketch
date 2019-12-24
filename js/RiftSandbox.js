@@ -53,10 +53,10 @@ export default class RiftSandbox {
     this._camera.add(this._monitor.object);
   }
 
-  setTextAreas(domTextAreas) {
+  setTextAreas(domTextAreas, hasCamera) {
     this.domTextAreas = domTextAreas;
     this._textAreas = this.domTextAreas.map(domTextArea => {
-      const textArea = new TextArea(domTextArea);
+      const textArea = new TextArea(domTextArea, hasCamera);
       this.scene.add(textArea.object);
       return textArea;
     });

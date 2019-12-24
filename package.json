@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@brianpeiris/kibo": "^1.2.0",
+    "@fortawesome/fontawesome-free": "^5.12.0",
     "three": "^0.111.0"
   },
   "devDependencies": {

@@ -33,6 +33,7 @@ export default class Monitor {
   }
 
   update() {
+    if (!this._domMonitor) return;
     this.context.drawImage(this._domMonitor, 0, 0, WIDTH, HEIGHT);
     this._monitorTexture.needsUpdate = true;
   }

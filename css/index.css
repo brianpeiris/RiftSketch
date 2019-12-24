@@ -46,3 +46,15 @@ textarea {
   filter: drop-shadow(0 0 2px rgba(0,0,0,1))!important;
   -webkit-filter: drop-shadow(0 0 2px rgba(0,0,0,1))!important;
 }
+
+#github {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  background: white;
+  border-radius: 50px;
+  border: 2px solid white;
+  height: 41px;
+  filter: opacity(0.5);
+}

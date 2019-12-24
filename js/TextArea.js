@@ -5,8 +5,9 @@ const NUM_LINES = 20;
 const CANVAS_SIZE_PX = NUM_LINES * FONT_SIZE_PX + FONT_SIZE_PX * 0.2;
 const UPDATE_INTERVAL_MS = 500;
 export default class TextArea {
-  constructor(domTextArea) {
+  constructor(domTextArea, hasCamera) {
     this.domTextArea = domTextArea;
+    this._hasCamera = hasCamera;
 
     this.canvasSize = CANVAS_SIZE_PX;
     const canvas = document.createElement("canvas");
@@ -52,7 +53,7 @@ export default class TextArea {
     this.infoContext.fillRect(0, 0, this.canvasSize, this.canvasSize);
     this.infoContext.fillStyle = "hsl(0, 0%, 25%)";
     this.infoContext.fillText("Alt/Ctrl + Shift + ...", 0, FONT_SIZE_PX * 2);
-    this.infoContext.fillText("v: VR | z: reset | e: editor | r: webcam", 0, FONT_SIZE_PX * 3);
+    this.infoContext.fillText(`e - toggle editor${this._hasCamera ? " | r - webcam" : ""}`, 0, FONT_SIZE_PX * 3);
     this.infoContext.fillText("j/k, u/i, n/m - change number", 0, FONT_SIZE_PX * 4);
 
     this.infoTexture = new THREE.Texture(canvas);
