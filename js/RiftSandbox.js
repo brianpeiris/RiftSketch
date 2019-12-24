@@ -106,7 +106,9 @@ export default class RiftSandbox {
       this.renderer.vr.enabled = true;
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-      document.body.append(VRButton.createButton(this.renderer));
+      const button = VRButton.createButton(this.renderer);
+      button.style.backgroundColor = "black";
+      document.body.append(button);
     } catch (e) {
       alert("This application needs WebGL enabled!");
       return false;
