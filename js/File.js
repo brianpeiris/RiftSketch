@@ -1,8 +1,10 @@
+import { Math } from "three";
+
 export default class File {
-  constructor(name, contents) {
+  constructor(name, contents, uuid) {
+    this.uuid = uuid || Math.generateUUID();
     this.name = name || "Example";
     this.contents = contents;
-    this.selected = true;
   }
   _findNumberAt(index) {
     const match = this.contents.substring(index).match(/-?\d+\.?\d*/);

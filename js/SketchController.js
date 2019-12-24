@@ -48,7 +48,12 @@ export default class SketchController {
   }
 
   _initializeSketch() {
-    this._sketch = new Sketch("", [new File("Cube", Cube)]);
+    const storedSketches = localStorage.getItem("sketches_v1");
+    if (storedSketches) {
+      this._sketch = Sketch.fromJSON(JSON.parse(storedSketches)[0]);
+    } else {
+      this._sketch = new Sketch("", [new File("Cube", Cube)]);
+    }
     this._domTextAreas = this._sketch.files.map(this._setupDomTextArea);
     this._currentDomTextArea = this._domTextAreas[0];
     this._currentDomTextArea.focus();
@@ -87,6 +92,7 @@ export default class SketchController {
   }
 
   _readCode() {
+    localStorage.setItem("sketches_v1", JSON.stringify([this._sketch]));
     this._domTextAreas.forEach((domTextArea, i) => {
       domTextArea.value = this._sketch.files[i].contents;
     });
@@ -116,9 +122,8 @@ export default class SketchController {
   spinNumberAndKeepSelection(domTextArea, file, direction, amount) {
     const start = domTextArea.selectionStart;
     file.spinNumberAt(start, direction, amount);
-    domTextArea.value = file.contents;
-    domTextArea.selectionStart = domTextArea.selectionEnd = start;
     this._readCode();
+    domTextArea.selectionStart = domTextArea.selectionEnd = start;
   }
 
   resetSensor() {
