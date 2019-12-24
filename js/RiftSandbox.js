@@ -49,10 +49,6 @@ export default class RiftSandbox {
     ground.receiveShadow = true;
     this.scene.add(ground);
 
-    const axis = new THREE.AxesHelper();
-    axis.position.y = 0.1;
-    this.scene.add(axis);
-
     this._monitor = new Monitor(this._domMonitor);
     this._camera.add(this._monitor.object);
   }

@@ -106,9 +106,16 @@ export default class SketchController {
         "scene",
         "camera",
         "sketch",
+        "renderer",
         '"use strict";\n' + this._sketch.getCode()
       );
-      _sketchFunc(THREE, this._riftSandbox.scene, this._riftSandbox.cameraPivot, this._sketch);
+      _sketchFunc(
+        THREE,
+        this._riftSandbox.scene,
+        this._riftSandbox.cameraPivot,
+        this._sketch,
+        this._riftSandbox.renderer
+      );
       _sketchLoop = this._sketch.loop;
     } catch (err) {
       console.log("Sketch Error", err);
