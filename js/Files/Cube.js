@@ -1,5 +1,9 @@
 const t3 = THREE;
 
+const sky = "lightblue";
+renderer.setClearColor(sky);
+scene.fog.color.setStyle(sky);
+
 const light = new t3.DirectionalLight();
 light.castShadow = true;
 light.position.set(7, 5.0, 4.0);
