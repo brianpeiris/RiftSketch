@@ -33,15 +33,7 @@ export default class TextArea {
 
     this.object = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), new THREE.MeshBasicMaterial(textAreaMat));
     this.object.position.y = 1.5;
-
-    this.grabHandle = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(0.5, 0.5),
-      new THREE.MeshBasicMaterial({ wireframe: true })
-    );
-    this.grabHandle.position.set(0.8, -1.2, -0.05);
-    const grabHandleCube = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.15), new THREE.MeshLambertMaterial());
-    this.grabHandle.add(grabHandleCube);
-    this.object.add(this.grabHandle);
+    this.object.castShadow = true;
 
     this.setupInfoPane();
 
@@ -71,6 +63,7 @@ export default class TextArea {
     infoMat.transparent = true;
 
     const infoMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 0.5), new THREE.MeshBasicMaterial(infoMat));
+    infoMesh.castShadow = true;
     infoMesh.position.y = -1.3;
 
     this.object.add(infoMesh);

@@ -24,6 +24,7 @@ export default class RiftSandbox {
 
   _initScene() {
     this.scene = new THREE.Scene();
+    this.scene.fog = new THREE.FogExp2("lightgrey", 0.03);
 
     this._camera = new THREE.PerspectiveCamera(75, this._width / this._height, 0.1, 200);
     this._camera.position.y = 1.6;
@@ -42,9 +43,10 @@ export default class RiftSandbox {
 
     const ground = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(200, 200),
-      new THREE.MeshBasicMaterial({ map: groundTexture })
+      new THREE.MeshStandardMaterial({ map: groundTexture, roughness: 1, metalness: 0 })
     );
     ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
     this.scene.add(ground);
 
     const axis = new THREE.AxesHelper();
@@ -106,6 +108,8 @@ export default class RiftSandbox {
       });
       this.renderer.setPixelRatio(devicePixelRatio);
       this.renderer.vr.enabled = true;
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       document.body.append(VRButton.createButton(this.renderer));
     } catch (e) {
       alert("This application needs WebGL enabled!");
