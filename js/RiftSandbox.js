@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { VRButton } from "three/examples/jsm/webxr/VRButton";
+import { VRButton } from "three/examples/jsm/webxr/VRButton.js";
 
 import TextArea from "./TextArea";
 import Monitor from "./Monitor";
@@ -103,7 +103,7 @@ export default class RiftSandbox {
         canvas: document.getElementById("viewer")
       });
       this.renderer.setPixelRatio(devicePixelRatio);
-      this.renderer.vr.enabled = true;
+      this.renderer.xr.enabled = true;
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       const button = VRButton.createButton(this.renderer);

@@ -3,7 +3,7 @@ module.exports = {
     THREE: "readonly",
     scene: "readonly",
     camera: "readonly",
-    sketch: "readonly"
+    sketch: "readonly",
     renderer: "readonly"
   },
   parserOptions: {

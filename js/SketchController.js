@@ -1,30 +1,23 @@
 import * as THREE from "three";
-import WebFont from "webfontloader";
 
 import KeyboardHandler from "./KeyboardHandler";
 import RiftSandbox from "./RiftSandbox";
 import File from "./File";
 import Sketch from "./Sketch";
 
-import Cube from "raw-loader!./Files/Cube.js";
-
 export default class SketchController {
   constructor() {
-    //this._setupVideoPassthrough();
+    // this._setupVideoPassthrough();
 
     this._keyboardHandler = new KeyboardHandler(this);
 
     this._sketchLoop = function() {};
 
-    WebFont.load({
-      google: { families: ["Ubuntu Mono"] },
-      active: () => {
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", () => this._init());
-        } else {
-          this._init();
-          document.getElementById("loading").style.display = "none";
-        }
+    document.fonts.ready.then(() => {
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => this._init());
+      } else {
+        this._init();
       }
     });
 
@@ -47,11 +40,12 @@ export default class SketchController {
     }
   }
 
-  _initializeSketch() {
+  async _initializeSketch() {
     const storedSketches = localStorage.getItem("sketches_v1");
     if (storedSketches) {
       this._sketch = Sketch.fromJSON(JSON.parse(storedSketches)[0]);
     } else {
+      const Cube = await fetch("js/Files/Cube.js").then(r => r.text());
       this._sketch = new Sketch("", [new File("Cube", Cube)]);
     }
     this._domTextAreas = this._sketch.files.map(this._setupDomTextArea);
@@ -151,9 +145,10 @@ export default class SketchController {
     }
   }
 
-  _init() {
+  async _init() {
+    document.getElementById("loading").style.display = "none";
     this._riftSandbox = new RiftSandbox(window.innerWidth, window.innerHeight, this._domMonitor);
-    this._initializeSketch();
+    await this._initializeSketch();
     this._readCode();
     this._keyboardHandler.riftSandbox = this._riftSandbox;
     this._keyboardHandler.bindKeyboardShortcuts(document);
