@@ -1,6 +1,6 @@
 const t3 = THREE;
 
-const sky = "lightblue";
+const sky = "pink";
 renderer.setClearColor(sky);
 scene.fog.color.setStyle(sky);
 
@@ -14,57 +14,38 @@ scene.add(
   new THREE.AmbientLight("white", 0.5)
 );
 
-function makeCube(x, y, z) {
-  const cube = new t3.Mesh(
-    new t3.BoxGeometry(1.0, 0.2, 1.0),
+const origin = new t3.Group();
+origin.position.set(-0.20, 1.10, 1.30)
+scene.add(origin);
+
+const boxes = [];
+const n = 30;
+for (let i = 0; i < n; i++) {
+  const hue = t3.MathUtils.mapLinear(
+    i, 0, n, 0, 360
+  );
+  const box = new t3.Mesh(
+    new t3.BoxGeometry(0.30, 0.005, 0.01),
     new t3.MeshStandardMaterial({
-      color: "green",
-      roughness: 0.5,
-      metalness: 0.6
+      roughness: 0.1,
+      metalness: 0.5,
+      color: `hsl(${hue}, 100%, 50%)`
     })
   );
-  cube.castShadow = true;
-  cube.receiveShadow = true;
-  cube.position.set(x, y, z);
-  return cube;
+  box.castShadow = true;
+  box.receiveShadow = true;
+  box.position.y = i * 0.01;
+  origin.add(box);
+  boxes.push(box);
 }
 
-const star = new t3.Mesh(
-  new t3.OctahedronGeometry(1, 0),
-  new t3.MeshStandardMaterial({
-    color: "gold",
-    roughness: 0.5,
-    metalness: 0.6
-  })
-);
-star.castShadow = true;
-star.scale.setScalar(0.2);
-star.position.set(-1.0, 3.4, -1.0);
-scene.add(star);
-
-const numCubes = 16;
-const cubes = [];
-for (let i = 0; i < numCubes; i++) {
-  const cube = makeCube(-1, i / 5, -1);
-  cube.scale.setScalar(
-    (1 / (i + 4)) * 6
-  );
-  cube.scale.y = 1;
-  cube.material.color.setStyle(
-    i % 2 === 0 ? "red" : "darkgreen"
-  );
-  scene.add(cube);
-  cubes.push(cube);
-}
-
-sketch.initialState({ t: 0 });
+sketch.initialState({t: 0});
 sketch.loop = () => {
   const { state } = sketch;
-  for (let i = 0; i < numCubes; i++) {
-    const cube = cubes[i];
-    cube.rotation.y =
-      (state.t * i) / numCubes;
+  for (let i = 0; i < boxes.length; i++) {
+    const box = boxes[i];
+    box.rotation.y = state.t * i;
+    box.rotation.z = state.t * 0.5;
   }
-  star.rotation.y = state.t;
-  state.t += 0.02;
+  state.t += 0.003;
 };
