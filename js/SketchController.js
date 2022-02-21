@@ -45,7 +45,7 @@ export default class SketchController {
     if (storedSketches) {
       this._sketch = Sketch.fromJSON(JSON.parse(storedSketches)[0]);
     } else {
-      const Cube = await fetch("/js/Files/Cube.js").then(r => r.text());
+      const Cube = await fetch("js/Files/Cube.js").then(r => r.text());
       this._sketch = new Sketch("", [new File("Cube", Cube)]);
     }
     this._domTextAreas = this._sketch.files.map(this._setupDomTextArea);
