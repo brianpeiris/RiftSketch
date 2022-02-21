@@ -2,6 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "browser-sync start -s -w --no-open --no-notify --no-ghost-mode --https",
     "lint": "eslint 'js/**/*.js'",
     "build": "esbuild js/index.js --bundle --outfile=bundle.js"
   },
@@ -10,6 +11,7 @@
     "three": "^0.137.5"
   },
   "devDependencies": {
+    "browser-sync": "^2.27.7",
     "esbuild": "^0.14.21",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
