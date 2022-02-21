@@ -31,25 +31,10 @@ textarea {
   word-wrap: normal;
 }
 
-.modal {
-  display: block;
-  font-size: 12pt;
-}
-
 #monitor {
   position: absolute;
   left: -9999px;
   top: -9999px;
-}
-
-.webvr-button {
-  box-sizing: content-box;
-  filter: brightness(0) !important;
-  -webkit-filter: brightness(0) !important;
-}
-.webvr-button:hover {
-  filter: drop-shadow(0 0 2px rgba(0,0,0,1))!important;
-  -webkit-filter: drop-shadow(0 0 2px rgba(0,0,0,1))!important;
 }
 
 #github {

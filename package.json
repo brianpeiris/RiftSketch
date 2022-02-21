@@ -2,9 +2,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "browser-sync start -s -w --no-open --no-notify --no-ghost-mode --https",
+    "start": "concurrently npm:dev:*",
+    "dev:serve": "browser-sync start -s -w --no-open --no-notify --no-ghost-mode --https",
+    "dev:build": "esbuild js/index.js --watch --sourcemap --bundle --outfile=bundle.js",
     "lint": "eslint 'js/**/*.js'",
-    "build": "esbuild js/index.js --bundle --outfile=bundle.js"
+    "build": "esbuild js/index.js --minify --sourcemap --bundle --outfile=bundle.js"
   },
   "dependencies": {
     "@brianpeiris/kibo": "^1.2.0",
@@ -12,6 +14,7 @@
   },
   "devDependencies": {
     "browser-sync": "^2.27.7",
+    "concurrently": "^7.0.0",
     "esbuild": "^0.14.21",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",

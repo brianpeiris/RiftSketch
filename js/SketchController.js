@@ -7,7 +7,7 @@ import Sketch from "./Sketch";
 
 export default class SketchController {
   constructor() {
-    //this._setupVideoPassthrough();
+    // this._setupVideoPassthrough();
 
     this._keyboardHandler = new KeyboardHandler(this);
 
